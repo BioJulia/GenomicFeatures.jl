@@ -397,6 +397,8 @@ end
         @test !BED.hasblockcount(record)
         @test !BED.hasblocksizes(record)
         @test !BED.hasblockstarts(record)
+        @test startswith(repr(record), "GenomicFeatures.BED.Record:\n")
+        @test string(record) == "chr1\t17368\t17436"
 
         record = BED.Record(b"chrXIII\t854794\t855293\tYMR292W\t0\t+\t854794\t855293\t0\t2\t22,395,\t0,104,")
         @test BED.chrom(record) == "chrXIII"
@@ -411,6 +413,8 @@ end
         @test BED.blockcount(record) === 2
         @test BED.blocksizes(record) == [22, 395]
         @test BED.blockstarts(record) == [1, 105]
+        @test startswith(repr(record), "GenomicFeatures.BED.Record:\n")
+        @test string(record) == "chrXIII\t854794\t855293\tYMR292W\t0\t+\t854794\t855293\t0\t2\t22,395,\t0,104,"
 
         record = BED.Record(b"chrX\t151080532\t151081699\tCHOCOLATE1\t0\t-\t151080532\t151081699\t255,127,36")
         @test BED.chrom(record) == "chrX"
@@ -425,6 +429,8 @@ end
         @test !BED.hasblockcount(record)
         @test !BED.hasblocksizes(record)
         @test !BED.hasblockstarts(record)
+        @test startswith(repr(record), "GenomicFeatures.BED.Record:\n")
+        @test string(record) == "chrX\t151080532\t151081699\tCHOCOLATE1\t0\t-\t151080532\t151081699\t255,127,36"
     end
 
     function check_bed_parse(filename)
