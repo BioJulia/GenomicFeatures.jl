@@ -2,14 +2,21 @@
 # ===========
 
 """
-    GFF3Reader(input::IO; save_directives::Bool=false)
+    GFF3.Reader(input::IO;
+                save_directives::Bool=false,
+                skip_features::Bool=false,
+                skip_directives::Bool=true,
+                skip_comments::Bool=true)
 
 Create a reader for data in GFF3 format.
 
-# Arguments:
-* `input`: data source
-* `save_directives=false`: if true, store directive lines, which can be accessed
-  with the `directives` function
+Arguments
+---------
+- `input`: data source
+- `save_directives`: flag to save directive records (which can be accessed with `GFF3.directives`)
+- `skip_features`: flag to skip feature records
+- `skip_directives`: flag to skip directive records
+- `skip_comments`:  flag to skip comment records
 """
 type Reader <: Bio.IO.AbstractReader
     state::Bio.Ragel.State
