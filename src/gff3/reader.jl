@@ -107,7 +107,7 @@ function getfasta(reader::Reader)
     return BioSequences.FASTA.Reader(reader.state.stream)
 end
 
-info("compiling GFF3")
+isinteractive() && info("compiling GFF3")
 const record_machine, body_machine = (function ()
     cat = Automa.RegExp.cat
     rep = Automa.RegExp.rep

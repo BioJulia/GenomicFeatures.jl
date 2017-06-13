@@ -29,7 +29,7 @@ function Bio.IO.stream(reader::Reader)
     return reader.state.stream
 end
 
-info("compiling BED")
+isinteractive() && info("compiling BED")
 const record_machine, file_machine = (function ()
     cat = Automa.RegExp.cat
     rep = Automa.RegExp.rep
