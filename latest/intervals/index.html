@@ -228,8 +228,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#interval-types" title="Interval types" class="md-nav__link">
-    Interval types
+  <a href="#interval-type" title="Interval type" class="md-nav__link">
+    Interval type
   </a>
   
 </li>
@@ -242,8 +242,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#intersection" title="Intersection" class="md-nav__link">
-    Intersection
+  <a href="#overlap-query" title="Overlap query" class="md-nav__link">
+    Overlap query
   </a>
   
 </li>
@@ -357,8 +357,8 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#interval-types" title="Interval types" class="md-nav__link">
-    Interval types
+  <a href="#interval-type" title="Interval type" class="md-nav__link">
+    Interval type
   </a>
   
 </li>
@@ -371,8 +371,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#intersection" title="Intersection" class="md-nav__link">
-    Intersection
+  <a href="#overlap-query" title="Overlap query" class="md-nav__link">
+    Overlap query
   </a>
   
 </li>
@@ -401,12 +401,12 @@
                   <a href="https://github.com/BioJulia/GenomicFeatures.jl/edit/master/docs/intervals.md" title="Edit this page" class="md-icon md-content__icon">edit</a>
                 
                 
-                <p><a id='Intervals:-Genomic-Interval-Manipulation-1'></a></p>
-<h1 id="intervals-genomic-interval-manipulation">Intervals: Genomic Interval Manipulation</h1>
-<p>The <code>Intervals</code> module consists of tools for working efficiently with genomic intervals.</p>
-<p><a id='Interval-types-1'></a></p>
-<h2 id="interval-types">Interval types</h2>
-<p>Intervals in Bio.jl are consistent with ranges in Julia: <em>1-based and end-inclusive</em>. When data is read from formats with different representations (i.e. 0-based and/or end-exclusive) they are always converted automatically. Similarly when writing data. You should not have to reason about off-by-one errors due to format differences while using functionality provided in Bio.jl.</p>
+                <p><a id='Genomic-Interval-Manipulation-1'></a></p>
+<h1 id="genomic-interval-manipulation">Genomic Interval Manipulation</h1>
+<p>The <code>GenomicFeatures</code> module consists of tools for working efficiently with genomic intervals.</p>
+<p><a id='Interval-type-1'></a></p>
+<h2 id="interval-type">Interval type</h2>
+<p>Intervals in GenomicFeatures.jl are consistent with ranges in Julia: <em>1-based and end-inclusive</em>. When data is read from formats with different representations (i.e. 0-based and/or end-exclusive) they are always converted automatically.  Similarly when writing data. You should not have to reason about off-by-one errors due to format differences while using functionality provided in GenomicFeatures.jl.</p>
 <p>The <code>Interval</code> type is defined as</p>
 <div class="codehilite"><pre><span></span><span class="k">immutable</span> <span class="n">Interval</span><span class="p">{</span><span class="n">T</span><span class="p">}</span> <span class="o">&lt;:</span> <span class="n">AbstractInterval</span><span class="p">{</span><span class="kt">Int64</span><span class="p">}</span>
     <span class="n">seqname</span><span class="o">::</span><span class="n">String</span>
@@ -451,8 +451,8 @@
 </tr>
 </tbody>
 </table>
-<p>Similarly to the <code>SeqRecord</code> type in the <code>Bio.Seq</code> module, <code>Interval</code> is parameterized on metadata type, which lets it efficiently and precisely be specialized to represent intervals from a variety of formats.</p>
-<p>The default strand and metadata values are <code>STRAND_BOTH</code> and <code>nothing</code>:</p>
+<p><code>Interval</code> is parameterized on metadata type, which lets it efficiently and precisely be specialized to represent intervals from a variety of formats.</p>
+<p>The default strand and metadata value are <code>STRAND_BOTH</code> and <code>nothing</code>:</p>
 <div class="codehilite"><pre><span></span><span class="gp">julia&gt;</span> <span class="n">Interval</span><span class="p">(</span><span class="s">&quot;chr1&quot;</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">20000</span><span class="p">)</span>
 <span class="go">GenomicFeatures.Interval{Void}:</span>
 <span class="go">  sequence name: chr1</span>
@@ -502,29 +502,29 @@
 <p>Collections of intervals are represented using the <code>IntervalCollection</code> type, which is a general purpose indexed container for intervals. It supports fast intersection operations as well as insertion, deletion, and sorted iteration.</p>
 <p>Interval collections can be initialized by inserting elements one by one using <code>push!</code>.</p>
 <div class="codehilite"><pre><span></span><span class="c"># The type parameter (Void here) indicates the interval metadata type.</span>
-<span class="n">incol</span> <span class="o">=</span> <span class="n">IntervalCollection</span><span class="p">{</span><span class="kt">Void</span><span class="p">}()</span>
+<span class="n">col</span> <span class="o">=</span> <span class="n">IntervalCollection</span><span class="p">{</span><span class="kt">Void</span><span class="p">}()</span>
 
 <span class="k">for</span> <span class="n">i</span> <span class="kp">in</span> <span class="mi">1</span><span class="o">:</span><span class="mi">100</span><span class="o">:</span><span class="mi">10000</span>
-    <span class="n">push!</span><span class="p">(</span><span class="n">incol</span><span class="p">,</span> <span class="n">Interval</span><span class="p">(</span><span class="s">&quot;chr1&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">99</span><span class="p">))</span>
+    <span class="n">push!</span><span class="p">(</span><span class="n">col</span><span class="p">,</span> <span class="n">Interval</span><span class="p">(</span><span class="s">&quot;chr1&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">99</span><span class="p">))</span>
 <span class="k">end</span>
 </pre></div>
 
 
 <p>Incrementally building an interval collection like this works, but <code>IntervalCollection</code> also has a bulk insertion constructor that is able to build the indexed data structure extremely efficiently from an array of intervals.</p>
-<div class="codehilite"><pre><span></span><span class="n">incol</span> <span class="o">=</span> <span class="n">IntervalCollection</span><span class="p">([</span><span class="n">Interval</span><span class="p">(</span><span class="s">&quot;chr1&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">99</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="kp">in</span> <span class="mi">1</span><span class="o">:</span><span class="mi">100</span><span class="o">:</span><span class="mi">10000</span><span class="p">])</span>
+<div class="codehilite"><pre><span></span><span class="n">col</span> <span class="o">=</span> <span class="n">IntervalCollection</span><span class="p">([</span><span class="n">Interval</span><span class="p">(</span><span class="s">&quot;chr1&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">i</span> <span class="o">+</span> <span class="mi">99</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="kp">in</span> <span class="mi">1</span><span class="o">:</span><span class="mi">100</span><span class="o">:</span><span class="mi">10000</span><span class="p">])</span>
 </pre></div>
 
 
 <p>Bulding <code>IntervalCollections</code> in one shot like this should be preferred when it's convenient or speed in an issue.</p>
 <p><code>IntervalCollection</code>s can also be build directly from a genome annotation file, here in GFF3 format:</p>
-<div class="codehilite"><pre><span></span><span class="n">rdr</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">GFF3</span><span class="o">.</span><span class="n">Reader</span><span class="p">,</span> <span class="s">&quot;some_genome.gff3&quot;</span><span class="p">)</span>
-<span class="n">features</span> <span class="o">=</span> <span class="n">IntervalCollection</span><span class="p">(</span><span class="n">rdr</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span><span class="n">reader</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">GFF3</span><span class="o">.</span><span class="n">Reader</span><span class="p">,</span> <span class="s">&quot;some_genome.gff3&quot;</span><span class="p">)</span>
+<span class="n">features</span> <span class="o">=</span> <span class="n">IntervalCollection</span><span class="p">(</span><span class="n">reader</span><span class="p">)</span>
 </pre></div>
 
 
-<p><a id='Intersection-1'></a></p>
-<h2 id="intersection">Intersection</h2>
-<p>There are number of <code>eachoverlap</code> function in the Intervals module. They follow two patterns: interval versus collection queries which return an iterator over intervals in the collection that intersect the query, and collection versus collection queries which iterate over all pairs of overlapping intervals.</p>
+<p><a id='Overlap-query-1'></a></p>
+<h2 id="overlap-query">Overlap query</h2>
+<p>There are number of <code>eachoverlap</code> function in the <code>GenomicFeatures</code> module. They follow two patterns: interval versus collection queries which return an iterator over intervals in the collection that overlap the query, and collection versus collection queries which iterate over all pairs of overlapping intervals.</p>
 <p><a id='GenomicFeatures.eachoverlap' href='#GenomicFeatures.eachoverlap'>#</a>
 <strong><code>GenomicFeatures.eachoverlap</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>eachoverlap(intervals_a, intervals_b, [seqname_isless=Base.isless])
@@ -534,7 +534,7 @@
 <p>Create an iterator of overlapping intervals between <code>intervals_a</code> and <code>intervals_b</code>.</p>
 <p>This function assumes elements of <code>intervals_a</code> and <code>intervals_b</code> are sorted by its sequence name and left position.  If the element type is not a subtype of <code>GenomicFeatures.Interval</code>, elements are converted to <code>Interval</code> objects.</p>
 <p>The third optional argument is a function that defines the order of sequence names. The default function is <code>Base.isless</code>, which is the lexicographical order.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/f33f1e87e57dd3b932ad32c3f1d819a8088bb924/src/overlap.jl#L18-L30' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/4c4dc19da7022f7e867b28baecb3f39d4d5f4596/src/overlap.jl#L18-L30' class='documenter-source'>source</a><br></p>
 <p>The order of interval pairs is the same as the following nested loop but <code>eachoverlap</code> is often much faster:</p>
 <div class="codehilite"><pre><span></span><span class="k">for</span> <span class="n">a</span> <span class="kp">in</span> <span class="n">intervals_a</span><span class="p">,</span> <span class="n">b</span> <span class="kp">in</span> <span class="n">intervals_b</span>
     <span class="k">if</span> <span class="n">isoverlapping</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
@@ -546,22 +546,19 @@
 
 <p><a id='Interval-streams-1'></a></p>
 <h2 id="interval-streams">Interval streams</h2>
-<p>Intervals need not necessarily stored in an indexed data structure for efficient intersection to be practical. Two collections of intervals need only be both sorted to compute all intersecting pairs. This is particularly useful in genomics where datasets are sometimes so large that loading them entirely into memory is not practical.</p>
-<p>The Intervals module is able to intersect any two iterators that yield intervals in sorted order, which we refer to as "interval streams". An <code>IntervalCollection</code> is also an interval stream, but so is a sorted array of intervals, and parsers over interval file formats. This allows for a very general notion of intersection.</p>
-<div class="codehilite"><pre><span></span><span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="kp">in</span> <span class="n">eachoverlap</span><span class="p">(</span><span class="n">open</span><span class="p">(</span><span class="n">BED</span><span class="o">.</span><span class="n">Reader</span><span class="p">,</span> <span class="s">&quot;x_features.bed&quot;</span><span class="p">),</span> <span class="n">open</span><span class="p">(</span><span class="n">BED</span><span class="o">.</span><span class="n">Reader</span><span class="p">,</span> <span class="s">&quot;y_features.bed&quot;</span><span class="p">))</span>
-    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Intersection found between &quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="s">&quot; and &quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<p>Intervals need not necessarily stored in an indexed data structure for efficient intersection to be practical. Two collections of intervals need only be both sorted to compute all overlapping pairs. This is particularly useful in genomics where datasets are sometimes so large that loading them entirely into memory is not practical.</p>
+<p>The <code>GenomicFeatures</code> module is able to intersect any two iterators that yield intervals in sorted order, which we refer to as "interval streams". An <code>IntervalCollection</code> is also an interval stream, but so is a sorted array of intervals, and parsers over interval file formats. This allows for a very general notion of intersection.</p>
+<div class="codehilite"><pre><span></span><span class="n">features_x</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">BED</span><span class="o">.</span><span class="n">Reader</span><span class="p">,</span> <span class="s">&quot;features_x.bed&quot;</span><span class="p">)</span>
+<span class="n">features_y</span> <span class="o">=</span> <span class="n">open</span><span class="p">(</span><span class="n">BED</span><span class="o">.</span><span class="n">Reader</span><span class="p">,</span> <span class="s">&quot;features_y.bed&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="kp">in</span> <span class="n">eachoverlap</span><span class="p">(</span><span class="n">features_x</span><span class="p">,</span> <span class="n">features_y</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;intersection found between &quot;</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="s">&quot; and &quot;</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 <span class="k">end</span>
+<span class="n">close</span><span class="p">(</span><span class="n">features_x</span><span class="p">)</span>
+<span class="n">close</span><span class="p">(</span><span class="n">features_y</span><span class="p">)</span>
 </pre></div>
 
 
-<p>An exception will be thrown if an interval in encountered out of order while processing an interval stream. Ordering of intervals has one complication: there is not necessarily a standardized way to order sequence names. By default in Bio.jl intervals are sorted using a <code>Base.isless</code> comparison function that is a default order in most command-line tools. The Intervals module also offers <code>alphanum_isless</code> comparison that compares numbers numerically if they exist in string, so that names like <code>chr1, chr2, chr10</code> end up in their natural order.</p>
-<p>The <code>eachoverlap</code> function takes as an optional parameter an <code>isless</code> function to use to compare sequence names to account for arbitrary sequence name orderings.</p>
-<div class="codehilite"><pre><span></span><span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span> <span class="kp">in</span> <span class="n">eachoverlap</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">ys</span><span class="p">,</span> <span class="n">GenomicFeatures</span><span class="o">.</span><span class="n">alphanum_isless</span><span class="p">)</span>
-    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Intersection found between &quot;</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="s">&quot; and &quot;</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
-<span class="k">end</span>
-</pre></div>
-
-
+<p>An exception will be thrown if an interval in encountered out of order while processing an interval stream. Ordering of intervals has one complication: there is not necessarily a standardized way to order sequence names. By default in GenomicFeatures.jl intervals are sorted using a <code>Base.isless</code> comparison function that is a default order in most command-line tools.</p>
 <p>A special sort of intersection can also be performed on an interval stream against itself to produce "coverage intervals".</p>
 <p><a id='GenomicFeatures.coverage' href='#GenomicFeatures.coverage'>#</a>
 <strong><code>GenomicFeatures.coverage</code></strong> &mdash; <em>Function</em>.</p>
@@ -581,7 +578,7 @@
 </pre></div>
 
 
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/f33f1e87e57dd3b932ad32c3f1d819a8088bb924/src/coverage.jl#L9-L24' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/4c4dc19da7022f7e867b28baecb3f39d4d5f4596/src/coverage.jl#L9-L24' class='documenter-source'>source</a><br></p>
                 
                   
                 

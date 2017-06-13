@@ -377,7 +377,7 @@
 
 <p>Create a reader for bigWig file format.</p>
 <p>Note that <code>input</code> must be seekable.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/f33f1e87e57dd3b932ad32c3f1d819a8088bb924/src/bigwig/reader.jl#L25-L31' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/4c4dc19da7022f7e867b28baecb3f39d4d5f4596/src/bigwig/reader.jl#L25-L31' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BigWig.chromlist' href='#GenomicFeatures.BigWig.chromlist'>#</a>
 <strong><code>GenomicFeatures.BigWig.chromlist</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>chromlist(reader::BigWig.Reader)::Vector{Tuple{String,Int}}
@@ -385,7 +385,7 @@
 
 
 <p>Get the <code>(name, length)</code> pairs of chromosomes/contigs.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/f33f1e87e57dd3b932ad32c3f1d819a8088bb924/src/bigwig/reader.jl#L55-L59' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/4c4dc19da7022f7e867b28baecb3f39d4d5f4596/src/bigwig/reader.jl#L55-L59' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BigWig.values' href='#GenomicFeatures.BigWig.values'>#</a>
 <strong><code>GenomicFeatures.BigWig.values</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>values(reader::BigWig.Reader, interval::Interval)::Vector{Float32}
@@ -394,14 +394,14 @@
 
 <p>Get a vector of values within <code>interval</code> from <code>reader</code>.</p>
 <p>This function fills missing values with <code>NaN32</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/f33f1e87e57dd3b932ad32c3f1d819a8088bb924/src/bigwig/reader.jl#L64-L70' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/4c4dc19da7022f7e867b28baecb3f39d4d5f4596/src/bigwig/reader.jl#L64-L70' class='documenter-source'>source</a><br></p>
 <div class="codehilite"><pre><span></span>values(reader::BigWig.Reader, chrom::AbstractString, range::UnitRange)::Vector{Float32}
 </pre></div>
 
 
 <p>Get a vector of values within <code>range</code> of <code>chrom</code> from <code>reader</code>.</p>
 <p>This function fills missing values with <code>NaN32</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/f33f1e87e57dd3b932ad32c3f1d819a8088bb924/src/bigwig/reader.jl#L75-L81' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/4c4dc19da7022f7e867b28baecb3f39d4d5f4596/src/bigwig/reader.jl#L75-L81' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BigWig.Writer' href='#GenomicFeatures.BigWig.Writer'>#</a>
 <strong><code>GenomicFeatures.BigWig.Writer</code></strong> &mdash; <em>Type</em>.</p>
 <div class="codehilite"><pre><span></span><span class="nt">BigWig</span><span class="p">.</span><span class="nc">Writer</span><span class="o">(</span><span class="nt">output</span><span class="p">::</span><span class="nd">IO</span><span class="o">,</span> <span class="nt">chromlist</span><span class="o">;</span> <span class="nt">binsize</span><span class="o">=</span><span class="nt">64</span><span class="o">,</span> <span class="nt">datatype</span><span class="o">=</span><span class="p">:</span><span class="nd">bedgraph</span><span class="o">)</span>
@@ -425,7 +425,7 @@
 </pre></div>
 
 
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/f33f1e87e57dd3b932ad32c3f1d819a8088bb924/src/bigwig/writer.jl#L75-L98' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/4c4dc19da7022f7e867b28baecb3f39d4d5f4596/src/bigwig/writer.jl#L75-L98' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BigWig.Record' href='#GenomicFeatures.BigWig.Record'>#</a>
 <strong><code>GenomicFeatures.BigWig.Record</code></strong> &mdash; <em>Type</em>.</p>
 <div class="codehilite"><pre><span></span>BigWig.Record()
@@ -433,7 +433,7 @@
 
 
 <p>Create an unfilled bigWig record.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/f33f1e87e57dd3b932ad32c3f1d819a8088bb924/src/bigwig/record.jl#L6-L10' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/4c4dc19da7022f7e867b28baecb3f39d4d5f4596/src/bigwig/record.jl#L6-L10' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BigWig.chrom' href='#GenomicFeatures.BigWig.chrom'>#</a>
 <strong><code>GenomicFeatures.BigWig.chrom</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>chrom(record::Record)::String
@@ -441,7 +441,7 @@
 
 
 <p>Get the chromosome name of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/f33f1e87e57dd3b932ad32c3f1d819a8088bb924/src/bigwig/record.jl#L69-L73' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/4c4dc19da7022f7e867b28baecb3f39d4d5f4596/src/bigwig/record.jl#L69-L73' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BigWig.chromid' href='#GenomicFeatures.BigWig.chromid'>#</a>
 <strong><code>GenomicFeatures.BigWig.chromid</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>chromid(record::Record)::UInt32
@@ -449,7 +449,7 @@
 
 
 <p>Get the chromosome ID of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/f33f1e87e57dd3b932ad32c3f1d819a8088bb924/src/bigwig/record.jl#L59-L63' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/4c4dc19da7022f7e867b28baecb3f39d4d5f4596/src/bigwig/record.jl#L59-L63' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BigWig.chromstart' href='#GenomicFeatures.BigWig.chromstart'>#</a>
 <strong><code>GenomicFeatures.BigWig.chromstart</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>chromstart(record::Record)::Int
@@ -457,7 +457,7 @@
 
 
 <p>Get the start position of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/f33f1e87e57dd3b932ad32c3f1d819a8088bb924/src/bigwig/record.jl#L91-L95' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/4c4dc19da7022f7e867b28baecb3f39d4d5f4596/src/bigwig/record.jl#L91-L95' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BigWig.chromend' href='#GenomicFeatures.BigWig.chromend'>#</a>
 <strong><code>GenomicFeatures.BigWig.chromend</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>chromend(record::Record)::Int
@@ -465,7 +465,7 @@
 
 
 <p>Get the end position of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/f33f1e87e57dd3b932ad32c3f1d819a8088bb924/src/bigwig/record.jl#L113-L117' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/4c4dc19da7022f7e867b28baecb3f39d4d5f4596/src/bigwig/record.jl#L113-L117' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BigWig.value' href='#GenomicFeatures.BigWig.value'>#</a>
 <strong><code>GenomicFeatures.BigWig.value</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>value(record::Record)::Float32
@@ -473,7 +473,7 @@
 
 
 <p>Get the value of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/f33f1e87e57dd3b932ad32c3f1d819a8088bb924/src/bigwig/record.jl#L135-L139' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/4c4dc19da7022f7e867b28baecb3f39d4d5f4596/src/bigwig/record.jl#L135-L139' class='documenter-source'>source</a><br></p>
                 
                   
                 
