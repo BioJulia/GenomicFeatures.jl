@@ -126,69 +126,6 @@ function Base.show(io::IO, i::Interval)
     end
 end
 
-"""
-A comparison function used to sort on numbers within text.
-
-This is useful since sequences are often named things like "chr12" or
-"read1234". Treating the numbers as numbers and not text gives a more natural
-ordering.
-
-This is similar to the '--version-sort' option in GNU coreutils sort.
-"""
-function alphanum_isless(a::AbstractString, b::AbstractString)
-    i = 1
-    j = 1
-
-    # match up to the first digit
-    k0 = 0 # position of first digit
-    while i <= length(a) && j <= length(b)
-        if isdigit(a[i]) && isdigit(b[j])
-            k0 = i
-            break
-        else
-            if a[i] != b[j]
-                return a[i] < b[j]
-            end
-        end
-        i = nextind(a, i)
-        j = nextind(b, j)
-    end
-
-    # match numbers
-    ka1, kb1 = 0, 0
-    while i <= length(a) && isdigit(a[i])
-        ka1 = i
-        i = nextind(a, i)
-    end
-    while j <= length(b) && isdigit(b[j])
-        kb1 = j
-        j = nextind(b, j)
-    end
-
-    if ka1 == 0 && kb1 != 0
-        return true
-    elseif ka1 != 0 && kb1 == 0
-        return false
-    elseif ka1 != 0 && kb1 != 0
-        aval = parse(Int, a[k0:ka1])
-        bval = parse(Int, b[k0:kb1])
-        if aval != bval
-            return aval < bval
-        end
-    end
-
-    # match suffixes
-    while i <= length(a) && j <= length(b)
-        if a[i] != b[j]
-            return a[i] < b[j]
-        end
-        i = nextind(a, i)
-        j = nextind(b, j)
-    end
-
-    return j <= length(b)
-end
-
 function metadatatype{T}(::Type{T})
     return _metadatatype(eltype(T))
 end
