@@ -8,40 +8,22 @@
 
 # Note, just to be clear: this shadows IntervalTrees.Interval
 "A genomic interval specifies interval with some associated metadata"
-type Interval{T} <: IntervalTrees.AbstractInterval{Int64}
+immutable Interval{T} <: IntervalTrees.AbstractInterval{Int64}
     seqname::String
     first::Int64
     last::Int64
     strand::Strand
     metadata::T
-
-    function Interval(seqname, first, last, strand, metadata)
-        return new(seqname, first, last, strand, metadata)
-    end
-
-    function Interval()
-        return new("", 0, 0, STRAND_NA, T())
-    end
-end
-
-function Interval{T}(seqname::AbstractString, first::Integer, last::Integer,
-                    strand::Union{Strand,Char}, metadata::T)
-    return Interval{T}(seqname, first, last, strand, metadata)
 end
 
 function Interval(seqname::AbstractString, first::Integer, last::Integer,
-                  strand::Union{Strand,Char}=STRAND_BOTH)
-    return Interval{Void}(seqname, first, last, strand, nothing)
+                  strand::Union{Strand,Char}=STRAND_BOTH, metadata=nothing)
+    return Interval{typeof(metadata)}(seqname, first, last, strand, metadata)
 end
 
 function Interval{T<:Integer}(seqname::AbstractString, range::UnitRange{T},
                               strand::Union{Strand,Char}=STRAND_BOTH, metadata=nothing)
-    return Interval(seqname, first(range), last(range), strand, metadata)
-end
-
-function Base.copy{T}(interval::Interval{T})
-    return Interval{T}(copy(interval.seqname), interval.first, interval.last,
-                       interval.strand, copy(interval.metadata))
+    return Interval{typeof(metadata)}(seqname, first(range), last(range), strand, metadata)
 end
 
 function BioCore.seqname(i::Interval)
