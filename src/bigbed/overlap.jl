@@ -26,7 +26,7 @@ function GenomicFeatures.eachoverlap(reader::Reader, interval::GenomicFeatures.I
 end
 
 type OverlapIteratorState
-    state::Bio.Ragel.State
+    state::BioCore.Ragel.State
     data::Vector{UInt8}
     done::Bool
     record::Record
@@ -41,7 +41,7 @@ function Base.start(iter::OverlapIterator)
         seek(iter.reader.stream, blocks[1].offset)
     end
     return OverlapIteratorState(
-        Bio.Ragel.State(
+        BioCore.Ragel.State(
             data_machine.start_state,
             Libz.ZlibInflateInputStream(iter.reader.stream, reset_on_end=false)),
         data,
@@ -63,7 +63,7 @@ function advance!(iter::OverlapIterator, state::OverlapIteratorState)
             block = state.blocks[state.current_block]
             seek(iter.reader.stream, block.offset)
             size = BBI.uncompress!(state.data, read(iter.reader.stream, block.size))
-            state.state = Bio.Ragel.State(data_machine.start_state, BufferedStreams.BufferedInputStream(state.data[1:size]))
+            state.state = BioCore.Ragel.State(data_machine.start_state, BufferedStreams.BufferedInputStream(state.data[1:size]))
             state.current_block += 1
         end
         if state.done || (state.current_block > endof(state.blocks) && eof(state.state.stream))

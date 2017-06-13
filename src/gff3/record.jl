@@ -89,9 +89,9 @@ function Base.convert(::Type{String}, record::Record)
 end
 
 function Base.convert(::Type{Interval}, record::Record)
-    name = Bio.seqname(record)
-    lpos = Bio.leftposition(record)
-    rpos = Bio.rightposition(record)
+    name = BioCore.seqname(record)
+    lpos = BioCore.leftposition(record)
+    rpos = BioCore.rightposition(record)
     strd = hasstrand(record) ? GenomicFeatures.strand(record) : GenomicFeatures.STRAND_BOTH
     return Interval(name, lpos, rpos, strd, record)
 end
@@ -236,11 +236,11 @@ function hasseqid(record::Record)
     return record.kind == :feature && !ismissing(record, record.seqid)
 end
 
-function Bio.seqname(record::Record)
+function BioCore.seqname(record::Record)
     return seqid(record)
 end
 
-function Bio.hasseqname(record::Record)
+function BioCore.hasseqname(record::Record)
     return hasseqid(record)
 end
 
@@ -298,11 +298,11 @@ function hasseqstart(record::Record)
     return record.kind == :feature && !ismissing(record, record.start)
 end
 
-function Bio.leftposition(record::Record)
+function BioCore.leftposition(record::Record)
     return seqstart(record)
 end
 
-function Bio.hasleftposition(record::Record)
+function BioCore.hasleftposition(record::Record)
     return hasseqstart(record)
 end
 
@@ -324,11 +324,11 @@ function hasseqend(record::Record)
     return record.kind == :feature && !ismissing(record, record.end_)
 end
 
-function Bio.rightposition(record::Record)
+function BioCore.rightposition(record::Record)
     return seqend(record)
 end
 
-function Bio.hasrightposition(record::Record)
+function BioCore.hasrightposition(record::Record)
     return hasseqend(record)
 end
 

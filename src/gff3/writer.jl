@@ -9,11 +9,11 @@ Create a data writer of the GFF3 file format.
 # Arguments:
 * `output`: data sink
 """
-type Writer{T<:IO} <: Bio.IO.AbstractReader
+type Writer{T<:IO} <: BioCore.IO.AbstractReader
     stream::T
 end
 
-function Bio.IO.stream(writer::Writer)
+function BioCore.IO.stream(writer::Writer)
     return writer.stream
 end
 

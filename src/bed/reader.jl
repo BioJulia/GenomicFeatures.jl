@@ -1,11 +1,11 @@
 # BED Reader
 # ==========
 
-immutable Reader <: Bio.IO.AbstractReader
-    state::Bio.Ragel.State
+immutable Reader <: BioCore.IO.AbstractReader
+    state::BioCore.Ragel.State
 
     function Reader(input::BufferedStreams.BufferedInputStream)
-        return new(Bio.Ragel.State(file_machine.start_state, input))
+        return new(BioCore.Ragel.State(file_machine.start_state, input))
     end
 end
 
@@ -25,7 +25,7 @@ function Base.eltype(::Type{Reader})
     return Record
 end
 
-function Bio.IO.stream(reader::Reader)
+function BioCore.IO.stream(reader::Reader)
     return reader.state.stream
 end
 
@@ -150,22 +150,22 @@ const record_actions = Dict(
     :mark => :(mark = p),
     :anchor => :())
 eval(
-    Bio.ReaderHelper.generate_index_function(
+    BioCore.ReaderHelper.generate_index_function(
         Record,
         record_machine,
         :(offset = mark = 0),
         record_actions))
 eval(
-    Bio.ReaderHelper.generate_read_function(
+    BioCore.ReaderHelper.generate_read_function(
         Reader,
         file_machine,
         :(offset = mark = 0),
         merge(record_actions, Dict(
             :record => quote
-                Bio.ReaderHelper.resize_and_copy!(record.data, data, Bio.ReaderHelper.upanchor!(stream):p-1)
+                BioCore.ReaderHelper.resize_and_copy!(record.data, data, BioCore.ReaderHelper.upanchor!(stream):p-1)
                 record.filled = (offset+1:p-1) - offset
                 found_record = true
                 @escape
             end,
             :countline => :(linenum += 1),
-            :anchor => :(Bio.ReaderHelper.anchor!(stream, p); offset = p - 1)))))
+            :anchor => :(BioCore.ReaderHelper.anchor!(stream, p); offset = p - 1)))))

@@ -8,8 +8,6 @@ import ColorTypes
 import FixedPointNumbers: N0f8
 import GenomicFeatures
 
-const Bio = BioCore  # TODO: rename
-
 include("record.jl")
 include("reader.jl")
 include("writer.jl")

@@ -97,9 +97,9 @@ function initialize!(record::Record)
 end
 
 function Base.convert(::Type{GenomicFeatures.Interval}, record::Record)
-    name = Bio.seqname(record)
-    lpos = Bio.leftposition(record)
-    rpos = Bio.rightposition(record)
+    name = BioCore.seqname(record)
+    lpos = BioCore.leftposition(record)
+    rpos = BioCore.rightposition(record)
     strd = hasstrand(record) ? GenomicFeatures.strand(record) : GenomicFeatures.STRAND_BOTH
     return GenomicFeatures.Interval(name, lpos, rpos, strd, record)
 end
@@ -213,11 +213,11 @@ function haschrom(record::Record)
     return isfilled(record)
 end
 
-function Bio.seqname(record::Record)
+function BioCore.seqname(record::Record)
     return chrom(record)
 end
 
-function Bio.hasseqname(record::Record)
+function BioCore.hasseqname(record::Record)
     return haschrom(record)
 end
 
@@ -237,11 +237,11 @@ function haschromstart(record::Record)
     return isfilled(record)
 end
 
-function Bio.leftposition(record::Record)
+function BioCore.leftposition(record::Record)
     return chromstart(record)
 end
 
-function Bio.hasleftposition(record::Record)
+function BioCore.hasleftposition(record::Record)
     return haschromstart(record)
 end
 
@@ -259,11 +259,11 @@ function haschromend(record::Record)
     return isfilled(record)
 end
 
-function Bio.rightposition(record::Record)
+function BioCore.rightposition(record::Record)
     return chromend(record)
 end
 
-function Bio.hasrightposition(record::Record)
+function BioCore.hasrightposition(record::Record)
     return haschromend(record)
 end
 

@@ -15,8 +15,6 @@ import GenomicFeatures: GenomicFeatures, BBI, Interval
 import Libz
 importall BioCore
 
-const Bio = BioCore
-
 include("header.jl")
 include("reader.jl")
 include("writer.jl")

@@ -42,7 +42,7 @@ type WriterState
     end
 end
 
-immutable Writer <: Bio.IO.AbstractWriter
+immutable Writer <: BioCore.IO.AbstractWriter
     # output stream
     stream::IO
 
@@ -200,7 +200,7 @@ function Base.close(writer::Writer)
     return
 end
 
-function Bio.IO.stream(writer::Writer)
+function BioCore.IO.stream(writer::Writer)
     return writer.stream
 end
 

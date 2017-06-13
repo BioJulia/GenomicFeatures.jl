@@ -1,7 +1,7 @@
 # BigBed Reader
 # =============
 
-immutable Reader <: Bio.IO.AbstractReader
+immutable Reader <: BioCore.IO.AbstractReader
     stream::IO
     header::BBI.Header
     zooms::Vector{BBI.Zoom}
@@ -18,7 +18,7 @@ function Base.eltype(::Type{Reader})
     return Record
 end
 
-function Bio.IO.stream(reader::Reader)
+function BioCore.IO.stream(reader::Reader)
     return reader.stream
 end
 
@@ -160,14 +160,14 @@ const actions = Dict(
     :record_blockstarts_blockstart => :(push!(record.blockstarts, (mark:p-1) - offset)),
     :record_blockstarts            => :(record.ncols += 1),
     :record => quote
-        Bio.ReaderHelper.resize_and_copy!(record.data, data, Bio.ReaderHelper.upanchor!(stream):p-1)
+        BioCore.ReaderHelper.resize_and_copy!(record.data, data, BioCore.ReaderHelper.upanchor!(stream):p-1)
         record.filled = (offset+1:p-1) - offset
         found_record = true
         @escape
     end,
     :countrecord => :(),
     :mark => :(mark = p),
-    :anchor => :(Bio.ReaderHelper.anchor!(stream, p); offset = p - 1))
+    :anchor => :(BioCore.ReaderHelper.anchor!(stream, p); offset = p - 1))
 
 type Record
     chromid::UInt32
@@ -203,7 +203,7 @@ type Record
 end
 
 eval(
-    Bio.ReaderHelper.generate_read_function(
+    BioCore.ReaderHelper.generate_read_function(
         Reader,
         data_machine,
         :(offset = mark = 0),
@@ -214,7 +214,7 @@ eval(
 # --------
 
 type IteratorState
-    state::Bio.Ragel.State
+    state::BioCore.Ragel.State
     done::Bool
     record::Record
     n_records::UInt64
@@ -226,7 +226,7 @@ function Base.start(reader::Reader)
     # this is defined as UInt32 in the spces but actually UInt64
     record_count = read(reader.stream, UInt64)
     datastream = Libz.ZlibInflateInputStream(reader.stream)
-    parser_state = Bio.Ragel.State(data_machine.start_state, datastream)
+    parser_state = BioCore.Ragel.State(data_machine.start_state, datastream)
     return IteratorState(parser_state, false, Record(), record_count, 0)
 end
 

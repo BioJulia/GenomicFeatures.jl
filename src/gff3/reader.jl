@@ -18,8 +18,8 @@ Arguments
 - `skip_directives`: flag to skip directive records
 - `skip_comments`:  flag to skip comment records
 """
-type Reader <: Bio.IO.AbstractReader
-    state::Bio.Ragel.State
+type Reader <: BioCore.IO.AbstractReader
+    state::BioCore.Ragel.State
     save_directives::Bool
     targets::Vector{Symbol}
     found_fasta::Bool
@@ -40,7 +40,7 @@ type Reader <: Bio.IO.AbstractReader
         if !skip_comments
             push!(targets, :comment)
         end
-        return new(Bio.Ragel.State(body_machine.start_state, input), save_directives, targets, false, Record[], 0, 0)
+        return new(BioCore.Ragel.State(body_machine.start_state, input), save_directives, targets, false, Record[], 0, 0)
     end
 end
 
@@ -54,7 +54,7 @@ function Base.eltype(::Type{Reader})
     return Record
 end
 
-function Bio.IO.stream(reader::Reader)
+function BioCore.IO.stream(reader::Reader)
     return reader.state.stream
 end
 
@@ -66,7 +66,7 @@ function Base.close(reader::Reader)
     # make trailing directives accessable
     reader.directive_count = reader.preceding_directive_count
     reader.preceding_directive_count = 0
-    close(Bio.IO.stream(reader))
+    close(BioCore.IO.stream(reader))
 end
 
 function IntervalCollection(reader::Reader)
@@ -218,13 +218,13 @@ const record_actions = Dict(
     :directive       => :(record.kind = :directive),
     :comment         => :(record.kind = :comment),
     :record          => quote
-        Bio.ReaderHelper.resize_and_copy!(record.data, data, 1:p-1)
+        BioCore.ReaderHelper.resize_and_copy!(record.data, data, 1:p-1)
         record.filled = (offset+1:p-1) - offset
     end,
     :anchor          => :(),
     :mark            => :(mark = p))
 eval(
-    Bio.ReaderHelper.generate_index_function(
+    BioCore.ReaderHelper.generate_index_function(
         Record,
         record_machine,
         quote
@@ -232,7 +232,7 @@ eval(
         end,
         record_actions))
 eval(
-    Bio.ReaderHelper.generate_read_function(
+    BioCore.ReaderHelper.generate_read_function(
         Reader,
         body_machine,
         quote
@@ -240,7 +240,7 @@ eval(
         end,
         merge(record_actions, Dict(
             :record => quote
-                Bio.ReaderHelper.resize_and_copy!(record.data, data, Bio.ReaderHelper.upanchor!(stream):p-1)
+                BioCore.ReaderHelper.resize_and_copy!(record.data, data, BioCore.ReaderHelper.upanchor!(stream):p-1)
                 record.filled = (offset+1:p-1) - offset
                 if isfeature(record)
                     reader.directive_count = reader.preceding_directive_count
@@ -270,4 +270,4 @@ eval(
                 end
             end,
             :countline => :(linenum += 1),
-            :anchor    => :(Bio.ReaderHelper.anchor!(stream, p); offset = p - 1)))))
+            :anchor    => :(BioCore.ReaderHelper.anchor!(stream, p); offset = p - 1)))))

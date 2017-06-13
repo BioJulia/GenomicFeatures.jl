@@ -19,8 +19,6 @@ import GenomicFeatures: GenomicFeatures, BBI, BED, Interval
 import Libz
 importall BioCore
 
-const Bio = BioCore
-
 include("reader.jl")
 include("writer.jl")
 include("record.jl")

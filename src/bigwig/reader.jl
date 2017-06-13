@@ -1,7 +1,7 @@
 # BigWig Reader
 # =============
 
-immutable Reader <: Bio.IO.AbstractReader
+immutable Reader <: BioCore.IO.AbstractReader
     stream::IO
     header::BBI.Header
     zooms::Vector{BBI.Zoom}
@@ -18,7 +18,7 @@ function Base.eltype(::Type{Reader})
     return Record
 end
 
-function Bio.IO.stream(reader::Reader)
+function BioCore.IO.stream(reader::Reader)
     return reader.stream
 end
 
