@@ -1,20 +1,19 @@
-# Intervals: Genomic Interval Manipulation
+Genomic Interval Manipulation
+=============================
 
-```@meta
-CurrentModule = GenomicFeatures
-```
-
-The `Intervals` module consists of tools for working efficiently with genomic
-intervals.
+The `GenomicFeatures` module consists of tools for working efficiently with
+genomic intervals.
 
 
-## Interval types
+Interval type
+-------------
 
-Intervals in Bio.jl are consistent with ranges in Julia: *1-based and
-end-inclusive*. When data is read from formats with different representations
-(i.e. 0-based and/or end-exclusive) they are always converted automatically.
-Similarly when writing data. You should not have to reason about off-by-one
-errors due to format differences while using functionality provided in Bio.jl.
+Intervals in GenomicFeatures.jl are consistent with ranges in Julia: *1-based
+and end-inclusive*. When data is read from formats with different
+representations (i.e. 0-based and/or end-exclusive) they are always converted
+automatically.  Similarly when writing data. You should not have to reason about
+off-by-one errors due to format differences while using functionality provided
+in GenomicFeatures.jl.
 
 The `Interval` type is defined as
 ```julia
@@ -42,12 +41,10 @@ The `strand` field can take four kinds of values listed in the next table:
 | `'-'`  | `STRAND_NEG`  | negative strand                   |
 | `'.'`  | `STRAND_BOTH` | non-strand-specific feature       |
 
-Similarly to the `SeqRecord` type in the `Bio.Seq` module, `Interval` is
-parameterized on metadata type, which lets it efficiently and precisely be
-specialized to represent intervals from a variety of formats.
+`Interval` is parameterized on metadata type, which lets it efficiently and
+precisely be specialized to represent intervals from a variety of formats.
 
-
-The default strand and metadata values are `STRAND_BOTH` and `nothing`:
+The default strand and metadata value are `STRAND_BOTH` and `nothing`:
 ```jlcon
 julia> Interval("chr1", 10000, 20000)
 GenomicFeatures.Interval{Void}:
@@ -95,7 +92,8 @@ julia> metadata(i)
 ```
 
 
-## Collections of intervals
+Collections of intervals
+------------------------
 
 Collections of intervals are represented using the `IntervalCollection` type,
 which is a general purpose indexed container for intervals. It supports fast
@@ -106,10 +104,10 @@ Interval collections can be initialized by inserting elements one by one using
 
 ```julia
 # The type parameter (Void here) indicates the interval metadata type.
-incol = IntervalCollection{Void}()
+col = IntervalCollection{Void}()
 
 for i in 1:100:10000
-    push!(incol, Interval("chr1", i, i + 99))
+    push!(col, Interval("chr1", i, i + 99))
 end
 ```
 
@@ -118,26 +116,27 @@ Incrementally building an interval collection like this works, but
 the indexed data structure extremely efficiently from an array of intervals.
 
 ```julia
-incol = IntervalCollection([Interval("chr1", i, i + 99) for i in 1:100:10000])
+col = IntervalCollection([Interval("chr1", i, i + 99) for i in 1:100:10000])
 ```
 
 Bulding `IntervalCollections` in one shot like this should be preferred when
 it's convenient or speed in an issue.
 
-
 `IntervalCollection`s can also be build directly from a genome annotation file,
 here in GFF3 format:
 
 ```julia
-rdr = open(GFF3.Reader, "some_genome.gff3")
-features = IntervalCollection(rdr)
+reader = open(GFF3.Reader, "some_genome.gff3")
+features = IntervalCollection(reader)
 ```
 
-## Intersection
 
-There are number of `eachoverlap` function in the Intervals module. They follow
-two patterns: interval versus collection queries which return an iterator over
-intervals in the collection that intersect the query, and collection versus
+Overlap query
+-------------
+
+There are number of `eachoverlap` function in the `GenomicFeatures` module. They
+follow two patterns: interval versus collection queries which return an iterator
+over intervals in the collection that overlap the query, and collection versus
 collection queries which iterate over all pairs of overlapping intervals.
 
 ```@docs
@@ -155,42 +154,36 @@ end
 ```
 
 
-## Interval streams
+Interval streams
+----------------
 
 Intervals need not necessarily stored in an indexed data structure for efficient
 intersection to be practical. Two collections of intervals need only be both
-sorted to compute all intersecting pairs. This is particularly useful in
-genomics where datasets are sometimes so large that loading them entirely into
-memory is not practical.
+sorted to compute all overlapping pairs. This is particularly useful in genomics
+where datasets are sometimes so large that loading them entirely into memory is
+not practical.
 
-The Intervals module is able to intersect any two iterators that yield intervals
-in sorted order, which we refer to as "interval streams". An
+The `GenomicFeatures` module is able to intersect any two iterators that yield
+intervals in sorted order, which we refer to as "interval streams". An
 `IntervalCollection` is also an interval stream, but so is a sorted array of
 intervals, and parsers over interval file formats. This allows for a very
 general notion of intersection.
 
 ```julia
-for (x, y) in eachoverlap(open(BED.Reader, "x_features.bed"), open(BED.Reader, "y_features.bed"))
-    println("Intersection found between ", x, " and ", y)
+features_x = open(BED.Reader, "features_x.bed")
+features_y = open(BED.Reader, "features_y.bed")
+for (x, y) in eachoverlap(features_x, features_y)
+    println("intersection found between ", x, " and ", y)
 end
+close(features_x)
+close(features_y)
 ```
 
 An exception will be thrown if an interval in encountered out of order while
 processing an interval stream. Ordering of intervals has one complication: there
 is not necessarily a standardized way to order sequence names. By default in
-Bio.jl intervals are sorted using a `Base.isless` comparison function that is a
-default order in most command-line tools. The Intervals module also offers
-`alphanum_isless` comparison that compares numbers numerically if they exist in
-string, so that names like `chr1, chr2, chr10` end up in their natural order.
-
-The `eachoverlap` function takes as an optional parameter an `isless` function to
-use to compare sequence names to account for arbitrary sequence name orderings.
-
-```julia
-for (x, y) in eachoverlap(xs, ys, GenomicFeatures.alphanum_isless)
-    println("Intersection found between ", a, " and ", b)
-end
-```
+GenomicFeatures.jl intervals are sorted using a `Base.isless` comparison
+function that is a default order in most command-line tools.
 
 A special sort of intersection can also be performed on an interval stream
 against itself to produce "coverage intervals".
