@@ -3,6 +3,7 @@ using Base.Test
 using Distributions
 import YAML
 import ColorTypes: RGB
+import Compat: take!
 import BioSequences: @dna_str, FASTA
 import FixedPointNumbers: N0f8
 import BioCore.Exceptions: MissingFieldException
@@ -148,7 +149,7 @@ end
             for s in [STRAND_NA, STRAND_POS, STRAND_NEG, STRAND_BOTH]
                 show(buf, s); print(buf, " ")
             end
-            @test takebuf_string(buf) == "STRAND_NA STRAND_POS STRAND_NEG STRAND_BOTH "
+            @test String(take!(buf)) == "STRAND_NA STRAND_POS STRAND_NEG STRAND_BOTH "
         end
 
         @testset "print" begin
@@ -156,7 +157,7 @@ end
             for s in [STRAND_NA, STRAND_POS, STRAND_NEG, STRAND_BOTH]
                 print(buf, s)
             end
-            @test takebuf_string(buf) == "?+-."
+            @test String(take!(buf)) == "?+-."
         end
     end
 end
@@ -622,7 +623,7 @@ end
         flush(writer)
 
         records2 = GFF3.Record[]
-        for record in GFF3.Reader(IOBuffer(takebuf_array(output)))
+        for record in GFF3.Reader(IOBuffer(take!(output)))
             push!(records2, record)
         end
         return records == records2

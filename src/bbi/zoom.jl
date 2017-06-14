@@ -351,7 +351,7 @@ function write_zoom_impl(output::IO, buffer::ZoomBuffer, scale::Int)
         up = max(up, (data.chromid, data.chromend))
         blocksize += 1
         if blocksize == dataperblock
-            datasize = compress!(compressed, takebuf_array(tmpbuf))
+            datasize = compress!(compressed, take!(tmpbuf))
             push!(blocks, Block(lo, up, position(output), datasize))
             unsafe_write(output, pointer(compressed), datasize)
             lo = (typemax(UInt32), typemax(UInt32))
@@ -371,7 +371,7 @@ function write_zoom_impl(output::IO, buffer::ZoomBuffer, scale::Int)
 
     # write remaining data and zoom if any
     if blocksize > 0
-        datasize = compress!(compressed, takebuf_array(tmpbuf))
+        datasize = compress!(compressed, take!(tmpbuf))
         push!(blocks, Block(lo, up, position(output), datasize))
         unsafe_write(output, pointer(compressed), datasize)
     end

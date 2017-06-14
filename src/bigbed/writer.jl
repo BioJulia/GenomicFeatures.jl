@@ -332,7 +332,7 @@ function finish_section!(writer::Writer)
     state = writer.state
 
     # write compressed data
-    datasize = BBI.compress!(state.compressed, takebuf_array(state.buffer))
+    datasize = BBI.compress!(state.compressed, take!(state.buffer))
     offset = position(writer.stream)
     unsafe_write(writer.stream, pointer(state.compressed), datasize)
 
