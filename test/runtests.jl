@@ -835,9 +835,9 @@ end
                 chromstart = (bin - 1) * binsize_scaled + 1
                 chromend = bin * binsize_scaled
                 @test BigWig.coverage(reader, "chr1", chromstart, chromend; usezoom=false) == BigWig.coverage(reader, "chr1", chromstart, chromend; usezoom=true)
-                @test_approx_eq BigWig.mean(reader, "chr1", chromstart, chromend; usezoom=false)    BigWig.mean(reader, "chr1", chromstart, chromend; usezoom=true)
-                @test_approx_eq BigWig.minimum(reader, "chr1", chromstart, chromend; usezoom=false) BigWig.minimum(reader, "chr1", chromstart, chromend; usezoom=true)
-                @test_approx_eq BigWig.maximum(reader, "chr1", chromstart, chromend; usezoom=false) BigWig.maximum(reader, "chr1", chromstart, chromend; usezoom=true)
+                @test BigWig.mean(reader, "chr1", chromstart, chromend; usezoom=false)     ≈  BigWig.mean(reader, "chr1", chromstart, chromend; usezoom=true)
+                @test BigWig.minimum(reader, "chr1", chromstart, chromend; usezoom=false)  ≈  BigWig.minimum(reader, "chr1", chromstart, chromend; usezoom=true)
+                @test BigWig.maximum(reader, "chr1", chromstart, chromend; usezoom=false)  ≈  BigWig.maximum(reader, "chr1", chromstart, chromend; usezoom=true)
                 # TODO: use more stable algorithm?
                 #@test_approx_eq BigWig.std(reader, "chr1", chromstart, chromend; usezoom=false)     BigWig.std(reader, "chr1", chromstart, chromend; usezoom=true)
             end
