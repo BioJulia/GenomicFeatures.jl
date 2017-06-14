@@ -24,7 +24,7 @@ function random_intervals(seqnames, maxpos::Int, n::Int)
     seq_dist = Categorical(length(seqnames))
     strand_dist = Categorical(2)
     length_dist = Normal(1000, 1000)
-    intervals = Array(Interval{Int}, n)
+    intervals = Vector{Interval{Int}}(n)
     for i in 1:n
         intlen = maxpos
         while intlen >= maxpos || intlen <= 0
