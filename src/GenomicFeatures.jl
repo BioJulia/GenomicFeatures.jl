@@ -32,6 +32,7 @@ export
 
 import BioCore: BioCore, seqname, leftposition, rightposition, isoverlapping, isfilled, hasseqname, hasleftposition, hasrightposition, metadata
 import IntervalTrees
+import DataStructures
 
 include("strand.jl")
 include("interval.jl")
