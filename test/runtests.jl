@@ -543,6 +543,7 @@ end
 @testset "GFF3" begin
     record = GFF3.Record()
     @test !isfilled(record)
+    @test repr(record) == "GenomicFeatures.GFF3.Record: <not filled>"
 
     record = GFF3.Record("CCDS1.1\tCCDS\tgene\t801943\t802434\t.\t-\t.\tNAME=LINC00115")
     @test isfilled(record)
@@ -565,7 +566,10 @@ end
     @test !GFF3.hasphase(record)
     @test_throws MissingFieldException GFF3.phase(record)
     @test GFF3.attributes(record) == ["NAME" => ["LINC00115"]]
+    @test GFF3.attributes(record, "NAME") == ["LINC00115"]
     @test GFF3.content(record) == "CCDS1.1\tCCDS\tgene\t801943\t802434\t.\t-\t.\tNAME=LINC00115"
+    @test startswith(repr(record), "GenomicFeatures.GFF3.Record:\n")
+    @test string(record) == "CCDS1.1\tCCDS\tgene\t801943\t802434\t.\t-\t.\tNAME=LINC00115"
 
     record = GFF3.Record("##gff-version 3")
     @test isfilled(record)
