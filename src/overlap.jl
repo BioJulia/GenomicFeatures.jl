@@ -41,9 +41,9 @@ type OverlapIteratorState{Sa,Sb,Ta,Tb}
     interval_a::Interval{Ta}
     interval_b::Interval{Tb}
 
-    function OverlapIteratorState(state_a, state_b)
+    function (::Type{OverlapIteratorState{Sa,Sb,Ta,Tb}}){Sa,Sb,Ta,Tb}(state_a, state_b)
         queue = Queue{Interval{Tb}}()
-        return new(state_a, state_b, queue, start(queue), false)
+        return new{Sa,Sb,Ta,Tb}(state_a, state_b, queue, start(queue), false)
     end
 end
 
