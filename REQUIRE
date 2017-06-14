@@ -4,6 +4,7 @@ BioCore 1.0
 BioSequences 0.5
 BufferedStreams 0.3
 ColorTypes 0.5
+Compat 0.18
 DataStructures 0.5
 FixedPointNumbers 0.3
 IntervalTrees 0.2
