@@ -33,11 +33,11 @@
 #
 
 # Aliases for types of IntervalTrees.jl (IC: Interval Collection).
-typealias ICTree{T}                             IntervalTrees.IntervalBTree{Int64,Interval{T},64}
-typealias ICTreeIteratorState{T}                IntervalTrees.IntervalBTreeIteratorState{Int64,Interval{T},64}
-typealias ICTreeIntersection{T}                 IntervalTrees.Intersection{Int64,Interval{T},64}
-typealias ICTreeIntersectionIterator{S,T}       IntervalTrees.IntersectionIterator{Int64,Interval{S},64,Interval{T},64}
-typealias ICTreeIntervalIntersectionIterator{T} IntervalTrees.IntervalIntersectionIterator{Int64,Interval{T},64}
+@compat const ICTree{T}                             = IntervalTrees.IntervalBTree{Int64,Interval{T},64}
+@compat const ICTreeIteratorState{T}                = IntervalTrees.IntervalBTreeIteratorState{Int64,Interval{T},64}
+@compat const ICTreeIntersection{T}                 = IntervalTrees.Intersection{Int64,Interval{T},64}
+@compat const ICTreeIntersectionIterator{S,T}       = IntervalTrees.IntersectionIterator{Int64,Interval{S},64,Interval{T},64}
+@compat const ICTreeIntervalIntersectionIterator{T} = IntervalTrees.IntervalIntersectionIterator{Int64,Interval{T},64}
 
 type IntervalCollection{T}
     # Sequence name mapped to IntervalTree, which in turn maps intervals to
