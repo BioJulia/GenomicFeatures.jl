@@ -3,6 +3,7 @@ using Base.Test
 using Distributions
 import YAML
 import ColorTypes: RGB
+import Compat: take!
 import BioSequences: @dna_str, FASTA
 import FixedPointNumbers: N0f8
 import BioCore.Exceptions: MissingFieldException
@@ -23,7 +24,7 @@ function random_intervals(seqnames, maxpos::Int, n::Int)
     seq_dist = Categorical(length(seqnames))
     strand_dist = Categorical(2)
     length_dist = Normal(1000, 1000)
-    intervals = Array(Interval{Int}, n)
+    intervals = Vector{Interval{Int}}(n)
     for i in 1:n
         intlen = maxpos
         while intlen >= maxpos || intlen <= 0
@@ -148,7 +149,7 @@ end
             for s in [STRAND_NA, STRAND_POS, STRAND_NEG, STRAND_BOTH]
                 show(buf, s); print(buf, " ")
             end
-            @test takebuf_string(buf) == "STRAND_NA STRAND_POS STRAND_NEG STRAND_BOTH "
+            @test String(take!(buf)) == "STRAND_NA STRAND_POS STRAND_NEG STRAND_BOTH "
         end
 
         @testset "print" begin
@@ -156,7 +157,7 @@ end
             for s in [STRAND_NA, STRAND_POS, STRAND_NEG, STRAND_BOTH]
                 print(buf, s)
             end
-            @test takebuf_string(buf) == "?+-."
+            @test String(take!(buf)) == "?+-."
         end
     end
 end
@@ -626,7 +627,7 @@ end
         flush(writer)
 
         records2 = GFF3.Record[]
-        for record in GFF3.Reader(IOBuffer(takebuf_array(output)))
+        for record in GFF3.Reader(IOBuffer(take!(output)))
             push!(records2, record)
         end
         return records == records2
@@ -755,10 +756,10 @@ end
         @test leftposition(interval) === 50
         @test rightposition(interval) === 100
         @test metadata(interval) === 3.14f0
-        @test all(isnan(BigWig.values(reader, "chr1", 1:49)))
+        @test all(isnan.(BigWig.values(reader, "chr1", 1:49)))
         @test BigWig.values(reader, "chr1", 50:51) == [3.14f0, 3.14f0]
         @test BigWig.values(reader, "chr1", 99:100) == [3.14f0, 3.14f0]
-        @test all(isnan(BigWig.values(reader, "chr1", 101:200)))
+        @test all(isnan.(BigWig.values(reader, "chr1", 101:200)))
         @test BigWig.values(reader, Interval("chr1", 55, 56)) == [3.14f0, 3.14f0]
 
         # bedgraph (default)
@@ -838,9 +839,9 @@ end
                 chromstart = (bin - 1) * binsize_scaled + 1
                 chromend = bin * binsize_scaled
                 @test BigWig.coverage(reader, "chr1", chromstart, chromend; usezoom=false) == BigWig.coverage(reader, "chr1", chromstart, chromend; usezoom=true)
-                @test_approx_eq BigWig.mean(reader, "chr1", chromstart, chromend; usezoom=false)    BigWig.mean(reader, "chr1", chromstart, chromend; usezoom=true)
-                @test_approx_eq BigWig.minimum(reader, "chr1", chromstart, chromend; usezoom=false) BigWig.minimum(reader, "chr1", chromstart, chromend; usezoom=true)
-                @test_approx_eq BigWig.maximum(reader, "chr1", chromstart, chromend; usezoom=false) BigWig.maximum(reader, "chr1", chromstart, chromend; usezoom=true)
+                @test BigWig.mean(reader, "chr1", chromstart, chromend; usezoom=false)     ≈  BigWig.mean(reader, "chr1", chromstart, chromend; usezoom=true)
+                @test BigWig.minimum(reader, "chr1", chromstart, chromend; usezoom=false)  ≈  BigWig.minimum(reader, "chr1", chromstart, chromend; usezoom=true)
+                @test BigWig.maximum(reader, "chr1", chromstart, chromend; usezoom=false)  ≈  BigWig.maximum(reader, "chr1", chromstart, chromend; usezoom=true)
                 # TODO: use more stable algorithm?
                 #@test_approx_eq BigWig.std(reader, "chr1", chromstart, chromend; usezoom=false)     BigWig.std(reader, "chr1", chromstart, chromend; usezoom=true)
             end

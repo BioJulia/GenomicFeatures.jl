@@ -33,11 +33,11 @@
 #
 
 # Aliases for types of IntervalTrees.jl (IC: Interval Collection).
-typealias ICTree{T}                             IntervalTrees.IntervalBTree{Int64,Interval{T},64}
-typealias ICTreeIteratorState{T}                IntervalTrees.IntervalBTreeIteratorState{Int64,Interval{T},64}
-typealias ICTreeIntersection{T}                 IntervalTrees.Intersection{Int64,Interval{T},64}
-typealias ICTreeIntersectionIterator{S,T}       IntervalTrees.IntersectionIterator{Int64,Interval{S},64,Interval{T},64}
-typealias ICTreeIntervalIntersectionIterator{T} IntervalTrees.IntervalIntersectionIterator{Int64,Interval{T},64}
+@compat const ICTree{T}                             = IntervalTrees.IntervalBTree{Int64,Interval{T},64}
+@compat const ICTreeIteratorState{T}                = IntervalTrees.IntervalBTreeIteratorState{Int64,Interval{T},64}
+@compat const ICTreeIntersection{T}                 = IntervalTrees.Intersection{Int64,Interval{T},64}
+@compat const ICTreeIntersectionIterator{S,T}       = IntervalTrees.IntersectionIterator{Int64,Interval{S},64,Interval{T},64}
+@compat const ICTreeIntervalIntersectionIterator{T} = IntervalTrees.IntervalIntersectionIterator{Int64,Interval{T},64}
 
 type IntervalCollection{T}
     # Sequence name mapped to IntervalTree, which in turn maps intervals to
@@ -53,12 +53,12 @@ type IntervalCollection{T}
     ordered_trees::Vector{ICTree{T}}
     ordered_trees_outdated::Bool
 
-    function IntervalCollection()
-        return new(Dict{String,ICTree{T}}(), 0, ICTree{T}[], false)
+    function (::Type{IntervalCollection{T}}){T}()
+        return new{T}(Dict{String,ICTree{T}}(), 0, ICTree{T}[], false)
     end
 
     # bulk insertion
-    function IntervalCollection(intervals::AbstractVector{Interval{T}}, sort=false)
+    function (::Type{IntervalCollection{T}}){T}(intervals::AbstractVector{Interval{T}}, sort=false)
         if sort
             sort!(intervals)
         else
@@ -78,7 +78,7 @@ type IntervalCollection{T}
             trees[intervals[i].seqname] = ICTree{T}(view(intervals, i:j-1))
             i = j
         end
-        return new(trees, n, ICTree{T}[], true)
+        return new{T}(trees, n, ICTree{T}[], true)
     end
 end
 
@@ -156,12 +156,12 @@ type IntervalCollectionIteratorState{T}
     i::Int # index into ordered_trees
     tree_state::ICTreeIteratorState{T}
 
-    function IntervalCollectionIteratorState(i::Int)
-        return new(i)
+    function (::Type{IntervalCollectionIteratorState{T}}){T}(i::Int)
+        return new{T}(i)
     end
 
-    function IntervalCollectionIteratorState(i::Int, tree_state)
-        return new(i, tree_state)
+    function (::Type{IntervalCollectionIteratorState{T}}){T}(i::Int, tree_state)
+        return new{T}(i, tree_state)
     end
 end
 
@@ -228,12 +228,12 @@ type IntersectIteratorState{S,T}
     i::Int  # index into a_trees/b_trees.
     intersect_iterator::ICTreeIntersectionIterator{S,T}
 
-    function IntersectIteratorState(i)
-        return new(i)
+    function (::Type{IntersectIteratorState{S,T}}){S,T}(i)
+        return new{S,T}(i)
     end
 
-    function IntersectIteratorState(i, iter)
-        return new(i, iter)
+    function (::Type{IntersectIteratorState{S,T}}){S,T}(i, iter)
+        return new{S,T}(i, iter)
     end
 end
 
@@ -302,12 +302,12 @@ type IntervalCollectionStreamIteratorState{Ta,Tb,U}
     a_value::Interval{Ta}
     a_state::U
 
-    function IntervalCollectionStreamIteratorState(intersection, a_value, a_state)
-        return new(intersection, a_value, a_state)
+    function (::Type{IntervalCollectionStreamIteratorState{Ta,Tb,U}}){Ta,Tb,U}(intersection, a_value, a_state)
+        return new{Ta,Tb,U}(intersection, a_value, a_state)
     end
 
-    function IntervalCollectionStreamIteratorState()
-        return new(ICTreeIntersection{Tb}())
+    function (::Type{IntervalCollectionStreamIteratorState{Ta,Tb,U}}){Ta,Tb,U}()
+        return new{Ta,Tb,U}(ICTreeIntersection{Tb}())
     end
 end
 
