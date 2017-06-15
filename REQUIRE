@@ -1,7 +1,7 @@
 julia 0.5
 Automa 0.2
 BioCore 1.0
-BioSequences 0.5
+BioSequences 0.6
 BufferedStreams 0.3
 ColorTypes 0.5
 Compat 0.18
