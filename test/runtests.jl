@@ -383,6 +383,11 @@ end
     end
 end
 
+@testset "Indexes" begin
+    # TODO
+    @test GenomicFeatures.Indexes.Tabix === GenomicFeatures.Indexes.Tabix
+end
+
 @testset "BED" begin
     @testset "Record" begin
         record = BED.Record(b"chr1\t17368\t17436")
