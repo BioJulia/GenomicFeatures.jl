@@ -112,15 +112,15 @@ function Base.push!{T}(ic::IntervalCollection{T}, i::Interval{T})
     return ic
 end
 
-function Base.show(io::IO, ic::IntervalCollection)
+function Base.show{T}(io::IO, ic::IntervalCollection{T})
     n_entries = length(ic)
-    println(io, "IntervalCollection with $(n_entries) intervals:")
+    println(io, "IntervalCollection{$(T)} with $(n_entries) intervals:")
     if n_entries > 0
         for (k, i) in enumerate(ic)
             if k > 8
                 break
             end
-            println(io, "  ", i)
+            println(IOContext(io, compact=true), "  ", i)
         end
         if n_entries > 8
             print(io, "  ⋮")
