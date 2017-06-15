@@ -4,7 +4,7 @@
     
     <url>
      <loc>https://biojulia.github.io/GenomicFeatures.jl//</loc>
-     <lastmod>2017-06-14</lastmod>
+     <lastmod>2017-06-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -12,7 +12,7 @@
     
     <url>
      <loc>https://biojulia.github.io/GenomicFeatures.jl//intervals/</loc>
-     <lastmod>2017-06-14</lastmod>
+     <lastmod>2017-06-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -21,25 +21,25 @@
         
     <url>
      <loc>https://biojulia.github.io/GenomicFeatures.jl//io/bed/</loc>
-     <lastmod>2017-06-14</lastmod>
+     <lastmod>2017-06-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>https://biojulia.github.io/GenomicFeatures.jl//io/gff3/</loc>
-     <lastmod>2017-06-14</lastmod>
+     <lastmod>2017-06-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>https://biojulia.github.io/GenomicFeatures.jl//io/bigwig/</loc>
-     <lastmod>2017-06-14</lastmod>
+     <lastmod>2017-06-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         
     <url>
      <loc>https://biojulia.github.io/GenomicFeatures.jl//io/bigbed/</loc>
-     <lastmod>2017-06-14</lastmod>
+     <lastmod>2017-06-15</lastmod>
      <changefreq>daily</changefreq>
     </url>
         

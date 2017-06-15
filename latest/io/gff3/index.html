@@ -465,21 +465,21 @@
 <li><code>skip_directives</code>: flag to skip directive records</li>
 <li><code>skip_comments</code>:  flag to skip comment records</li>
 </ul>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/reader.jl#L4-L20' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/reader.jl#L4-L20' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.directives' href='#GenomicFeatures.GFF3.directives'>#</a>
 <strong><code>GenomicFeatures.GFF3.directives</code></strong> &mdash; <em>Function</em>.</p>
 <p>Return all directives that preceded the last GFF entry parsed as an array of strings.</p>
 <p>Directives at the end of the file can be accessed by calling <code>close(reader)</code> and then <code>directives(reader)</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/reader.jl#L78-L84' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/reader.jl#L78-L84' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.hasfasta' href='#GenomicFeatures.GFF3.hasfasta'>#</a>
 <strong><code>GenomicFeatures.GFF3.hasfasta</code></strong> &mdash; <em>Function</em>.</p>
 <p>Return true if the GFF3 stream is at its end and there is trailing FASTA data.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/reader.jl#L93-L95' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/reader.jl#L93-L95' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.getfasta' href='#GenomicFeatures.GFF3.getfasta'>#</a>
 <strong><code>GenomicFeatures.GFF3.getfasta</code></strong> &mdash; <em>Function</em>.</p>
 <p>Return a BioSequences.FASTA.Reader initialized to parse trailing FASTA data.</p>
 <p>Throws an exception if there is no trailing FASTA, which can be checked using <code>hasfasta</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/reader.jl#L104-L109' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/reader.jl#L104-L109' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.Writer' href='#GenomicFeatures.GFF3.Writer'>#</a>
 <strong><code>GenomicFeatures.GFF3.Writer</code></strong> &mdash; <em>Type</em>.</p>
 <div class="codehilite"><pre><span></span>GFF3.Writer(output::IO)
@@ -491,7 +491,7 @@
 <ul>
 <li><code>output</code>: data sink</li>
 </ul>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/writer.jl#L4-L11' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/writer.jl#L4-L11' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.Record' href='#GenomicFeatures.GFF3.Record'>#</a>
 <strong><code>GenomicFeatures.GFF3.Record</code></strong> &mdash; <em>Type</em>.</p>
 <div class="codehilite"><pre><span></span>GFF3.Record()
@@ -499,19 +499,19 @@
 
 
 <p>Create an unfilled GFF3 record.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L22-L26' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L22-L26' class='documenter-source'>source</a><br></p>
 <div class="codehilite"><pre><span></span>GFF3.Record(data::Vector{UInt8})
 </pre></div>
 
 
 <p>Create a GFF3 record object from <code>data</code>. This function verifies and indexes fields for accessors. Note that the ownership of <code>data</code> is transferred to a new record object.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L36-L42' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L36-L42' class='documenter-source'>source</a><br></p>
 <div class="codehilite"><pre><span></span>GFF3.Record(str::AbstractString)
 </pre></div>
 
 
 <p>Create a GFF3 record object from <code>str</code>. This function verifies and indexes fields for accessors.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L58-L63' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L58-L63' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.isfeature' href='#GenomicFeatures.GFF3.isfeature'>#</a>
 <strong><code>GenomicFeatures.GFF3.isfeature</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>isfeature(record::Record)::Bool
@@ -519,7 +519,7 @@
 
 
 <p>Test if <code>record</code> is a feature record.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L182-L186' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L182-L186' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.isdirective' href='#GenomicFeatures.GFF3.isdirective'>#</a>
 <strong><code>GenomicFeatures.GFF3.isdirective</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>isdirective(record::Record)::Bool
@@ -527,7 +527,7 @@
 
 
 <p>Test if <code>record</code> is a directive record.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L191-L195' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L191-L195' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.iscomment' href='#GenomicFeatures.GFF3.iscomment'>#</a>
 <strong><code>GenomicFeatures.GFF3.iscomment</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>iscomment(record::Record)::Bool
@@ -535,7 +535,7 @@
 
 
 <p>Test if <code>record</code> is a comment record.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L200-L204' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L200-L204' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.seqid' href='#GenomicFeatures.GFF3.seqid'>#</a>
 <strong><code>GenomicFeatures.GFF3.seqid</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>seqid(record::Record)::String
@@ -543,7 +543,7 @@
 
 
 <p>Get the sequence ID of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L221-L225' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L221-L225' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.source' href='#GenomicFeatures.GFF3.source'>#</a>
 <strong><code>GenomicFeatures.GFF3.source</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>source(record::Record)::String
@@ -551,7 +551,7 @@
 
 
 <p>Get the source of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L247-L251' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L247-L251' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.featuretype' href='#GenomicFeatures.GFF3.featuretype'>#</a>
 <strong><code>GenomicFeatures.GFF3.featuretype</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>featuretype(record::Record)::String
@@ -559,7 +559,7 @@
 
 
 <p>Get the type of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L265-L269' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L265-L269' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.seqstart' href='#GenomicFeatures.GFF3.seqstart'>#</a>
 <strong><code>GenomicFeatures.GFF3.seqstart</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>seqstart(record::Record)::Int
@@ -567,7 +567,7 @@
 
 
 <p>Get the start coordinate of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L283-L287' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L283-L287' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.seqend' href='#GenomicFeatures.GFF3.seqend'>#</a>
 <strong><code>GenomicFeatures.GFF3.seqend</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>seqend(record::Record)::Int
@@ -575,7 +575,7 @@
 
 
 <p>Get the end coordinate of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L309-L313' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L309-L313' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.score' href='#GenomicFeatures.GFF3.score'>#</a>
 <strong><code>GenomicFeatures.GFF3.score</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>score(record::Record)::Float64
@@ -583,7 +583,7 @@
 
 
 <p>Get the score of <code>record</code></p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L335-L339' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L335-L339' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.strand' href='#GenomicFeatures.GFF3.strand'>#</a>
 <strong><code>GenomicFeatures.GFF3.strand</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>strand(record::Record)::GenomicFeatures.Strand
@@ -591,7 +591,7 @@
 
 
 <p>Get the strand of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L354-L358' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L354-L358' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.phase' href='#GenomicFeatures.GFF3.phase'>#</a>
 <strong><code>GenomicFeatures.GFF3.phase</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>phase(record::Record)::Int
@@ -599,7 +599,7 @@
 
 
 <p>Get the phase of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L376-L380' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L376-L380' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.attributes' href='#GenomicFeatures.GFF3.attributes'>#</a>
 <strong><code>GenomicFeatures.GFF3.attributes</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>attributes(record::Record)::Vector{Pair{String,Vector{String}}}
@@ -607,13 +607,13 @@
 
 
 <p>Get the attributes of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L394-L398' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L394-L398' class='documenter-source'>source</a><br></p>
 <div class="codehilite"><pre><span></span>attributes(record::Record, key::String)::Vector{String}
 </pre></div>
 
 
 <p>Get the attributes of <code>record</code> with <code>key</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L431-L435' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L431-L435' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.GFF3.content' href='#GenomicFeatures.GFF3.content'>#</a>
 <strong><code>GenomicFeatures.GFF3.content</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>content(record::Record)::String
@@ -621,7 +621,7 @@
 
 
 <p>Get the content of <code>record</code>. Leading '#' letters are removed.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/c3a3f9b616484a6d3be4323af92ccaf5c9533f09/src/gff3/record.jl#L458-L462' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/fa6e3293f0786c2a2bbd3dc63adb881ac7a53f0a/src/gff3/record.jl#L458-L462' class='documenter-source'>source</a><br></p>
                 
                   
                 
