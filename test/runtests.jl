@@ -110,10 +110,13 @@ function simple_coverage(intervals)
     return covintervals
 end
 
-function get_bio_fmt_specimens()
+function get_bio_fmt_specimens(commit="3140ef6110bb309703ffde564ce705eeb80607d4")
     path = joinpath(dirname(@__FILE__), "BioFmtSpecimens")
     if !isdir(path)
-        run(`git clone --depth 1 https://github.com/BioJulia/BioFmtSpecimens.git $(path)`)
+        run(`git clone https://github.com/BioJulia/BioFmtSpecimens.git $(path)`)
+    end
+    cd(path) do
+        run(`git checkout $(commit)`)
     end
     return path
 end
