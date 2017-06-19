@@ -87,17 +87,19 @@ end
 # Merge chunks so as to minimize the number of seek operations.
 function reduce!(chunks)
     @assert issorted(chunks)
+    # NOTE: the maximum size of a BGZF block is 64KiB
+    merge_threshold = 64 * 1024 * 2
     i = 1
     while i < endof(chunks)
         chunk = chunks[i]
         next = chunks[i+1]
-        if chunk.stop < next.start
-            # neither overlapping nor adjacent
-            i += 1
+        if chunk.stop > next.start || next.start[1] - chunk.stop[1] ≤ merge_threshold
+            # merge overlapping or close chunks
+            chunks[i] = Chunk(chunk.start, max(chunk.stop, next.stop))
+            deleteat!(chunks, i + 1)
             continue
         end
-        chunks[i] = Chunk(chunk.start, max(chunk.stop, next.stop))
-        deleteat!(chunks, i + 1)
+        i += 1
     end
     return chunks
 end
