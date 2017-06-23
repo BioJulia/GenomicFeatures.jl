@@ -40,7 +40,7 @@ function random_intervals(seqnames, maxpos::Int, n::Int)
 end
 
 # A simple interval intersection implementation to test against.
-function simple_intersection(intervals_a, intervals_b)
+function simple_intersection(intervals_a, intervals_b; filter=(a,b)->true)
     sort!(intervals_a)
     sort!(intervals_b)
     intersections = Any[]
@@ -58,7 +58,7 @@ function simple_intersection(intervals_a, intervals_b)
         else
             k = j
             while k <= length(intervals_b) && intervals_b[k].first <= ai.last
-                if isoverlapping(ai, intervals_b[k])
+                if isoverlapping(ai, intervals_b[k]) && filter(ai, intervals_b[k])
                     push!(intersections, (ai, intervals_b[k]))
                 end
                 k += 1
@@ -225,7 +225,10 @@ end
             push!(ic_b, interval)
         end
 
-        @test sort(collect(eachoverlap(ic_a, ic_b))) == sort(simple_intersection(intervals_a, intervals_b))
+        @test sort(collect(eachoverlap(ic_a, ic_b))) ==
+              sort(simple_intersection(intervals_a, intervals_b))
+        @test sort(collect(eachoverlap(ic_a, ic_b, filter=(a,b) -> isodd(first(a))))) ==
+              sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
     end
 
     @testset "Show" begin
@@ -269,6 +272,10 @@ end
         # non-empty versus non-empty, stream intersection
         it = eachoverlap(ic_a, ic_b, isless)
         @test sort(collect(it)) == sort(simple_intersection(intervals_a, intervals_b))
+
+        it = eachoverlap(ic_a, ic_b, isless, filter=(a,b) -> isodd(first(a)))
+        @test sort(collect(it)) ==
+              sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
 
         it = eachoverlap(
             [Interval("a", 1, 100, STRAND_POS, nothing), Interval("c", 1, 100, STRAND_POS, nothing)],
@@ -320,7 +327,10 @@ end
             push!(ic_b, interval)
         end
 
-        @test sort(collect(eachoverlap(ic_a, ic_b, isless))) == sort(simple_intersection(intervals_a, intervals_b))
+        @test sort(collect(eachoverlap(ic_a, ic_b, isless))) ==
+              sort(simple_intersection(intervals_a, intervals_b))
+        @test sort(collect(eachoverlap(ic_a, ic_b, isless, filter=(a,b) -> isodd(first(a))))) ==
+              sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
     end
 
     @testset "IntervalStream Coverage" begin

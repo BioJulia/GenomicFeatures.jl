@@ -1,17 +1,18 @@
 # Overlap Iterator
 # ================
 
-immutable OverlapIterator{Sa,Sb,F}
+immutable OverlapIterator{Sa,Sb,F,G}
     intervals_a::Sa
     intervals_b::Sb
     isless::F
+    filter::G
 end
 
-function Base.eltype{Sa,Sb,F}(::Type{OverlapIterator{Sa,Sb,F}})
+function Base.eltype{Sa,Sb,F,G}(::Type{OverlapIterator{Sa,Sb,F,G}})
     return Tuple{Interval{metadatatype(Sa)},Interval{metadatatype(Sb)}}
 end
 
-function Base.iteratorsize{Sa,Sb,F}(::Type{OverlapIterator{Sa,Sb,F}})
+function Base.iteratorsize{Sa,Sb,F,G}(::Type{OverlapIterator{Sa,Sb,F,G}})
     return Base.SizeUnknown()
 end
 
@@ -28,8 +29,8 @@ The third optional argument is a function that defines the order of sequence
 names. The default function is `Base.isless`, which is the lexicographical
 order.
 """
-function eachoverlap(intervals_a, intervals_b, seqname_isless=Base.isless)
-    return OverlapIterator(intervals_a, intervals_b, seqname_isless)
+function eachoverlap(intervals_a, intervals_b, seqname_isless=Base.isless; filter=true_cmp)
+    return OverlapIterator(intervals_a, intervals_b, seqname_isless, filter)
 end
 
 type OverlapIteratorState{Sa,Sb,Ta,Tb}
@@ -124,7 +125,14 @@ function advance!(state::OverlapIteratorState, iter::OverlapIterator)
                 state.state_queue = start(state.queue)
             end
         elseif c == 0
-            return state
+            if iter.filter(state.interval_a, interval_b)
+                return state
+            else
+                state.state_queue = next_state_queue
+                if done(state.queue, state.state_queue)
+                    queue!()
+                end
+            end
         else
             if interval_b === first(state.queue)
                 shift!(state.queue)
