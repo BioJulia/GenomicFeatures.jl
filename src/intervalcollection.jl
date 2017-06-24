@@ -216,7 +216,7 @@ Find a the first interval with matching start and end points.
 Returns that interval wrapped in a Nullable, or an empty Nullable if no such
 interval was found.
 """
-function Base.findfirst{T,S}(a::IntervalCollection{T}, b::Interval{S},
+function Base.findfirst{T,S}(a::IntervalCollection{T}, b::Interval{S};
                              filter=true_cmp)
     if !haskey(a.trees, b.seqname)
         return Nullable{Interval{T}}()
