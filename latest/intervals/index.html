@@ -5,6 +5,7 @@
     
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
       
         <meta name="description" content="Genomic features for the Julia language">
       
@@ -17,7 +18,7 @@
       
         <link rel="shortcut icon" href="../assets/images/favicon.png">
       
-      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.7.3">
+      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.7.4">
     
     
       
@@ -28,7 +29,7 @@
       <script src="../assets/javascripts/modernizr-1df76c4e58.js"></script>
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application-acc56dad49.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application-769c285a91.css">
       
     
     
@@ -534,7 +535,7 @@
 <p>Create an iterator of overlapping intervals between <code>intervals_a</code> and <code>intervals_b</code>.</p>
 <p>This function assumes elements of <code>intervals_a</code> and <code>intervals_b</code> are sorted by its sequence name and left position.  If the element type is not a subtype of <code>GenomicFeatures.Interval</code>, elements are converted to <code>Interval</code> objects.</p>
 <p>The third optional argument is a function that defines the order of sequence names. The default function is <code>Base.isless</code>, which is the lexicographical order.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/57944d338ffd333716a8b1c8605e83622e2eaa02/src/overlap.jl#L18-L30' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/baecd090de80b241c981ec4e195708abf1ed3c2f/src/overlap.jl#L19-L31' class='documenter-source'>source</a><br></p>
 <p>The order of interval pairs is the same as the following nested loop but <code>eachoverlap</code> is often much faster:</p>
 <div class="codehilite"><pre><span></span><span class="k">for</span> <span class="n">a</span> <span class="kp">in</span> <span class="n">intervals_a</span><span class="p">,</span> <span class="n">b</span> <span class="kp">in</span> <span class="n">intervals_b</span>
     <span class="k">if</span> <span class="n">isoverlapping</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span>
@@ -578,7 +579,7 @@
 </pre></div>
 
 
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/57944d338ffd333716a8b1c8605e83622e2eaa02/src/coverage.jl#L9-L24' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/baecd090de80b241c981ec4e195708abf1ed3c2f/src/coverage.jl#L9-L24' class='documenter-source'>source</a><br></p>
                 
                   
                 
@@ -652,7 +653,7 @@
       
     </div>
     
-      <script src="../assets/javascripts/application-b30566c560.js"></script>
+      <script src="../assets/javascripts/application-c35428f87f.js"></script>
       
       
       <script>app.initialize({url:{base:".."}})</script>
