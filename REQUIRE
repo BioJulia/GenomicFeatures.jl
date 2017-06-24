@@ -8,6 +8,6 @@ ColorTypes 0.5
 Compat 0.18
 DataStructures 0.5
 FixedPointNumbers 0.3
-IntervalTrees 0.2
+IntervalTrees 0.3
 Libz 0.2
 URIParser 0.1

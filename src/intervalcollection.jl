@@ -33,11 +33,11 @@
 #
 
 # Aliases for types of IntervalTrees.jl (IC: Interval Collection).
-@compat const ICTree{T}                             = IntervalTrees.IntervalBTree{Int64,Interval{T},64}
-@compat const ICTreeIteratorState{T}                = IntervalTrees.IntervalBTreeIteratorState{Int64,Interval{T},64}
-@compat const ICTreeIntersection{T}                 = IntervalTrees.Intersection{Int64,Interval{T},64}
-@compat const ICTreeIntersectionIterator{S,T}       = IntervalTrees.IntersectionIterator{Int64,Interval{S},64,Interval{T},64}
-@compat const ICTreeIntervalIntersectionIterator{T} = IntervalTrees.IntervalIntersectionIterator{Int64,Interval{T},64}
+@compat const ICTree{T}                               = IntervalTrees.IntervalBTree{Int64,Interval{T},64}
+@compat const ICTreeIteratorState{T}                  = IntervalTrees.IntervalBTreeIteratorState{Int64,Interval{T},64}
+@compat const ICTreeIntersection{T}                   = IntervalTrees.Intersection{Int64,Interval{T},64}
+@compat const ICTreeIntersectionIterator{F,S,T}       = IntervalTrees.IntersectionIterator{F,Int64,Interval{S},64,Interval{T},64}
+@compat const ICTreeIntervalIntersectionIterator{F,T} = IntervalTrees.IntervalIntersectionIterator{F, Int64,Interval{T},64}
 
 type IntervalCollection{T}
     # Sequence name mapped to IntervalTree, which in turn maps intervals to
@@ -200,71 +200,99 @@ function Base.done(ic::IntervalCollection, state)
 end
 
 
-# Overlaps
-# --------
+# Filter predicates
+# -----------------
 
-function eachoverlap{T}(a::IntervalCollection{T}, b::Interval)
-    if haskey(a.trees, b.seqname)
-        return intersect(a.trees[b.seqname], b)
+true_cmp(a, b) = true
+
+eachoverlap_equal_filter(a, b) = first(a) == first(b) && last(a) == last(b)
+
+# TODO: other prebaked filter predicates
+
+
+"""
+Find a the first interval with matching start and end points.
+
+Returns that interval wrapped in a Nullable, or an empty Nullable if no such
+interval was found.
+"""
+function Base.findfirst{T,S}(a::IntervalCollection{T}, b::Interval{S};
+                             filter=true_cmp)
+    if !haskey(a.trees, b.seqname)
+        return Nullable{Interval{T}}()
     else
-        return ICTreeIntervalIntersectionIterator{T}()
+        return findfirst(a.trees[b.seqname], b, filter)
     end
 end
 
-function eachoverlap(a::IntervalCollection, b::IntervalCollection)
+
+# Overlaps
+# --------
+
+function eachoverlap{F,T}(a::IntervalCollection{T}, b::Interval; filter::F=true_cmp)
+    if haskey(a.trees, b.seqname)
+        return intersect(a.trees[b.seqname], b)
+    else
+        return ICTreeIntervalIntersectionIterator{F,T}()
+    end
+end
+
+function eachoverlap(a::IntervalCollection, b::IntervalCollection; filter=true_cmp)
     seqnames = collect(AbstractString, keys(a.trees) ∩ keys(b.trees))
     sort!(seqnames, lt=isless)
     a_trees = [a.trees[seqname] for seqname in seqnames]
     b_trees = [b.trees[seqname] for seqname in seqnames]
-    return IntersectIterator(a_trees, b_trees)
+    return IntersectIterator(filter, a_trees, b_trees)
 end
 
-immutable IntersectIterator{S, T}
+immutable IntersectIterator{F, S, T}
+    filter::F
     a_trees::Vector{ICTree{S}}
     b_trees::Vector{ICTree{T}}
 end
 
-type IntersectIteratorState{S,T}
+type IntersectIteratorState{F,S,T}
     i::Int  # index into a_trees/b_trees.
-    intersect_iterator::ICTreeIntersectionIterator{S,T}
+    intersect_iterator::ICTreeIntersectionIterator{F,S,T}
 
-    function (::Type{IntersectIteratorState{S,T}}){S,T}(i)
-        return new{S,T}(i)
+    function (::Type{IntersectIteratorState{F,S,T}}){F,S,T}(i)
+        return new{F,S,T}(i)
     end
 
-    function (::Type{IntersectIteratorState{S,T}}){S,T}(i, iter)
-        return new{S,T}(i, iter)
+    function (::Type{IntersectIteratorState{F,S,T}}){F,S,T}(i, iter)
+        return new{F,S,T}(i, iter)
     end
 end
 
-function Base.eltype{S,T}(::Type{IntersectIterator{S,T}})
+function Base.eltype{F,S,T}(::Type{IntersectIterator{F,S,T}})
     return Tuple{Interval{S},Interval{T}}
 end
 
-function Base.iteratorsize{S,T}(::Type{IntersectIterator{S,T}})
+function Base.iteratorsize{F,S,T}(::Type{IntersectIterator{F,S,T}})
     return Base.SizeUnknown()
 end
 
-function Base.start{S,T}(it::IntersectIterator{S,T})
+function Base.start{F,S,T}(it::IntersectIterator{F,S,T})
     i = 1
     while i <= length(it.a_trees)
-        intersect_iterator = intersect(it.a_trees[i], it.b_trees[i])
+        intersect_iterator = intersect(it.a_trees[i], it.b_trees[i], it.filter)
         intersect_iterator_state = start(intersect_iterator)
         if !done(intersect_iterator, intersect_iterator_state)
-            return IntersectIteratorState{S,T}(i, intersect_iterator)
+            return IntersectIteratorState{F,S,T}(i, intersect_iterator)
         end
         i += 1
     end
-    return IntersectIteratorState{S,T}(i)
+    return IntersectIteratorState{F,S,T}(i)
 end
 
-function Base.next{S,T}(it::IntersectIterator{S, T}, state)
+function Base.next{F,S,T}(it::IntersectIterator{F, S, T}, state)
     i, intersect_iterator = state.i, state.intersect_iterator
     value, intersect_iterator_state = next(intersect_iterator, nothing)
     if done(intersect_iterator, intersect_iterator_state)
         i += 1
         while i <= length(it.a_trees)
-            intersect_iterator = intersect(it.a_trees[i], it.b_trees[i])
+            intersect_iterator = intersect(it.a_trees[i], it.b_trees[i],
+                                           it.filter)
             intersect_iterator_state = start(intersect_iterator)
             if !done(intersect_iterator, intersect_iterator_state)
                 break
@@ -276,68 +304,69 @@ function Base.next{S,T}(it::IntersectIterator{S, T}, state)
     return value, state
 end
 
-function Base.done{S, T}(it::IntersectIterator{S, T}, state)
+function Base.done{F, S, T}(it::IntersectIterator{F, S, T}, state)
     return state.i > length(it.a_trees)
 end
 
-function eachoverlap(a, b::IntervalCollection)
-    return IntervalCollectionStreamIterator(a, b)
+function eachoverlap(a, b::IntervalCollection; filter=true_cmp)
+    return IntervalCollectionStreamIterator(filter, a, b)
 end
 
-immutable IntervalCollectionStreamIterator{S,T}
+immutable IntervalCollectionStreamIterator{F,S,T}
+    filter::F
     a::S
     b::IntervalCollection{T}
 end
 
-function Base.eltype{S,T}(::Type{IntervalCollectionStreamIterator{S,T}})
+function Base.eltype{F,S,T}(::Type{IntervalCollectionStreamIterator{F,S,T}})
     return Tuple{Interval{metadatatype(S)},Interval{T}}
 end
 
-function Base.iteratorsize{S,T}(::Type{IntervalCollectionStreamIterator{S,T}})
+function Base.iteratorsize{F,S,T}(::Type{IntervalCollectionStreamIterator{F,S,T}})
     return Base.SizeUnknown()
 end
 
-type IntervalCollectionStreamIteratorState{Ta,Tb,U}
+type IntervalCollectionStreamIteratorState{F,Ta,Tb,U}
     intersection::ICTreeIntersection{Tb}
     a_value::Interval{Ta}
     a_state::U
 
-    function (::Type{IntervalCollectionStreamIteratorState{Ta,Tb,U}}){Ta,Tb,U}(intersection, a_value, a_state)
-        return new{Ta,Tb,U}(intersection, a_value, a_state)
+    function (::Type{IntervalCollectionStreamIteratorState{F,Ta,Tb,U}}){F,Ta,Tb,U}(intersection, a_value, a_state)
+        return new{F,Ta,Tb,U}(intersection, a_value, a_state)
     end
 
-    function (::Type{IntervalCollectionStreamIteratorState{Ta,Tb,U}}){Ta,Tb,U}()
-        return new{Ta,Tb,U}(ICTreeIntersection{Tb}())
+    function (::Type{IntervalCollectionStreamIteratorState{F,Ta,Tb,U}}){F,Ta,Tb,U}()
+        return new{F,Ta,Tb,U}(ICTreeIntersection{Tb}())
     end
 end
 
 # This mostly follows from SuccessiveTreeIntersectionIterator in IntervalTrees
-function Base.start{S,T}(it::IntervalCollectionStreamIterator{S,T})
+function Base.start{F,S,T}(it::IntervalCollectionStreamIterator{F,S,T})
     a_state = start(it.a)
     intersection = ICTreeIntersection{T}()
     while !done(it.a, a_state)
         a_value, a_state = next(it.a, a_state)
         if haskey(it.b.trees, a_value.seqname)
             tree = it.b.trees[a_value.seqname]
-            IntervalTrees.firstintersection!(tree, a_value, Nullable{Interval{T}}(), intersection)
+            IntervalTrees.firstintersection!(tree, a_value, Nullable{Interval{T}}(), intersection, it.filter)
             if intersection.index != 0
-                return IntervalCollectionStreamIteratorState{T,metadatatype(it.a),typeof(a_state)}(intersection, a_value, a_state)
+                return IntervalCollectionStreamIteratorState{F,T,metadatatype(it.a),typeof(a_state)}(intersection, a_value, a_state)
             end
         end
     end
     return IntervalCollectionStreamIteratorState{S,metadatatype(it.a),typeof(a_state)}()
 end
 
-function Base.next{S,T}(it::IntervalCollectionStreamIterator{S,T}, state)
+function Base.next{F,S,T}(it::IntervalCollectionStreamIterator{F,S,T}, state)
     intersection = state.intersection
     entry = intersection.node.entries[intersection.index]
     return_value = (state.a_value, entry)
-    IntervalTrees.nextintersection!(intersection.node, intersection.index, state.a_value, intersection)
+    IntervalTrees.nextintersection!(intersection.node, intersection.index, state.a_value, intersection, it.filter)
     while intersection.index == 0 && !done(it.a, state.a_state)
         state.a_value, state.a_state = next(it.a, state.a_state)
         if haskey(it.b.trees, state.a_value.seqname)
             tree = it.b.trees[state.a_value.seqname]
-            IntervalTrees.firstintersection!(tree, state.a_value, Nullable{Interval{T}}(), intersection)
+            IntervalTrees.firstintersection!(tree, state.a_value, Nullable{Interval{T}}(), intersection, it.filter)
         end
     end
     return return_value, state
