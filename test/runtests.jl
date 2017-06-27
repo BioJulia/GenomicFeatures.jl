@@ -146,22 +146,33 @@ end
         @test STRAND_NA < STRAND_POS < STRAND_NEG < STRAND_BOTH
     end
 
-    @testset "Show" begin
-        @testset "show" begin
-            buf = IOBuffer()
-            for s in [STRAND_NA, STRAND_POS, STRAND_NEG, STRAND_BOTH]
-                show(buf, s); print(buf, " ")
-            end
-            @test String(take!(buf)) == "STRAND_NA STRAND_POS STRAND_NEG STRAND_BOTH "
+    @testset "IO" begin
+        # show
+        buf = IOBuffer()
+        for s in [STRAND_NA, STRAND_POS, STRAND_NEG, STRAND_BOTH]
+            show(buf, s); print(buf, " ")
         end
+        @test String(take!(buf)) == "STRAND_NA STRAND_POS STRAND_NEG STRAND_BOTH "
 
-        @testset "print" begin
-            buf = IOBuffer()
-            for s in [STRAND_NA, STRAND_POS, STRAND_NEG, STRAND_BOTH]
-                print(buf, s)
-            end
-            @test String(take!(buf)) == "?+-."
+        # print
+        buf = IOBuffer()
+        for s in [STRAND_NA, STRAND_POS, STRAND_NEG, STRAND_BOTH]
+            print(buf, s)
         end
+        @test String(take!(buf)) == "?+-."
+
+        # read and write
+        buf = IOBuffer()
+        @test write(buf, STRAND_NA)   == 1
+        @test write(buf, STRAND_POS)  == 1
+        @test write(buf, STRAND_NEG)  == 1
+        @test write(buf, STRAND_BOTH) == 1
+        seekstart(buf)
+        @test read(buf, Strand) === STRAND_NA
+        @test read(buf, Strand) === STRAND_POS
+        @test read(buf, Strand) === STRAND_NEG
+        @test read(buf, Strand) === STRAND_BOTH
+        @test eof(buf)
     end
 end
 
