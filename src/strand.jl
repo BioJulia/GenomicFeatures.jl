@@ -80,3 +80,11 @@ function Base.print(io::IO, strand::Strand)
         error("try to print an invalid strand")
     end
 end
+
+function Base.write(io::IO, strand::Strand)
+    return write(io, convert(UInt8, strand))
+end
+
+function Base.read(io::IO, ::Type{Strand})
+    return convert(Strand, read(io, UInt8))
+end
