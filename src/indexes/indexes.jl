@@ -10,6 +10,7 @@ module Indexes
 
 import BGZFStreams
 import BioCore
+import BufferedStreams
 import GenomicFeatures: Interval
 
 include("chunk.jl")

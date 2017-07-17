@@ -23,6 +23,9 @@ end
 
 function Base.start(iter::TabixOverlapIterator)
     @assert !isnull(iter.reader.index)
+    # TODO: Use a method that resets the reading position.
+    buffer = BioCore.IO.stream(iter.reader)
+    iter.reader.state = BioCore.Ragel.State(1, BufferedStreams.BufferedInputStream(buffer.source))
     return TabixOverlapIteratorState(
         Indexes.overlapchunks(get(iter.reader.index), iter.interval),
         0,
@@ -31,14 +34,19 @@ function Base.start(iter::TabixOverlapIterator)
 end
 
 function Base.done(iter::TabixOverlapIterator, state)
-    source = BioCore.IO.stream(iter.reader).source
+    buffer = BioCore.IO.stream(iter.reader)
+    source = buffer.source
     if state.chunkid == 0 && !isempty(state.chunks)
         state.chunkid += 1
         seek(source, state.chunks[state.chunkid].start)
     end
     while state.chunkid ≤ endof(state.chunks)
         chunk = state.chunks[state.chunkid]
-        while BGZFStreams.virtualoffset(source) < chunk.stop
+        # The `virtualoffset(source)` is not synchronized with the current
+        # reading position because data are buffered in `buffer` for parsing
+        # text. So we need to check not only `virtualoffset` but also
+        # `nb_available`, which returns the current buffered data size.
+        while nb_available(buffer) > 0 || BGZFStreams.virtualoffset(source) < chunk.stop
             read!(iter.reader, state.record)
             c = icmp(state.record, iter.interval)
             if c == 0  # overlapping

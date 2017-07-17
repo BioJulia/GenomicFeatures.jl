@@ -1,6 +1,7 @@
 using GenomicFeatures
 using Base.Test
 using Distributions
+import BGZFStreams
 import YAML
 import ColorTypes: RGB
 import Compat: take!
@@ -748,6 +749,22 @@ TGCATGCA
     @test [r.kind for r in GFF3.Reader(IOBuffer(test_input5))] == [:feature, :feature, :feature]
     @test [r.kind for r in GFF3.Reader(IOBuffer(test_input5), skip_directives=false)] == [:directive, :feature, :feature, :directive, :feature]
     @test [r.kind for r in GFF3.Reader(IOBuffer(test_input5), skip_directives=false, skip_comments=false)] == [:directive, :feature, :comment, :feature, :directive, :feature]
+
+    @testset "eachoverlap" begin
+        path = joinpath(get_bio_fmt_specimens(), "GFF3", "TAIR10.gff.bgz")
+        stream = BGZFStreams.BGZFStream(path)
+        reader = GFF3.Reader(stream, index=string(path, ".tbi"))
+        for (interval, n_records) in [
+                (Interval("ChrC", 1:70_000), 68),
+                (Interval("Chr4", 1:10_000),  2),
+                (Interval("ChrM", 1:30_000), 10),]
+            n = 0
+            for record in eachoverlap(reader, interval)
+                n += 1
+            end
+            @test n == n_records
+        end
+    end
 end
 
 @testset "BigWig" begin
