@@ -612,9 +612,7 @@ end
     @test GFF3.iscomment(record)
     @test GFF3.content(record) == "comment"
     @test convert(String, record) == "#comment"
-end
 
-@testset "GFF3 Parsing" begin
     function check_gff3_parse(filename)
         # Reading from a stream
         num_intervals = 0
