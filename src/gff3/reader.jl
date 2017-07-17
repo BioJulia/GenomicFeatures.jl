@@ -20,6 +20,7 @@ Arguments
 """
 type Reader <: BioCore.IO.AbstractReader
     state::BioCore.Ragel.State
+    index::Nullable{GenomicFeatures.Indexes.Tabix}
     save_directives::Bool
     targets::Vector{Symbol}
     found_fasta::Bool
@@ -28,8 +29,12 @@ type Reader <: BioCore.IO.AbstractReader
     preceding_directive_count::Int
 
     function Reader(input::BufferedStreams.BufferedInputStream,
+                    index=nothing,
                     save_directives::Bool=false,
                     skip_features::Bool=false, skip_directives::Bool=true, skip_comments::Bool=true)
+        if isa(index, GenomicFeatures.Indexes.Tabix) && !isa(input.source, BGZFStreams.BGZFStream)
+            throw(ArgumentError("not a BGZF stream"))
+        end
         targets = Symbol[]
         if !skip_features
             push!(targets, :feature)
@@ -40,14 +45,18 @@ type Reader <: BioCore.IO.AbstractReader
         if !skip_comments
             push!(targets, :comment)
         end
-        return new(BioCore.Ragel.State(body_machine.start_state, input), save_directives, targets, false, Record[], 0, 0)
+        return new(BioCore.Ragel.State(body_machine.start_state, input), index, save_directives, targets, false, Record[], 0, 0)
     end
 end
 
 function Reader(input::IO;
+                index=nothing,
                 save_directives::Bool=false,
                 skip_features::Bool=false, skip_directives::Bool=true, skip_comments::Bool=true)
-    return Reader(BufferedStreams.BufferedInputStream(input), save_directives, skip_features, skip_directives, skip_comments)
+    if isa(index, AbstractString)
+        index = GenomicFeatures.Indexes.Tabix(index)
+    end
+    return Reader(BufferedStreams.BufferedInputStream(input), index, save_directives, skip_features, skip_directives, skip_comments)
 end
 
 function Base.eltype(::Type{Reader})
@@ -114,7 +123,6 @@ function getfasta(reader::Reader)
     return BioSequences.FASTA.Reader(reader.state.stream)
 end
 
-isinteractive() && info("compiling GFF3")
 const record_machine, body_machine = (function ()
     cat = Automa.RegExp.cat
     rep = Automa.RegExp.rep

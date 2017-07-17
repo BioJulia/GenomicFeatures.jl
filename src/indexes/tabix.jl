@@ -11,7 +11,7 @@
 # License is MIT: https://github.com/BioJulia/Bio.jl/blob/master/LICENSE.md
 
 # An index type for tab-delimited files.
-type Tabix
+immutable Tabix
     # file format
     #   * 0: generic
     #   * 1: SAM
@@ -70,11 +70,11 @@ Note that records within the returned chunks are not guaranteed to actually
 overlap the query interval.
 """
 function overlapchunks(tabix::Tabix, interval::Interval)
-    seqid = findfirst(tabix.names, seqname(interval))
+    seqid = findfirst(tabix.names, interval.seqname)
     if seqid == 0
-        throw(ArgumentError("sequence name $(seqname) is not included in the index"))
+        throw(ArgumentError("failed to find sequence name '$(intervalseqname)'"))
     end
-    return overlapchunks(tabix.index, seqid, interval.first, interval.last)
+    return overlapchunks(tabix.index, seqid, interval.first:interval.last)
 end
 
 # Check if `format` follows the BED rule (half-closed-half-open and 0-based).
