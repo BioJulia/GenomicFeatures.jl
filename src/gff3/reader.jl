@@ -83,6 +83,13 @@ function IntervalCollection(reader::Reader)
     return IntervalCollection(intervals, true)
 end
 
+function GenomicFeatures.eachoverlap(reader::Reader, interval::Interval)
+    if isnull(reader.index)
+        throw(ArgumentError("index is null"))
+    end
+    return GenomicFeatures.Indexes.TabixOverlapIterator(reader, interval)
+end
+
 
 """
 Return all directives that preceded the last GFF entry parsed as an array of

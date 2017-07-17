@@ -99,7 +99,7 @@ end
 
 # Read a Tabix object from `input_`.
 function read_tabix(input_::IO)
-    input = BGZFStream(input_)
+    input = BGZFStreams.BGZFStream(input_)
 
     # check magic bytes
     T = read(input, UInt8)

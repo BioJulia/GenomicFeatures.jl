@@ -29,7 +29,6 @@ function BioCore.IO.stream(reader::Reader)
     return reader.state.stream
 end
 
-isinteractive() && info("compiling BED")
 const record_machine, file_machine = (function ()
     cat = Automa.RegExp.cat
     rep = Automa.RegExp.rep

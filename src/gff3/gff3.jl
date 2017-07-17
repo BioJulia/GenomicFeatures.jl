@@ -16,6 +16,5 @@ importall BioCore
 include("record.jl")
 include("reader.jl")
 include("writer.jl")
-include("overlap.jl")
 
 end

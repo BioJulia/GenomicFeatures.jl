@@ -1,43 +1,43 @@
-# GFF3 Overlap
-# ============
+# Tabix Overlap Iterator
+# ======================
 
-immutable OverlapIterator
-    reader::Reader
+immutable TabixOverlapIterator{T}
+    reader::T
     interval::Interval
 end
 
-function Base.eltype(::Type{OverlapIterator})
-    return Record
+function Base.eltype{T}(::Type{TabixOverlapIterator{T}})
+    return eltype(T)
 end
 
-function Base.iteratorsize(::Type{OverlapIterator})
+function Base.iteratorsize{T}(::Type{TabixOverlapIterator{T}})
     return Base.SizeUnknown()
 end
 
-function GenomicFeatures.eachoverlap(reader::Reader, interval::Interval)
+function GenomicFeatures.eachoverlap(reader::Union{BED.Reader,GFF3.Reader}, interval::Interval)
     if isnull(reader.index)
         throw(ArgumentError("index is null"))
     end
-    return OverlapIterator(reader, interval)
+    return TabixOverlapIterator(reader, interval)
 end
 
-type OverlapIteratorState
-    chunks::Vector{GenomicFeatures.Indexes.Chunk}
+type TabixOverlapIteratorState{T}
+    chunks::Vector{Indexes.Chunk}
     chunkid::Int
-    record::Record
     done::Bool
+    record::T
 end
 
-function Base.start(iter::OverlapIterator)
+function Base.start(iter::TabixOverlapIterator)
     @assert !isnull(iter.reader.index)
-    return OverlapIteratorState(
-        GenomicFeatures.Indexes.overlapchunks(get(iter.reader.index), iter.interval),
+    return TabixOverlapIteratorState(
+        Indexes.overlapchunks(get(iter.reader.index), iter.interval),
         0,
-        Record(),
-        false)
+        false,
+        eltype(iter)())
 end
 
-function Base.done(iter::OverlapIterator, state)
+function Base.done(iter::TabixOverlapIterator, state)
     source = BioCore.IO.stream(iter.reader).source
     if state.chunkid == 0 && !isempty(state.chunks)
         state.chunkid += 1
@@ -64,15 +64,15 @@ function Base.done(iter::OverlapIterator, state)
     return true
 end
 
-function Base.next(iter::OverlapIterator, state)
+function Base.next(iter::TabixOverlapIterator, state)
     return copy(state.record), state
 end
 
 function icmp(record, interval)
-    c = cmp(seqid(record), interval.seqname)
-    if c < 0 || (c == 0 && seqend(record) < interval.first)
+    c = cmp(seqname(record), interval.seqname)
+    if c < 0 || (c == 0 && rightposition(record) < interval.first)
         return -1
-    elseif c > 0 || (c == 0 && seqstart(record) > interval.last)
+    elseif c > 0 || (c == 0 && leftposition(record) > interval.last)
         return +1
     else
         return 0

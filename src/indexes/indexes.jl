@@ -8,11 +8,13 @@
 
 module Indexes
 
-import BGZFStreams: BGZFStream, VirtualOffset
+import BGZFStreams
+import BioCore
 import GenomicFeatures: Interval
 
 include("chunk.jl")
 include("bgzfindex.jl")
 include("tabix.jl")
+include("overlap.jl")
 
 end
