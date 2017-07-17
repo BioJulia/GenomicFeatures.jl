@@ -3,9 +3,10 @@
 
 immutable Reader <: BioCore.IO.AbstractReader
     state::BioCore.Ragel.State
+    index::Nullable{GenomicFeatures.Indexes.Tabix}
 
-    function Reader(input::BufferedStreams.BufferedInputStream)
-        return new(BioCore.Ragel.State(file_machine.start_state, input))
+    function Reader(input::BufferedStreams.BufferedInputStream, index=nothing)
+        return new(BioCore.Ragel.State(file_machine.start_state, input), index)
     end
 end
 
@@ -17,8 +18,11 @@ Create a data reader of the BED file format.
 # Arguments:
 * `input`: data source
 """
-function Reader(input::IO)
-    return Reader(BufferedStreams.BufferedInputStream(input))
+function Reader(input::IO; index=nothing)
+    if isa(index, AbstractString)
+        index = GenomicFeatures.Indexes.Tabix(index)
+    end
+    return Reader(BufferedStreams.BufferedInputStream(input), index)
 end
 
 function Base.eltype(::Type{Reader})
@@ -27,6 +31,13 @@ end
 
 function BioCore.IO.stream(reader::Reader)
     return reader.state.stream
+end
+
+function GenomicFeatures.eachoverlap(reader::Reader, interval::GenomicFeatures.Interval)
+    if isnull(reader.index)
+        throw(ArgumentError("index is null"))
+    end
+    return GenomicFeatures.Indexes.TabixOverlapIterator(reader, interval)
 end
 
 const record_machine, file_machine = (function ()
