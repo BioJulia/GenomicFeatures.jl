@@ -36,7 +36,10 @@ end
 function Base.done(iter::TabixOverlapIterator, state)
     buffer = BioCore.IO.stream(iter.reader)
     source = buffer.source
-    if state.chunkid == 0 && !isempty(state.chunks)
+    if state.chunkid == 0
+        if isempty(state.chunks)
+            return true
+        end
         state.chunkid += 1
         seek(source, state.chunks[state.chunkid].start)
     end

@@ -1,7 +1,7 @@
 # BED Reader
 # ==========
 
-immutable Reader <: BioCore.IO.AbstractReader
+type Reader <: BioCore.IO.AbstractReader
     state::BioCore.Ragel.State
     index::Nullable{GenomicFeatures.Indexes.Tabix}
 
