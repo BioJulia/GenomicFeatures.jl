@@ -61,6 +61,15 @@ function Tabix(input::IO)
     return read_tabix(input)
 end
 
+function findtabix(filepath::AbstractString)
+    ret = string(filepath, ".tbi")
+    if isfile(ret)
+        return ret
+    end
+    return nothing
+end
+
+
 """
     overlapchunks(tabix::Tabix, interval::Interval)
 

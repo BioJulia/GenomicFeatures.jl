@@ -588,6 +588,7 @@ end
             end
             @test n == n_records
         end
+        @test isa(BED.Reader(path), BED.Reader)
     end
 end
 
@@ -788,6 +789,7 @@ TGCATGCA
             end
             @test n == n_records
         end
+        @test isa(GFF3.Reader(path), GFF3.Reader)
     end
 end
 

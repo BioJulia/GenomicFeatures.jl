@@ -73,8 +73,8 @@ close(writer)
 ```
 
 
-Accessors
----------
+API
+---
 
 ```@docs
 GenomicFeatures.BigWig.Reader

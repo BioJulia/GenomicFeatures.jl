@@ -11,18 +11,41 @@ type Reader <: BioCore.IO.AbstractReader
 end
 
 """
-    BED.Reader(input::IO)
+    BED.Reader(input::IO; index=nothing)
+    BED.Reader(input::AbstractString; index=:auto)
 
 Create a data reader of the BED file format.
 
-# Arguments:
-* `input`: data source
+The first argument specifies the data source. When it is a filepath that ends
+with *.bgz*, it is considered to be block compression file format (BGZF) and the
+function will try to find a tabix index file (<filename>.tbi) and read it if
+any. See <http://www.htslib.org/doc/tabix.html> for bgzip and tabix tools.
+
+Arguments
+---------
+- `input`: data source
+- `index`: path to a tabix file
 """
 function Reader(input::IO; index=nothing)
     if isa(index, AbstractString)
         index = GenomicFeatures.Indexes.Tabix(index)
     end
     return Reader(BufferedStreams.BufferedInputStream(input), index)
+end
+
+function Reader(filepath::AbstractString; index=:auto)
+    if isa(index, Symbol) && index != :auto
+        throw(ArgumentError("invalid index argument: ':$(index)'"))
+    end
+    if endswith(filepath, ".bgz")
+        input = BGZFStreams.BGZFStream(filepath)
+        if index == :auto
+            index = GenomicFeatures.Indexes.findtabix(filepath)
+        end
+    else
+        input = open(filepath)
+    end
+    return Reader(input, index=index)
 end
 
 function Base.eltype(::Type{Reader})

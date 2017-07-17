@@ -1,23 +1,6 @@
 # GFF3 Reader
 # ===========
 
-"""
-    GFF3.Reader(input::IO;
-                save_directives::Bool=false,
-                skip_features::Bool=false,
-                skip_directives::Bool=true,
-                skip_comments::Bool=true)
-
-Create a reader for data in GFF3 format.
-
-Arguments
----------
-- `input`: data source
-- `save_directives`: flag to save directive records (which can be accessed with `GFF3.directives`)
-- `skip_features`: flag to skip feature records
-- `skip_directives`: flag to skip directive records
-- `skip_comments`:  flag to skip comment records
-"""
 type Reader <: BioCore.IO.AbstractReader
     state::BioCore.Ragel.State
     index::Nullable{GenomicFeatures.Indexes.Tabix}
@@ -49,6 +32,37 @@ type Reader <: BioCore.IO.AbstractReader
     end
 end
 
+"""
+    GFF3.Reader(input::IO;
+                index=nothing,
+                save_directives::Bool=false,
+                skip_features::Bool=false,
+                skip_directives::Bool=true,
+                skip_comments::Bool=true)
+
+    GFF3.Reader(input::AbstractString;
+                index=:auto,
+                save_directives::Bool=false,
+                skip_features::Bool=false,
+                skip_directives::Bool=true,
+                skip_comments::Bool=true)
+
+Create a reader for data in GFF3 format.
+
+The first argument specifies the data source. When it is a filepath that ends
+with *.bgz*, it is considered to be block compression file format (BGZF) and the
+function will try to find a tabix index file (<filename>.tbi) and read it if
+any. See <http://www.htslib.org/doc/tabix.html> for bgzip and tabix tools.
+
+Arguments
+---------
+- `input`: data source (`IO` object or filepath)
+- `index`: path to a tabix file
+- `save_directives`: flag to save directive records (which can be accessed with `GFF3.directives`)
+- `skip_features`: flag to skip feature records
+- `skip_directives`: flag to skip directive records
+- `skip_comments`:  flag to skip comment records
+"""
 function Reader(input::IO;
                 index=nothing,
                 save_directives::Bool=false,
@@ -56,7 +70,30 @@ function Reader(input::IO;
     if isa(index, AbstractString)
         index = GenomicFeatures.Indexes.Tabix(index)
     end
-    return Reader(BufferedStreams.BufferedInputStream(input), index, save_directives, skip_features, skip_directives, skip_comments)
+    return Reader(BufferedStreams.BufferedInputStream(input), index,
+                  save_directives, skip_features, skip_directives, skip_comments)
+end
+
+function Reader(filepath::AbstractString;
+                index=:auto,
+                save_directives::Bool=false,
+                skip_features::Bool=false, skip_directives::Bool=true, skip_comments::Bool=true)
+    if isa(index, Symbol) && index != :auto
+        throw(ArgumentError("invalid index argument: ':$(index)'"))
+    end
+    if endswith(filepath, ".bgz")
+        input = BGZFStreams.BGZFStream(filepath)
+        if index == :auto
+            index = GenomicFeatures.Indexes.findtabix(filepath)
+        end
+    else
+        input = open(filepath)
+    end
+    return Reader(
+        input,
+        index=index,
+        save_directives=save_directives,
+        skip_features=skip_features, skip_directives=skip_directives, skip_comments=skip_comments)
 end
 
 function Base.eltype(::Type{Reader})
