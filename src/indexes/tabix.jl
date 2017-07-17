@@ -72,7 +72,7 @@ overlap the query interval.
 function overlapchunks(tabix::Tabix, interval::Interval)
     seqid = findfirst(tabix.names, interval.seqname)
     if seqid == 0
-        throw(ArgumentError("failed to find sequence name '$(intervalseqname)'"))
+        throw(ArgumentError("failed to find sequence name '$(interval.seqname)'"))
     end
     return overlapchunks(tabix.index, seqid, interval.first:interval.last)
 end
