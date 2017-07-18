@@ -280,8 +280,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#accessors" title="Accessors" class="md-nav__link">
-    Accessors
+  <a href="#api" title="API" class="md-nav__link">
+    API
   </a>
   
 </li>
@@ -371,8 +371,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#accessors" title="Accessors" class="md-nav__link">
-    Accessors
+  <a href="#api" title="API" class="md-nav__link">
+    API
   </a>
   
 </li>
@@ -447,20 +447,23 @@ chr9    68456943    68486659    NM_001206   0   -
 </pre></div>
 
 
-<p><a id='Accessors-1'></a></p>
-<h2 id="accessors">Accessors</h2>
+<p><a id='API-1'></a></p>
+<h2 id="api">API</h2>
 <p><a id='GenomicFeatures.BED.Reader' href='#GenomicFeatures.BED.Reader'>#</a>
 <strong><code>GenomicFeatures.BED.Reader</code></strong> &mdash; <em>Type</em>.</p>
-<div class="codehilite"><pre><span></span>BED.Reader(input::IO)
+<div class="codehilite"><pre><span></span><span class="nt">BED</span><span class="p">.</span><span class="nc">Reader</span><span class="o">(</span><span class="nt">input</span><span class="p">::</span><span class="nd">IO</span><span class="o">;</span> <span class="nt">index</span><span class="o">=</span><span class="nt">nothing</span><span class="o">)</span>
+<span class="nt">BED</span><span class="p">.</span><span class="nc">Reader</span><span class="o">(</span><span class="nt">input</span><span class="p">::</span><span class="nd">AbstractString</span><span class="o">;</span> <span class="nt">index</span><span class="o">=</span><span class="p">:</span><span class="nd">auto</span><span class="o">)</span>
 </pre></div>
 
 
 <p>Create a data reader of the BED file format.</p>
-<p><strong>Arguments:</strong></p>
+<p>The first argument specifies the data source. When it is a filepath that ends with <em>.bgz</em>, it is considered to be block compression file format (BGZF) and the function will try to find a tabix index file (<filename>.tbi) and read it if any. See <a href="http://www.htslib.org/doc/tabix.html">http://www.htslib.org/doc/tabix.html</a> for bgzip and tabix tools.</p>
+<p><strong>Arguments</strong></p>
 <ul>
 <li><code>input</code>: data source</li>
+<li><code>index</code>: path to a tabix file</li>
 </ul>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/reader.jl#L12-L19' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/reader.jl#L13-L28' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.Writer' href='#GenomicFeatures.BED.Writer'>#</a>
 <strong><code>GenomicFeatures.BED.Writer</code></strong> &mdash; <em>Type</em>.</p>
 <div class="codehilite"><pre><span></span>BED.Writer(output::IO)
@@ -472,7 +475,7 @@ chr9    68456943    68486659    NM_001206   0   -
 <ul>
 <li><code>output</code>: data sink</li>
 </ul>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/writer.jl#L4-L11' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/writer.jl#L4-L11' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.Record' href='#GenomicFeatures.BED.Record'>#</a>
 <strong><code>GenomicFeatures.BED.Record</code></strong> &mdash; <em>Type</em>.</p>
 <div class="codehilite"><pre><span></span>BED.Record()
@@ -480,21 +483,21 @@ chr9    68456943    68486659    NM_001206   0   -
 
 
 <p>Create an unfilled BED record.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L25-L29' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L25-L29' class='documenter-source'>source</a><br></p>
 <div class="codehilite"><pre><span></span>BED.Record(data::Vector{UInt8})
 </pre></div>
 
 
 <p>Create a BED record object from <code>data</code>.</p>
 <p>This function verifies and indexes fields for accessors. Note that the ownership of <code>data</code> is transferred to a new record object.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L41-L48' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L41-L48' class='documenter-source'>source</a><br></p>
 <div class="codehilite"><pre><span></span>BED.Record(str::AbstractString)
 </pre></div>
 
 
 <p>Create a BED record object from <code>str</code>.</p>
 <p>This function verifies and indexes fields for accessors.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L66-L72' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L66-L72' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.chrom' href='#GenomicFeatures.BED.chrom'>#</a>
 <strong><code>GenomicFeatures.BED.chrom</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>chrom(record::Record)::String
@@ -502,7 +505,7 @@ chr9    68456943    68486659    NM_001206   0   -
 
 
 <p>Get the chromosome name of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L202-L206' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L202-L206' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.chromstart' href='#GenomicFeatures.BED.chromstart'>#</a>
 <strong><code>GenomicFeatures.BED.chromstart</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>chromstart(record::Record)::Int
@@ -511,7 +514,7 @@ chr9    68456943    68486659    NM_001206   0   -
 
 <p>Get the starting position of <code>record</code>.</p>
 <p>Note that the first base is numbered 1.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L224-L230' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L224-L230' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.chromend' href='#GenomicFeatures.BED.chromend'>#</a>
 <strong><code>GenomicFeatures.BED.chromend</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>chromend(record::Record)::Int
@@ -519,7 +522,7 @@ chr9    68456943    68486659    NM_001206   0   -
 
 
 <p>Get the end position of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L248-L252' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L248-L252' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.name' href='#GenomicFeatures.BED.name'>#</a>
 <strong><code>GenomicFeatures.BED.name</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>name(record::Record)::String
@@ -527,7 +530,7 @@ chr9    68456943    68486659    NM_001206   0   -
 
 
 <p>Get the name of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L270-L274' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L270-L274' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.score' href='#GenomicFeatures.BED.score'>#</a>
 <strong><code>GenomicFeatures.BED.score</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>score(record::Record)::Int
@@ -535,7 +538,7 @@ chr9    68456943    68486659    NM_001206   0   -
 
 
 <p>Get the score between 0 and 1000.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L287-L291' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L287-L291' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.strand' href='#GenomicFeatures.BED.strand'>#</a>
 <strong><code>GenomicFeatures.BED.strand</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>strand(record::Record)::GenomicFeatures.Strand
@@ -543,7 +546,7 @@ chr9    68456943    68486659    NM_001206   0   -
 
 
 <p>Get the strand of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L304-L308' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L304-L308' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.thickstart' href='#GenomicFeatures.BED.thickstart'>#</a>
 <strong><code>GenomicFeatures.BED.thickstart</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>thickstart(record::Record)::Int
@@ -552,7 +555,7 @@ chr9    68456943    68486659    NM_001206   0   -
 
 <p>Get the starting position at which <code>record</code> is drawn thickly.</p>
 <p>Note that the first base is numbered 1.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L325-L331' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L325-L331' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.thickend' href='#GenomicFeatures.BED.thickend'>#</a>
 <strong><code>GenomicFeatures.BED.thickend</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>thickend(record::Record)::Int
@@ -560,7 +563,7 @@ chr9    68456943    68486659    NM_001206   0   -
 
 
 <p>Get the end position at which <code>record</code> is drawn thickly.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L344-L348' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L344-L348' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.itemrgb' href='#GenomicFeatures.BED.itemrgb'>#</a>
 <strong><code>GenomicFeatures.BED.itemrgb</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>itemrgb(record::Record)::ColorTypes.RGB
@@ -569,7 +572,7 @@ chr9    68456943    68486659    NM_001206   0   -
 
 <p>Get the RGB value of <code>record</code>.</p>
 <p>The return type is defined in <a href="https://github.com/JuliaGraphics/ColorTypes.jl">ColorTypes.jl</a>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L361-L367' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L361-L367' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.blockcount' href='#GenomicFeatures.BED.blockcount'>#</a>
 <strong><code>GenomicFeatures.BED.blockcount</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>blockcount(record::Record)::Int
@@ -577,7 +580,7 @@ chr9    68456943    68486659    NM_001206   0   -
 
 
 <p>Get the number of blocks (exons) in <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L417-L421' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L417-L421' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.blocksizes' href='#GenomicFeatures.BED.blocksizes'>#</a>
 <strong><code>GenomicFeatures.BED.blocksizes</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>blocksizes(record::Record)::Vector{Int}
@@ -585,7 +588,7 @@ chr9    68456943    68486659    NM_001206   0   -
 
 
 <p>Get the block (exon) sizes of <code>record</code>.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L434-L438' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L434-L438' class='documenter-source'>source</a><br></p>
 <p><a id='GenomicFeatures.BED.blockstarts' href='#GenomicFeatures.BED.blockstarts'>#</a>
 <strong><code>GenomicFeatures.BED.blockstarts</code></strong> &mdash; <em>Function</em>.</p>
 <div class="codehilite"><pre><span></span>blockstarts(record::Record)::Vector{Int}
@@ -594,7 +597,7 @@ chr9    68456943    68486659    NM_001206   0   -
 
 <p>Get the block (exon) starts of <code>record</code>.</p>
 <p>Note that the first base is numbered 1.</p>
-<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/a2e54222240a0b06d52074a216b0f09ce3d2ba68/src/bed/record.jl#L451-L457' class='documenter-source'>source</a><br></p>
+<p><a target='_blank' href='https://github.com/BioJulia/GenomicFeatures.jl/tree/5381331535866cbbac1c9a50b736513bdcf80f4e/src/bed/record.jl#L451-L457' class='documenter-source'>source</a><br></p>
                 
                   
                 
