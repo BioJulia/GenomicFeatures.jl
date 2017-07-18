@@ -60,8 +60,8 @@ end
 ```
 
 
-Accessors
----------
+API
+---
 
 ```@docs
 GenomicFeatures.BED.Reader

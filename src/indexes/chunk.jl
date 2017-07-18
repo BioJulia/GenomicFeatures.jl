@@ -8,11 +8,11 @@
 
 # BGZF file chunk [.start, .stop).
 immutable Chunk
-    start::VirtualOffset
-    stop::VirtualOffset
+    start::BGZFStreams.VirtualOffset
+    stop::BGZFStreams.VirtualOffset
 end
 
-function Base.in(voffset::VirtualOffset, chunk::Chunk)
+function Base.in(voffset::BGZFStreams.VirtualOffset, chunk::Chunk)
     return chunk.start ≤ voffset < chunk.stop
 end
 
@@ -26,6 +26,6 @@ function Base.isless(chunk1::Chunk, chunk2::Chunk)
         (chunk1.start == chunk2.start && isless(chunk1.stop, chunk2.stop)))
 end
 
-function Base.seek(stream::BGZFStream, chunk::Chunk)
+function Base.seek(stream::BGZFStreams.BGZFStream, chunk::Chunk)
     seek(stream, chunk.start)
 end

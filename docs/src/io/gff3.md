@@ -61,9 +61,28 @@ end
 close(reader)
 ```
 
+GenomicFeatures.jl supports [tabix](http://www.htslib.org/doc/tabix.html) to
+retrieve records overlapping with a specific interval. First you need to create
+a block compression file from a GFF3 file using bgzip and then index it using
+tabix.
+```
+cat data.gff3 | grep -v "^#" | sort -k1,1 -k4,4n | bgzip >data.gff3.bgz
+tabix data.gff3.bgz  # this creates data.gff3.bgz.tbi
+```
 
-Accessors
----------
+Then you can read the block compression file as follows:
+```julia
+# Read the block compression gzip file.
+reader = GFF3.Reader("data.gff3.bgz")
+for record in eachoverlap(reader, Interval("chr1", 250_000, 300_000))
+    # Each record overlap the query interval.
+    # ...
+end
+```
+
+
+API
+---
 
 ```@docs
 GenomicFeatures.GFF3.Reader

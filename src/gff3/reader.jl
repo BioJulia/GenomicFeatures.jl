@@ -1,25 +1,9 @@
 # GFF3 Reader
 # ===========
 
-"""
-    GFF3.Reader(input::IO;
-                save_directives::Bool=false,
-                skip_features::Bool=false,
-                skip_directives::Bool=true,
-                skip_comments::Bool=true)
-
-Create a reader for data in GFF3 format.
-
-Arguments
----------
-- `input`: data source
-- `save_directives`: flag to save directive records (which can be accessed with `GFF3.directives`)
-- `skip_features`: flag to skip feature records
-- `skip_directives`: flag to skip directive records
-- `skip_comments`:  flag to skip comment records
-"""
 type Reader <: BioCore.IO.AbstractReader
     state::BioCore.Ragel.State
+    index::Nullable{GenomicFeatures.Indexes.Tabix}
     save_directives::Bool
     targets::Vector{Symbol}
     found_fasta::Bool
@@ -28,8 +12,12 @@ type Reader <: BioCore.IO.AbstractReader
     preceding_directive_count::Int
 
     function Reader(input::BufferedStreams.BufferedInputStream,
+                    index=nothing,
                     save_directives::Bool=false,
                     skip_features::Bool=false, skip_directives::Bool=true, skip_comments::Bool=true)
+        if isa(index, GenomicFeatures.Indexes.Tabix) && !isa(input.source, BGZFStreams.BGZFStream)
+            throw(ArgumentError("not a BGZF stream"))
+        end
         targets = Symbol[]
         if !skip_features
             push!(targets, :feature)
@@ -40,14 +28,72 @@ type Reader <: BioCore.IO.AbstractReader
         if !skip_comments
             push!(targets, :comment)
         end
-        return new(BioCore.Ragel.State(body_machine.start_state, input), save_directives, targets, false, Record[], 0, 0)
+        return new(BioCore.Ragel.State(body_machine.start_state, input), index, save_directives, targets, false, Record[], 0, 0)
     end
 end
 
+"""
+    GFF3.Reader(input::IO;
+                index=nothing,
+                save_directives::Bool=false,
+                skip_features::Bool=false,
+                skip_directives::Bool=true,
+                skip_comments::Bool=true)
+
+    GFF3.Reader(input::AbstractString;
+                index=:auto,
+                save_directives::Bool=false,
+                skip_features::Bool=false,
+                skip_directives::Bool=true,
+                skip_comments::Bool=true)
+
+Create a reader for data in GFF3 format.
+
+The first argument specifies the data source. When it is a filepath that ends
+with *.bgz*, it is considered to be block compression file format (BGZF) and the
+function will try to find a tabix index file (<filename>.tbi) and read it if
+any. See <http://www.htslib.org/doc/tabix.html> for bgzip and tabix tools.
+
+Arguments
+---------
+- `input`: data source (`IO` object or filepath)
+- `index`: path to a tabix file
+- `save_directives`: flag to save directive records (which can be accessed with `GFF3.directives`)
+- `skip_features`: flag to skip feature records
+- `skip_directives`: flag to skip directive records
+- `skip_comments`:  flag to skip comment records
+"""
 function Reader(input::IO;
+                index=nothing,
                 save_directives::Bool=false,
                 skip_features::Bool=false, skip_directives::Bool=true, skip_comments::Bool=true)
-    return Reader(BufferedStreams.BufferedInputStream(input), save_directives, skip_features, skip_directives, skip_comments)
+    if isa(index, AbstractString)
+        index = GenomicFeatures.Indexes.Tabix(index)
+    end
+    return Reader(BufferedStreams.BufferedInputStream(input), index,
+                  save_directives, skip_features, skip_directives, skip_comments)
+end
+
+function Reader(filepath::AbstractString;
+                index=:auto,
+                save_directives::Bool=false,
+                skip_features::Bool=false, skip_directives::Bool=true, skip_comments::Bool=true)
+    if isa(index, Symbol) && index != :auto
+        throw(ArgumentError("invalid index argument: ':$(index)'"))
+    end
+    if endswith(filepath, ".bgz")
+        input = BGZFStreams.BGZFStream(filepath)
+        if index == :auto
+            index = GenomicFeatures.Indexes.findtabix(filepath)
+        end
+    else
+        input = open(filepath)
+    end
+    return Reader(
+        input,
+        index=index,
+        save_directives=save_directives,
+        skip_features=skip_features, skip_directives=skip_directives, skip_comments=skip_comments)
 end
 
 function Base.eltype(::Type{Reader})
@@ -72,6 +118,13 @@ end
 function IntervalCollection(reader::Reader)
     intervals = collect(Interval{Record}, reader)
     return IntervalCollection(intervals, true)
+end
+
+function GenomicFeatures.eachoverlap(reader::Reader, interval::Interval)
+    if isnull(reader.index)
+        throw(ArgumentError("index is null"))
+    end
+    return GenomicFeatures.Indexes.TabixOverlapIterator(reader, interval)
 end
 
 
@@ -114,7 +167,6 @@ function getfasta(reader::Reader)
     return BioSequences.FASTA.Reader(reader.state.stream)
 end
 
-isinteractive() && info("compiling GFF3")
 const record_machine, body_machine = (function ()
     cat = Automa.RegExp.cat
     rep = Automa.RegExp.rep

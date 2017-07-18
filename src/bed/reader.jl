@@ -1,24 +1,51 @@
 # BED Reader
 # ==========
 
-immutable Reader <: BioCore.IO.AbstractReader
+type Reader <: BioCore.IO.AbstractReader
     state::BioCore.Ragel.State
+    index::Nullable{GenomicFeatures.Indexes.Tabix}
 
-    function Reader(input::BufferedStreams.BufferedInputStream)
-        return new(BioCore.Ragel.State(file_machine.start_state, input))
+    function Reader(input::BufferedStreams.BufferedInputStream, index=nothing)
+        return new(BioCore.Ragel.State(file_machine.start_state, input), index)
     end
 end
 
 """
-    BED.Reader(input::IO)
+    BED.Reader(input::IO; index=nothing)
+    BED.Reader(input::AbstractString; index=:auto)
 
 Create a data reader of the BED file format.
 
-# Arguments:
-* `input`: data source
+The first argument specifies the data source. When it is a filepath that ends
+with *.bgz*, it is considered to be block compression file format (BGZF) and the
+function will try to find a tabix index file (<filename>.tbi) and read it if
+any. See <http://www.htslib.org/doc/tabix.html> for bgzip and tabix tools.
+
+Arguments
+---------
+- `input`: data source
+- `index`: path to a tabix file
 """
-function Reader(input::IO)
-    return Reader(BufferedStreams.BufferedInputStream(input))
+function Reader(input::IO; index=nothing)
+    if isa(index, AbstractString)
+        index = GenomicFeatures.Indexes.Tabix(index)
+    end
+    return Reader(BufferedStreams.BufferedInputStream(input), index)
+end
+
+function Reader(filepath::AbstractString; index=:auto)
+    if isa(index, Symbol) && index != :auto
+        throw(ArgumentError("invalid index argument: ':$(index)'"))
+    end
+    if endswith(filepath, ".bgz")
+        input = BGZFStreams.BGZFStream(filepath)
+        if index == :auto
+            index = GenomicFeatures.Indexes.findtabix(filepath)
+        end
+    else
+        input = open(filepath)
+    end
+    return Reader(input, index=index)
 end
 
 function Base.eltype(::Type{Reader})
@@ -29,7 +56,13 @@ function BioCore.IO.stream(reader::Reader)
     return reader.state.stream
 end
 
-isinteractive() && info("compiling BED")
+function GenomicFeatures.eachoverlap(reader::Reader, interval::GenomicFeatures.Interval)
+    if isnull(reader.index)
+        throw(ArgumentError("index is null"))
+    end
+    return GenomicFeatures.Indexes.TabixOverlapIterator(reader, interval)
+end
+
 const record_machine, file_machine = (function ()
     cat = Automa.RegExp.cat
     rep = Automa.RegExp.rep

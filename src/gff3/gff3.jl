@@ -5,6 +5,7 @@ module GFF3
 
 import Automa
 import Automa.RegExp: @re_str
+import BGZFStreams
 import BioCore.Exceptions: missingerror
 import BioSequences
 import BufferedStreams

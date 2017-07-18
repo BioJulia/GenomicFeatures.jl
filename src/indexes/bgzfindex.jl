@@ -13,7 +13,7 @@
 const BinIndex = Dict{UInt32,Vector{Chunk}}
 
 # linear index
-const LinearIndex = Vector{VirtualOffset}
+const LinearIndex = Vector{BGZFStreams.VirtualOffset}
 
 # Metadata providing a summary of the number of mappend/unmapped reads.
 type PseudoBin

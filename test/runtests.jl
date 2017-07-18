@@ -1,6 +1,7 @@
 using GenomicFeatures
 using Base.Test
 using Distributions
+import BGZFStreams
 import YAML
 import ColorTypes: RGB
 import Compat: take!
@@ -110,13 +111,13 @@ function simple_coverage(intervals)
     return covintervals
 end
 
-function get_bio_fmt_specimens(commit="3140ef6110bb309703ffde564ce705eeb80607d4")
+function get_bio_fmt_specimens(commit="222f58c8ef3e3480f26515d99d3784b8cfcca046")
     path = joinpath(dirname(@__FILE__), "BioFmtSpecimens")
     if !isdir(path)
         run(`git clone https://github.com/BioJulia/BioFmtSpecimens.git $(path)`)
     end
     cd(path) do
-        run(`git checkout $(commit)`)
+        #run(`git checkout $(commit)`)
     end
     return path
 end
@@ -501,6 +502,10 @@ end
 
     path = joinpath(get_bio_fmt_specimens(), "BED")
     for specimen in YAML.load_file(joinpath(path, "index.yml"))
+        if "gzip" ∈ split(get(specimen, "tags", ""))
+            # skip compressed files
+            continue
+        end
         valid = get(specimen, "valid", true)
         if valid
             @test check_bed_parse(joinpath(path, specimen["filename"]))
@@ -508,9 +513,8 @@ end
             @test_throws Exception check_bed_parse(joinpath(path, specimen["filename"]))
         end
     end
-end
 
-@testset "BED Intersection" begin
+
     # Testing strategy: there are two entirely separate intersection
     # algorithms for IntervalCollection and IntervalStream. Here we test
     # them both by checking that they agree by generating and intersecting
@@ -568,6 +572,24 @@ end
         write_intervals(filename_b, intervals_b)
         @test check_intersection(filename_a, filename_b)
     end
+
+    @testset "eachoverlap" begin
+        path = joinpath(get_bio_fmt_specimens(), "BED", "ws245Genes.WBGene.bed.bgz")
+        stream = BGZFStreams.BGZFStream(path)
+        reader = BED.Reader(stream, index=string(path, ".tbi"))
+        for (interval, n_records) in [
+                (Interval("chrII", 500_000:10_000_000), 38),
+                (Interval("chrII", 1:70_000), 0),
+                (Interval("chrIV", 500_000:10_000_000), 43),
+                (Interval("chrI",  1_000_000:12_000_000), 27),]
+            n = 0
+            for record in eachoverlap(reader, interval)
+                n += 1
+            end
+            @test n == n_records
+        end
+        @test isa(BED.Reader(path), BED.Reader)
+    end
 end
 
 @testset "GFF3" begin
@@ -612,9 +634,7 @@ end
     @test GFF3.iscomment(record)
     @test GFF3.content(record) == "comment"
     @test convert(String, record) == "#comment"
-end
 
-@testset "GFF3 Parsing" begin
     function check_gff3_parse(filename)
         # Reading from a stream
         num_intervals = 0
@@ -664,6 +684,10 @@ end
 
     path = joinpath(get_bio_fmt_specimens(), "GFF3")
     for specimen in YAML.load_file(joinpath(path, "index.yml"))
+        if "gzip" ∈ split(get(specimen, "tags", ""))
+            # skip compressed files
+            continue
+        end
         valid = get(specimen, "valid", true)
         if valid
             @test check_gff3_parse(joinpath(path, specimen["filename"]))
@@ -750,6 +774,23 @@ TGCATGCA
     @test [r.kind for r in GFF3.Reader(IOBuffer(test_input5))] == [:feature, :feature, :feature]
     @test [r.kind for r in GFF3.Reader(IOBuffer(test_input5), skip_directives=false)] == [:directive, :feature, :feature, :directive, :feature]
     @test [r.kind for r in GFF3.Reader(IOBuffer(test_input5), skip_directives=false, skip_comments=false)] == [:directive, :feature, :comment, :feature, :directive, :feature]
+
+    @testset "eachoverlap" begin
+        path = joinpath(get_bio_fmt_specimens(), "GFF3", "TAIR10.part.gff.bgz")
+        stream = BGZFStreams.BGZFStream(path)
+        reader = GFF3.Reader(stream, index=string(path, ".tbi"))
+        for (interval, n_records) in [
+                (Interval("ChrC", 1:70_000), 68),
+                (Interval("Chr4", 1:10_000),  2),
+                (Interval("ChrM", 1:30_000), 10),]
+            n = 0
+            for record in eachoverlap(reader, interval)
+                n += 1
+            end
+            @test n == n_records
+        end
+        @test isa(GFF3.Reader(path), GFF3.Reader)
+    end
 end
 
 @testset "BigWig" begin
