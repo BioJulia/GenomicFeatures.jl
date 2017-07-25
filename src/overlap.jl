@@ -42,7 +42,7 @@ mutable struct OverlapIteratorState{Sa,Sb,Ta,Tb}
     interval_a::Interval{Ta}
     interval_b::Interval{Tb}
 
-    function (::Type{OverlapIteratorState{Sa,Sb,Ta,Tb}}){Sa,Sb,Ta,Tb}(state_a, state_b)
+    function OverlapIteratorState{Sa,Sb,Ta,Tb}(state_a, state_b) where {Sa,Sb,Ta,Tb}
         queue = Queue{Interval{Tb}}()
         return new{Sa,Sb,Ta,Tb}(state_a, state_b, queue, start(queue), false)
     end

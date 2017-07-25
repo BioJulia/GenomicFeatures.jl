@@ -8,7 +8,7 @@ mutable struct Queue{T}
     last::Int
 end
 
-function (::Type{Queue{T}}){T}(bufsize::Integer=2^4)
+function Queue{T}(bufsize::Integer=2^4) where {T}
     if bufsize ≤ 0
         throw(ArgumentError("buffer size must be positive"))
     elseif !ispow2(bufsize)
