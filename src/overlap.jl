@@ -1,7 +1,7 @@
 # Overlap Iterator
 # ================
 
-immutable OverlapIterator{Sa,Sb,F,G}
+struct OverlapIterator{Sa,Sb,F,G}
     intervals_a::Sa
     intervals_b::Sb
     isless::F

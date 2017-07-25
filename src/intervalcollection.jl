@@ -245,7 +245,7 @@ function eachoverlap(a::IntervalCollection, b::IntervalCollection; filter=true_c
     return IntersectIterator(filter, a_trees, b_trees)
 end
 
-immutable IntersectIterator{F, S, T}
+struct IntersectIterator{F, S, T}
     filter::F
     a_trees::Vector{ICTree{S}}
     b_trees::Vector{ICTree{T}}
@@ -312,7 +312,7 @@ function eachoverlap(a, b::IntervalCollection; filter=true_cmp)
     return IntervalCollectionStreamIterator(filter, a, b)
 end
 
-immutable IntervalCollectionStreamIterator{F,S,T}
+struct IntervalCollectionStreamIterator{F,S,T}
     filter::F
     a::S
     b::IntervalCollection{T}

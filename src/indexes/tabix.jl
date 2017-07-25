@@ -11,7 +11,7 @@
 # License is MIT: https://github.com/BioJulia/Bio.jl/blob/master/LICENSE.md
 
 # An index type for tab-delimited files.
-immutable Tabix
+struct Tabix
     # file format
     #   * 0: generic
     #   * 1: SAM

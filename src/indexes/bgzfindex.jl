@@ -16,7 +16,7 @@ const BinIndex = Dict{UInt32,Vector{Chunk}}
 const LinearIndex = Vector{BGZFStreams.VirtualOffset}
 
 # Metadata providing a summary of the number of mappend/unmapped reads.
-immutable PseudoBin
+struct PseudoBin
     # file range of unmapped reads
     unmapped::Chunk
 
@@ -28,7 +28,7 @@ immutable PseudoBin
 end
 
 # Index for BGZFStream; used in BAI and Tabix index.
-immutable BGZFIndex
+struct BGZFIndex
     # indexes of contigs (chromosomes)
     data::Vector{Tuple{BinIndex,LinearIndex,Nullable{PseudoBin}}}
 end

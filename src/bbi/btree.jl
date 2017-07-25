@@ -4,7 +4,7 @@
 const BTREE_MAGIC = 0x78CA8C91
 
 # Supplemental Table 8.
-immutable BTreeHeader
+struct BTreeHeader
     magic::UInt32
     block_size::UInt32
     key_size::UInt32
@@ -21,7 +21,7 @@ function Base.write(stream::IO, header::BTreeHeader)
 end
 
 # Supplemental Table 9.
-immutable BTreeNode
+struct BTreeNode
     isleaf::UInt8
     reserved::UInt8
     count::UInt16
@@ -40,7 +40,7 @@ function Base.read(io::IO, ::Type{BTreeNode})
 end
 
 # disk-serialized B+ tree
-immutable BTree{T<:IO}
+struct BTree{T<:IO}
     stream::T
     offset::UInt64
     header::BTreeHeader

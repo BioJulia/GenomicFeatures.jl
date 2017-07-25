@@ -1,7 +1,7 @@
 # BigWig Reader
 # =============
 
-immutable Reader <: BioCore.IO.AbstractReader
+struct Reader <: BioCore.IO.AbstractReader
     stream::IO
     header::BBI.Header
     zooms::Vector{BBI.Zoom}

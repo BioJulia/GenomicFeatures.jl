@@ -8,7 +8,7 @@
 
 # Note, just to be clear: this shadows IntervalTrees.Interval
 "A genomic interval specifies interval with some associated metadata"
-immutable Interval{T} <: IntervalTrees.AbstractInterval{Int64}
+struct Interval{T} <: IntervalTrees.AbstractInterval{Int64}
     seqname::String
     first::Int64
     last::Int64

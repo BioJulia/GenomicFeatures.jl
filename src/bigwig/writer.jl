@@ -42,7 +42,7 @@ type WriterState
     end
 end
 
-immutable Writer <: BioCore.IO.AbstractWriter
+struct Writer <: BioCore.IO.AbstractWriter
     # output stream
     stream::IO
 

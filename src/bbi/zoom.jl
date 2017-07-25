@@ -2,7 +2,7 @@
 # ====================
 
 # Supplemental Table 6.
-immutable ZoomHeader
+struct ZoomHeader
     reduction_level::UInt32
     reserved::UInt32
     dataoffset::UInt64
@@ -26,7 +26,7 @@ function Base.write(stream::IO, header::ZoomHeader)
         header.indexoffset)
 end
 
-immutable Zoom{T<:IO}
+struct Zoom{T<:IO}
     header::ZoomHeader
     rtree::RTree{T}
     # preallocated ZoomData buffer
@@ -38,7 +38,7 @@ function Zoom(stream::IO, header::ZoomHeader, maxsize::Integer)
 end
 
 # Supplemental Table 19.
-immutable ZoomData
+struct ZoomData
     chromid::UInt32
     chromstart::UInt32
     chromend::UInt32

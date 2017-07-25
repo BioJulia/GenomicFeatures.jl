@@ -1,7 +1,7 @@
 # BigWig Overlap
 # ==============
 
-immutable OverlapIterator
+struct OverlapIterator
     reader::Reader
     chromid::UInt32
     chromstart::UInt32

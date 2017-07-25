@@ -9,7 +9,7 @@ Create a data writer of the BED file format.
 # Arguments:
 * `output`: data sink
 """
-immutable Writer <: BioCore.IO.AbstractWriter
+struct Writer <: BioCore.IO.AbstractWriter
     output::IO
 end
 

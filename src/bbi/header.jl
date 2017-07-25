@@ -5,7 +5,7 @@ const BED_MAGIC = 0x8789F2EB
 const WIG_MAGIC = 0x888FFC26
 
 # Supplemental Table 5.
-immutable Header
+struct Header
     magic::UInt32
     version::UInt16
     zoom_levels::UInt16

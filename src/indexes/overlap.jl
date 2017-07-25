@@ -1,7 +1,7 @@
 # Tabix Overlap Iterator
 # ======================
 
-immutable TabixOverlapIterator{T}
+struct TabixOverlapIterator{T}
     reader::T
     interval::Interval
 end
