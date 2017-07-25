@@ -98,7 +98,7 @@ end
 # Record
 # ------
 
-type Record
+mutable struct Record
     chromstart::UInt32
     chromend::UInt32
     value::Float32
@@ -114,7 +114,7 @@ end
 # Iterator
 # --------
 
-type IteratorState
+mutable struct IteratorState
     stream::BufferedStreams.BufferedInputStream
     done::Bool
     header::SectionHeader

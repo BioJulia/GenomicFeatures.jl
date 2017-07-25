@@ -1,7 +1,7 @@
 # Queue
 # =====
 
-type Queue{T}
+mutable struct Queue{T}
     data::Vector{T}
     offset::Int
     first::Int

@@ -25,7 +25,7 @@ function GenomicFeatures.eachoverlap(reader::Reader, interval::Interval)
     return OverlapIterator(reader, id, interval.first - 1, interval.last)
 end
 
-type OverlapIteratorState
+mutable struct OverlapIteratorState
     # inflating data stream
     stream::IOBuffer
     data::Vector{UInt8}

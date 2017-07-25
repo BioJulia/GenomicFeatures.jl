@@ -1,7 +1,7 @@
 # BED Record
 # ==========
 
-type Record
+mutable struct Record
     # data and filled range
     data::Vector{UInt8}
     filled::UnitRange{Int}

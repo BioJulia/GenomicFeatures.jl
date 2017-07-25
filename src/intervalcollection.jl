@@ -39,7 +39,7 @@ const ICTreeIntersection{T}                   = IntervalTrees.Intersection{Int64
 const ICTreeIntersectionIterator{F,S,T}       = IntervalTrees.IntersectionIterator{F,Int64,Interval{S},64,Interval{T},64}
 const ICTreeIntervalIntersectionIterator{F,T} = IntervalTrees.IntervalIntersectionIterator{F, Int64,Interval{T},64}
 
-type IntervalCollection{T}
+mutable struct IntervalCollection{T}
     # Sequence name mapped to IntervalTree, which in turn maps intervals to
     # a list of metadata.
     trees::Dict{String,ICTree{T}}
@@ -152,7 +152,7 @@ end
 # Iterators
 # ---------
 
-type IntervalCollectionIteratorState{T}
+mutable struct IntervalCollectionIteratorState{T}
     i::Int # index into ordered_trees
     tree_state::ICTreeIteratorState{T}
 
@@ -251,7 +251,7 @@ struct IntersectIterator{F, S, T}
     b_trees::Vector{ICTree{T}}
 end
 
-type IntersectIteratorState{F,S,T}
+mutable struct IntersectIteratorState{F,S,T}
     i::Int  # index into a_trees/b_trees.
     intersect_iterator::ICTreeIntersectionIterator{F,S,T}
 
@@ -326,7 +326,7 @@ function Base.iteratorsize{F,S,T}(::Type{IntervalCollectionStreamIterator{F,S,T}
     return Base.SizeUnknown()
 end
 
-type IntervalCollectionStreamIteratorState{F,Ta,Tb,U}
+mutable struct IntervalCollectionStreamIteratorState{F,Ta,Tb,U}
     intersection::ICTreeIntersection{Tb}
     a_value::Interval{Ta}
     a_state::U

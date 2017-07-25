@@ -191,7 +191,7 @@ end
 # Zoom Buffer
 # -----------
 
-type ZoomBuffer
+mutable struct ZoomBuffer
     # chrom ID => length
     chromlens::Dict{UInt32,UInt32}
 

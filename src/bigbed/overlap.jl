@@ -25,7 +25,7 @@ function GenomicFeatures.eachoverlap(reader::Reader, interval::GenomicFeatures.I
     return OverlapIterator(reader, id, interval.first - 1, interval.last)
 end
 
-type OverlapIteratorState
+mutable struct OverlapIteratorState
     state::BioCore.Ragel.State
     data::Vector{UInt8}
     done::Bool

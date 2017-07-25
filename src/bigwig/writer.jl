@@ -1,7 +1,7 @@
 # BigWig Writer
 # =============
 
-type WriterState
+mutable struct WriterState
     # section info
     datatype::UInt8
     count::UInt64

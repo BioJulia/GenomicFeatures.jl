@@ -33,7 +33,7 @@ function eachoverlap(intervals_a, intervals_b, seqname_isless=Base.isless; filte
     return OverlapIterator(intervals_a, intervals_b, seqname_isless, filter)
 end
 
-type OverlapIteratorState{Sa,Sb,Ta,Tb}
+mutable struct OverlapIteratorState{Sa,Sb,Ta,Tb}
     state_a::Sa
     state_b::Sb
     queue::Queue{Interval{Tb}}

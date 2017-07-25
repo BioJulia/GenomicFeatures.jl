@@ -14,7 +14,7 @@ function Base.iteratorsize{T}(::Type{TabixOverlapIterator{T}})
     return Base.SizeUnknown()
 end
 
-type TabixOverlapIteratorState{T}
+mutable struct TabixOverlapIteratorState{T}
     chunks::Vector{Indexes.Chunk}
     chunkid::Int
     done::Bool

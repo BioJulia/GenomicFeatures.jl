@@ -1,7 +1,7 @@
 # BigBed Writer
 # =============
 
-type WriterState
+mutable struct WriterState
     # section info
     chromid::UInt32
     chromstart::UInt32

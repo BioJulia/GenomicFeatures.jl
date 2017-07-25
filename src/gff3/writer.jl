@@ -9,7 +9,7 @@ Create a data writer of the GFF3 file format.
 # Arguments:
 * `output`: data sink
 """
-type Writer{T<:IO} <: BioCore.IO.AbstractReader
+mutable struct Writer{T<:IO} <: BioCore.IO.AbstractReader
     stream::T
 end
 

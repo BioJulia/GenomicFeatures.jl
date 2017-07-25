@@ -1,7 +1,7 @@
 # GFF3 Reader
 # ===========
 
-type Reader <: BioCore.IO.AbstractReader
+mutable struct Reader <: BioCore.IO.AbstractReader
     state::BioCore.Ragel.State
     index::Nullable{GenomicFeatures.Indexes.Tabix}
     save_directives::Bool
