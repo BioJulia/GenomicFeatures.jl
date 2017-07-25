@@ -7,7 +7,7 @@
 # License is MIT: https://github.com/BioJulia/Bio.jl/blob/master/LICENSE.md
 
 # BGZF file chunk [.start, .stop).
-immutable Chunk
+struct Chunk
     start::BGZFStreams.VirtualOffset
     stop::BGZFStreams.VirtualOffset
 end

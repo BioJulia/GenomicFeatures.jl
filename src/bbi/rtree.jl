@@ -4,7 +4,7 @@
 const RTREE_MAGIC = 0x2468ACE0
 
 # Supplemental Table 14.
-immutable RTreeHeader
+struct RTreeHeader
     magic::UInt32
     block_size::UInt32
     item_count::UInt64
@@ -43,7 +43,7 @@ function Base.write(stream::IO, header::RTreeHeader)
 end
 
 # Supplemental Table 15.
-immutable RTreeNodeFormat
+struct RTreeNodeFormat
     isleaf::UInt8
     reserved::UInt8
     count::UInt16
@@ -64,7 +64,7 @@ function Base.read(io::IO, ::Type{RTreeNodeFormat})
 end
 
 # Supplemental Table 16.
-immutable RTreeLeafNode
+struct RTreeLeafNode
     lo::NTuple{2,UInt32}
     up::NTuple{2,UInt32}
     offset::UInt64
@@ -82,7 +82,7 @@ function Base.write(stream::IO, node::RTreeLeafNode)
 end
 
 # Supplemental Table 17
-immutable RTreeInternalNode
+struct RTreeInternalNode
     lo::NTuple{2,UInt32}
     up::NTuple{2,UInt32}
     offset::UInt64
@@ -101,7 +101,7 @@ end
 
 # TODO: Merge this with RTreeLeafNode and SectionSummary
 # Data block indexed by R-tree (0-origin, left-closed and right-open).
-immutable Block
+struct Block
     # lower bound of genomic interval (chromid, chromstart)
     lo::Tuple{UInt32,UInt32}
 
@@ -116,7 +116,7 @@ immutable Block
 end
 
 # disk-serialized R tree
-immutable RTree{T<:IO}
+struct RTree{T<:IO}
     stream::T
     offset::UInt64
     header::RTreeHeader
@@ -173,7 +173,7 @@ function overlaps(chromid, chromstart, chromend, lo, up)
     end
 end
 
-immutable InMemoryRTree
+struct InMemoryRTree
     lo::NTuple{2,UInt32}
     up::NTuple{2,UInt32}
     offset::UInt64

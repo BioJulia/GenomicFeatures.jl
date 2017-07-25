@@ -1,7 +1,7 @@
 # BigBed Writer
 # =============
 
-type WriterState
+mutable struct WriterState
     # section info
     chromid::UInt32
     chromstart::UInt32
@@ -46,7 +46,7 @@ type WriterState
     end
 end
 
-immutable Writer <: BioCore.IO.AbstractWriter
+struct Writer <: BioCore.IO.AbstractWriter
     # output stream
     stream::IO
 

@@ -2,7 +2,7 @@
 # =========================
 
 # Supplemental Table 7.
-immutable Summary
+struct Summary
     # base coverage
     cov::UInt64
     # minimum value
@@ -37,7 +37,7 @@ end
 
 # Summary per section.
 # These are used to create the header, total summary, and data index.
-immutable SectionSummary
+struct SectionSummary
     # data range
     chromid::UInt32
     chromstart::UInt32

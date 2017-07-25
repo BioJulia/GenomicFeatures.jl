@@ -2,7 +2,7 @@
 # ============
 
 # Each section is compressed separately.
-immutable Section
+struct Section
     chromid::UInt32
     chromstart::UInt32
     chromend::UInt32

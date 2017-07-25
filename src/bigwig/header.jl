@@ -2,7 +2,7 @@
 # =====================
 
 # Supplemental Table 13.
-immutable SectionHeader
+struct SectionHeader
     chromid::UInt32
     chromstart::UInt32
     chromend::UInt32

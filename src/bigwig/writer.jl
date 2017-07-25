@@ -1,7 +1,7 @@
 # BigWig Writer
 # =============
 
-type WriterState
+mutable struct WriterState
     # section info
     datatype::UInt8
     count::UInt64
@@ -42,7 +42,7 @@ type WriterState
     end
 end
 
-immutable Writer <: BioCore.IO.AbstractWriter
+struct Writer <: BioCore.IO.AbstractWriter
     # output stream
     stream::IO
 

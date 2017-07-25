@@ -1,7 +1,7 @@
 # BigBed Reader
 # =============
 
-immutable Reader <: BioCore.IO.AbstractReader
+struct Reader <: BioCore.IO.AbstractReader
     stream::IO
     header::BBI.Header
     zooms::Vector{BBI.Zoom}
@@ -169,7 +169,7 @@ const actions = Dict(
     :mark => :(mark = p),
     :anchor => :(BioCore.ReaderHelper.anchor!(stream, p); offset = p - 1))
 
-type Record
+mutable struct Record
     chromid::UInt32
     chromstart::UInt32
     chromend::UInt32
@@ -213,7 +213,7 @@ eval(
 # Iterator
 # --------
 
-type IteratorState
+mutable struct IteratorState
     state::BioCore.Ragel.State
     done::Bool
     record::Record

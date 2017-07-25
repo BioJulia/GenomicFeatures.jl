@@ -1,7 +1,7 @@
 # Tabix Overlap Iterator
 # ======================
 
-immutable TabixOverlapIterator{T}
+struct TabixOverlapIterator{T}
     reader::T
     interval::Interval
 end
@@ -14,7 +14,7 @@ function Base.iteratorsize{T}(::Type{TabixOverlapIterator{T}})
     return Base.SizeUnknown()
 end
 
-type TabixOverlapIteratorState{T}
+mutable struct TabixOverlapIteratorState{T}
     chunks::Vector{Indexes.Chunk}
     chunkid::Int
     done::Bool
