@@ -4,7 +4,6 @@ using Distributions
 import BGZFStreams
 import YAML
 import ColorTypes: RGB
-import Compat: take!
 import BioSequences: @dna_str, FASTA
 import FixedPointNumbers: N0f8
 import BioCore.Exceptions: MissingFieldException
