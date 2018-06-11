@@ -148,7 +148,7 @@ function Base.write(writer::Writer, interval::GenomicFeatures.Interval{T}) where
     return write_impl(writer, chromid, UInt32(interval.first - 1), UInt32(interval.last), Float32(interval.metadata))
 end
 
-function Base.close(writer::Writer)
+function finalize_file(writer::Writer)
     state = writer.state
     if state.started
         finish_section!(writer)
@@ -195,8 +195,11 @@ function Base.close(writer::Writer)
     for zheader in zoomheaders
         write(stream, zheader)
     end
+end
 
-    close(stream)
+function Base.close(writer::Writer)
+    finalize_file(writer)
+    close(writer.stream)
     return
 end
 
