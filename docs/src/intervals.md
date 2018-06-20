@@ -17,7 +17,7 @@ in GenomicFeatures.jl.
 
 The `Interval` type is defined as
 ```julia
-immutable Interval{T} <: AbstractInterval{Int64}
+struct Interval{T} <: AbstractInterval{Int64}
     seqname::String
     first::Int64
     last::Int64

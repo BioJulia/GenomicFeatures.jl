@@ -17,7 +17,7 @@ function Queue{T}(bufsize::Integer=2^4) where {T}
     return Queue(Vector{T}(bufsize), 0, 1, 0)
 end
 
-function Base.eltype{T}(::Type{Queue{T}})
+function Base.eltype(::Type{Queue{T}}) where T
     return T
 end
 
@@ -25,7 +25,7 @@ function Base.length(queue::Queue)
     return queue.last - queue.first + 1
 end
 
-function Base.push!{T}(queue::Queue{T}, elm::T)
+function Base.push!(queue::Queue{T}, elm::T) where T
     if length(queue.data) < length(queue) + 1
         index_first = dataindex(queue, queue.first)
         index_last = dataindex(queue, queue.last)

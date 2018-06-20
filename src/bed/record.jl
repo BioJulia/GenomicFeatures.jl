@@ -474,7 +474,7 @@ function checkfilled(record::Record)
 end
 
 # r"[-+]?[0-9]+" must match `data[range]`.
-function unsafe_parse_decimal{T<:Signed}(::Type{T}, data::Vector{UInt8}, range::UnitRange{Int})
+function unsafe_parse_decimal(::Type{T}, data::Vector{UInt8}, range::UnitRange{Int}) where T<:Signed
     lo = first(range)
     if data[lo] == UInt8('-')
         sign = T(-1)

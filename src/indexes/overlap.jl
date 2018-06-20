@@ -6,11 +6,11 @@ struct TabixOverlapIterator{T}
     interval::Interval
 end
 
-function Base.eltype{T}(::Type{TabixOverlapIterator{T}})
+function Base.eltype(::Type{TabixOverlapIterator{T}}) where T
     return eltype(T)
 end
 
-function Base.iteratorsize{T}(::Type{TabixOverlapIterator{T}})
+function Base.iteratorsize(::Type{TabixOverlapIterator{T}}) where T
     return Base.SizeUnknown()
 end
 
