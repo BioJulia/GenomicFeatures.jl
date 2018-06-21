@@ -9,7 +9,7 @@ import FixedPointNumbers: N0f8
 import BioCore.Exceptions: MissingFieldException
 
 # Test that an array of intervals is well ordered
-function is_all_ordered{I <: Interval}(intervals::Vector{I})
+function is_all_ordered(intervals::Vector{I}) where I <: Interval
     for i = 2:length(intervals)
         if !GenomicFeatures.isordered(intervals[i-1], intervals[i])
             return false

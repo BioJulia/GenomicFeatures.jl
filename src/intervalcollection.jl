@@ -82,7 +82,7 @@ mutable struct IntervalCollection{T}
     end
 end
 
-function IntervalCollection{T}(intervals::AbstractVector{Interval{T}}, sort=false)
+function IntervalCollection(intervals::AbstractVector{Interval{T}}, sort=false) where T
     return IntervalCollection{T}(intervals, sort)
 end
 
@@ -90,7 +90,7 @@ function IntervalCollection(intervals)
     return IntervalCollection(collect(Interval{metadatatype(intervals)}, intervals), true)
 end
 
-function update_ordered_trees!{T}(ic::IntervalCollection{T})
+function update_ordered_trees!(ic::IntervalCollection{T}) where T
     if ic.ordered_trees_outdated
         ic.ordered_trees = collect(ICTree{T}, values(ic.trees))
         p = sortperm(collect(AbstractString, keys(ic.trees)), lt=isless)
@@ -99,7 +99,7 @@ function update_ordered_trees!{T}(ic::IntervalCollection{T})
     end
 end
 
-function Base.push!{T}(ic::IntervalCollection{T}, i::Interval{T})
+function Base.push!(ic::IntervalCollection{T}, i::Interval{T}) where T
     if !haskey(ic.trees, i.seqname)
         tree = ICTree{T}()
         ic.trees[i.seqname] = tree
@@ -112,7 +112,7 @@ function Base.push!{T}(ic::IntervalCollection{T}, i::Interval{T})
     return ic
 end
 
-function Base.show{T}(io::IO, ic::IntervalCollection{T})
+function Base.show(io::IO, ic::IntervalCollection{T}) where T
     n_entries = length(ic)
     println(io, "IntervalCollection{$(T)} with $(n_entries) intervals:")
     if n_entries > 0
@@ -132,11 +132,11 @@ function Base.length(ic::IntervalCollection)
     return ic.length
 end
 
-function Base.eltype{T}(::Type{IntervalCollection{T}})
+function Base.eltype(::Type{IntervalCollection{T}}) where T
     return Interval{T}
 end
 
-function Base.:(==){T}(a::IntervalCollection{T}, b::IntervalCollection{T})
+function Base.:(==)(a::IntervalCollection{T}, b::IntervalCollection{T}) where T
     if length(a) != length(b)
         return false
     end
@@ -165,7 +165,7 @@ mutable struct IntervalCollectionIteratorState{T}
     end
 end
 
-function Base.start{T}(ic::IntervalCollection{T})
+function Base.start(ic::IntervalCollection{T}) where T
     update_ordered_trees!(ic)
     i = 1
     while i <= length(ic.ordered_trees)
@@ -216,8 +216,8 @@ Find a the first interval with matching start and end points.
 Returns that interval wrapped in a Nullable, or an empty Nullable if no such
 interval was found.
 """
-function Base.findfirst{T,S}(a::IntervalCollection{T}, b::Interval{S};
-                             filter=true_cmp)
+function Base.findfirst(a::IntervalCollection{T}, b::Interval{S};
+                        filter=true_cmp) where {T,S}
     if !haskey(a.trees, b.seqname)
         return Nullable{Interval{T}}()
     else
@@ -229,7 +229,7 @@ end
 # Overlaps
 # --------
 
-function eachoverlap{F,T}(a::IntervalCollection{T}, b::Interval; filter::F=true_cmp)
+function eachoverlap(a::IntervalCollection{T}, b::Interval; filter::F=true_cmp) where {F,T}
     if haskey(a.trees, b.seqname)
         return intersect(a.trees[b.seqname], b)
     else
@@ -264,15 +264,15 @@ mutable struct IntersectIteratorState{F,S,T}
     end
 end
 
-function Base.eltype{F,S,T}(::Type{IntersectIterator{F,S,T}})
+function Base.eltype(::Type{IntersectIterator{F,S,T}}) where {F,S,T}
     return Tuple{Interval{S},Interval{T}}
 end
 
-function Base.iteratorsize{F,S,T}(::Type{IntersectIterator{F,S,T}})
+function Base.iteratorsize(::Type{IntersectIterator{F,S,T}}) where {F,S,T}
     return Base.SizeUnknown()
 end
 
-function Base.start{F,S,T}(it::IntersectIterator{F,S,T})
+function Base.start(it::IntersectIterator{F,S,T}) where {F,S,T}
     i = 1
     while i <= length(it.a_trees)
         intersect_iterator = intersect(it.a_trees[i], it.b_trees[i], it.filter)
@@ -285,7 +285,7 @@ function Base.start{F,S,T}(it::IntersectIterator{F,S,T})
     return IntersectIteratorState{F,S,T}(i)
 end
 
-function Base.next{F,S,T}(it::IntersectIterator{F, S, T}, state)
+function Base.next(it::IntersectIterator{F, S, T}, state) where {F,S,T}
     i, intersect_iterator = state.i, state.intersect_iterator
     value, intersect_iterator_state = next(intersect_iterator, nothing)
     if done(intersect_iterator, intersect_iterator_state)
@@ -304,7 +304,7 @@ function Base.next{F,S,T}(it::IntersectIterator{F, S, T}, state)
     return value, state
 end
 
-function Base.done{F, S, T}(it::IntersectIterator{F, S, T}, state)
+function Base.done(it::IntersectIterator{F, S, T}, state) where {F, S, T}
     return state.i > length(it.a_trees)
 end
 
@@ -318,11 +318,11 @@ struct IntervalCollectionStreamIterator{F,S,T}
     b::IntervalCollection{T}
 end
 
-function Base.eltype{F,S,T}(::Type{IntervalCollectionStreamIterator{F,S,T}})
+function Base.eltype(::Type{IntervalCollectionStreamIterator{F,S,T}}) where {F,S,T}
     return Tuple{Interval{metadatatype(S)},Interval{T}}
 end
 
-function Base.iteratorsize{F,S,T}(::Type{IntervalCollectionStreamIterator{F,S,T}})
+function Base.iteratorsize(::Type{IntervalCollectionStreamIterator{F,S,T}}) where {F,S,T}
     return Base.SizeUnknown()
 end
 
@@ -341,7 +341,7 @@ mutable struct IntervalCollectionStreamIteratorState{F,Ta,Tb,U}
 end
 
 # This mostly follows from SuccessiveTreeIntersectionIterator in IntervalTrees
-function Base.start{F,S,T}(it::IntervalCollectionStreamIterator{F,S,T})
+function Base.start(it::IntervalCollectionStreamIterator{F,S,T}) where {F,S,T}
     a_state = start(it.a)
     intersection = ICTreeIntersection{T}()
     while !done(it.a, a_state)
@@ -357,7 +357,7 @@ function Base.start{F,S,T}(it::IntervalCollectionStreamIterator{F,S,T})
     return IntervalCollectionStreamIteratorState{S,metadatatype(it.a),typeof(a_state)}()
 end
 
-function Base.next{F,S,T}(it::IntervalCollectionStreamIterator{F,S,T}, state)
+function Base.next(it::IntervalCollectionStreamIterator{F,S,T}, state) where {F,S,T}
     intersection = state.intersection
     entry = intersection.node.entries[intersection.index]
     return_value = (state.a_value, entry)

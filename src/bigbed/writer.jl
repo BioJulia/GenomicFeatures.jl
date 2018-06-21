@@ -152,7 +152,7 @@ function Base.write(writer::Writer, interval::GenomicFeatures.Interval{Void})
     return write_impl(writer, chromid, UInt32(interval.first - 1), UInt32(interval.last), ())
 end
 
-function Base.write{T<:Tuple}(writer::Writer, interval::GenomicFeatures.Interval{T})
+function Base.write(writer::Writer, interval::GenomicFeatures.Interval{T}) where T<:Tuple
     chromid = writer.chroms[interval.seqname][1]
     return write_impl(writer, chromid, UInt32(interval.first - 1), UInt32(interval.last), interval.metadata...)
 end
