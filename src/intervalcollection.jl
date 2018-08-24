@@ -268,7 +268,7 @@ function Base.eltype(::Type{IntersectIterator{F,S,T}}) where {F,S,T}
     return Tuple{Interval{S},Interval{T}}
 end
 
-function Base.iteratorsize(::Type{IntersectIterator{F,S,T}}) where {F,S,T}
+function Base.IteratorSize(::Type{IntersectIterator{F,S,T}}) where {F,S,T}
     return Base.SizeUnknown()
 end
 
@@ -322,7 +322,7 @@ function Base.eltype(::Type{IntervalCollectionStreamIterator{F,S,T}}) where {F,S
     return Tuple{Interval{metadatatype(S)},Interval{T}}
 end
 
-function Base.iteratorsize(::Type{IntervalCollectionStreamIterator{F,S,T}}) where {F,S,T}
+function Base.IteratorSize(::Type{IntervalCollectionStreamIterator{F,S,T}}) where {F,S,T}
     return Base.SizeUnknown()
 end
 

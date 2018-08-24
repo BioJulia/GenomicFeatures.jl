@@ -12,7 +12,7 @@ function Base.eltype(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
     return Tuple{Interval{metadatatype(Sa)},Interval{metadatatype(Sb)}}
 end
 
-function Base.iteratorsize(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
+function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
     return Base.SizeUnknown()
 end
 
