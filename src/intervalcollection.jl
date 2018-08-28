@@ -347,7 +347,7 @@ function Base.start(it::IntervalCollectionStreamIterator{F,S,T}) where {F,S,T}
         a_value, a_state = next(it.a, a_state)
         if haskey(it.b.trees, a_value.seqname)
             tree = it.b.trees[a_value.seqname]
-            IntervalTrees.firstintersection!(tree, a_value, Nullable{Interval{T}}(), intersection, it.filter)
+            IntervalTrees.firstintersection!(tree, a_value, nothing, intersection, it.filter)
             if intersection.index != 0
                 return IntervalCollectionStreamIteratorState{F,T,metadatatype(it.a),typeof(a_state)}(intersection, a_value, a_state)
             end
@@ -365,7 +365,7 @@ function Base.next(it::IntervalCollectionStreamIterator{F,S,T}, state) where {F,
         state.a_value, state.a_state = next(it.a, state.a_state)
         if haskey(it.b.trees, state.a_value.seqname)
             tree = it.b.trees[state.a_value.seqname]
-            IntervalTrees.firstintersection!(tree, state.a_value, Nullable{Interval{T}}(), intersection, it.filter)
+            IntervalTrees.firstintersection!(tree, state.a_value, nothing, intersection, it.filter)
         end
     end
     return return_value, state
