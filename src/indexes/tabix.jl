@@ -35,7 +35,7 @@ struct Tabix
     index::BGZFIndex
 
     # number of unmapped reads
-    n_no_coor::Nullable{Int}
+    n_no_coor::Union{Int, Nothing}
 end
 
 function Base.show(io::IO, index::Tabix)
@@ -135,9 +135,9 @@ function read_tabix(input_::IO)
     end
     index = read_bgzfindex(input, n_refs)
     if !eof(input)
-        n_no_coor = Nullable{Int}(read(input, UInt64))
+        n_no_coor::Union{Int, Nothing} = read(input, UInt64)
     else
-        n_no_coor = Nullable{Int}()
+        n_no_coor::Union{Int, Nothing} = nothing
     end
 
     return Tabix(

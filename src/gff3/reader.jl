@@ -3,7 +3,7 @@
 
 mutable struct Reader <: BioCore.IO.AbstractReader
     state::BioCore.Ragel.State
-    index::Nullable{GenomicFeatures.Indexes.Tabix}
+    index::Union{GenomicFeatures.Indexes.Tabix, Nothing}
     save_directives::Bool
     targets::Vector{Symbol}
     found_fasta::Bool

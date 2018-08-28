@@ -30,7 +30,7 @@ end
 # Index for BGZFStream; used in BAI and Tabix index.
 struct BGZFIndex
     # indexes of contigs (chromosomes)
-    data::Vector{Tuple{BinIndex,LinearIndex,Nullable{PseudoBin}}}
+    data::Vector{Tuple{BinIndex,LinearIndex,Union{PseudoBin, Nothing}}}
 end
 
 # 16Kbp
@@ -106,12 +106,12 @@ end
 
 # Read `n_refs` BAI/Tabix-compatible indexes from `input`.
 function read_bgzfindex(input, n_refs)
-    indexes = Tuple{BinIndex,LinearIndex,Nullable{PseudoBin}}[]
+    indexes = Tuple{BinIndex,LinearIndex,Union{PseudoBin, Nothing}}[]
     for _ in 1:n_refs
         # load a binning index (and a pseudo bin)
         n_bins = read(input, Int32)
         binindex = BinIndex()
-        pbin = Nullable{PseudoBin}()
+        pbin::Union{PseudoBin,Nothing} = nothing
         for _ in 1:n_bins
             bin = read(input, UInt32)
             n_chunks = read(input, Int32)
@@ -122,10 +122,10 @@ function read_bgzfindex(input, n_refs)
                 chunk_end = read(input, UInt64)
                 n_mapped = read(input, UInt64)
                 n_unmapped = read(input, UInt64)
-                pbin = Nullable(PseudoBin(
+                pbin = PseudoBin(
                     Chunk(chunk_beg, chunk_end),
                     n_mapped,
-                    n_unmapped))
+                    n_unmapped)
             else
                 chunks = Chunk[]
                 for i in 1:n_chunks

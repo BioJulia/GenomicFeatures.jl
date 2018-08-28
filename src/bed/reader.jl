@@ -3,7 +3,7 @@
 
 mutable struct Reader <: BioCore.IO.AbstractReader
     state::BioCore.Ragel.State
-    index::Nullable{GenomicFeatures.Indexes.Tabix}
+    index::Union{GenomicFeatures.Indexes.Tabix,Nothing}
 
     function Reader(input::BufferedStreams.BufferedInputStream, index=nothing)
         return new(BioCore.Ragel.State(file_machine.start_state, input), index)

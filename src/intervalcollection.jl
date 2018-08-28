@@ -213,13 +213,12 @@ eachoverlap_equal_filter(a, b) = first(a) == first(b) && last(a) == last(b)
 """
 Find a the first interval with matching start and end points.
 
-Returns that interval wrapped in a Nullable, or an empty Nullable if no such
-interval was found.
+Returns that interval, or 'nothing' if no interval was found.
 """
 function Base.findfirst(a::IntervalCollection{T}, b::Interval{S};
                         filter=true_cmp) where {T,S}
     if !haskey(a.trees, b.seqname)
-        return Nullable{Interval{T}}()
+        return nothing
     else
         return findfirst(a.trees[b.seqname], b, filter)
     end

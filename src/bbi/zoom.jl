@@ -154,7 +154,7 @@ function std(zoom::Zoom, chromid::UInt32, chromstart::UInt32, chromend::UInt32)
 end
 
 # Find the best zoom level for a given size.
-function find_best_zoom(zooms::Vector{Zoom}, size::UInt32)::Nullable{Zoom}
+function find_best_zoom(zooms::Vector{Zoom}, size::UInt32)::Union{Zoom, Nothing}
     # NOTE: This assumes zooms are sorted by reduction_level.
     halfsize = div(size, 2)
     i = 0
@@ -162,9 +162,9 @@ function find_best_zoom(zooms::Vector{Zoom}, size::UInt32)::Nullable{Zoom}
         i += 1
     end
     if i == 0
-        return Nullable{Zoom}()
+        return nothing
     else
-        return Nullable(zooms[i])
+        return zooms[i]
     end
 end
 
