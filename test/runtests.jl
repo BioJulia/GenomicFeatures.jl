@@ -1,5 +1,5 @@
 using GenomicFeatures
-using Base.Test
+using Test
 using Distributions
 import BGZFStreams
 import YAML

@@ -15,7 +15,7 @@ mutable struct WriterState
     started::Bool
     buffer::IOBuffer
     compressed::Vector{UInt8}
-    intervals::Vector{Interval{Void}}
+    intervals::Vector{Interval{Nothing}}
 
     # record buffer
     recordbuffer::IOBuffer
@@ -37,7 +37,7 @@ mutable struct WriterState
             # last record info
             0, 0,
             # section state
-            false, IOBuffer(), UInt8[], Interval{Void}[],
+            false, IOBuffer(), UInt8[], Interval{Nothing}[],
             # record buffer
             IOBuffer(),
             # global info
@@ -354,7 +354,7 @@ function finish_section!(writer::Writer)
     return
 end
 
-function compute_section_summary(intervals::Vector{Interval{Void}})
+function compute_section_summary(intervals::Vector{Interval{Nothing}})
     cov = 0
     min = Inf
     max = -Inf

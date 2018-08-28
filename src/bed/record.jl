@@ -494,5 +494,5 @@ function unsafe_parse_decimal(::Type{T}, data::Vector{UInt8}, range::UnitRange{I
 end
 
 function memcmp(p1::Ptr, p2::Ptr, n::Integer)
-    return ccall(:memcmp, Cint, (Ptr{Void}, Ptr{Void}, Csize_t), p1, p2, n)
+    return ccall(:memcmp, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Csize_t), p1, p2, n)
 end

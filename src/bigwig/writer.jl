@@ -96,7 +96,7 @@ write(writer, ("chr2", 301, 450, 3.0))
 close(writer)
 ```
 """
-function Writer(output::IO, chromlist::Union{AbstractVector,Associative};
+function Writer(output::IO, chromlist::Union{AbstractVector,AbstractDict};
                 binsize::Integer=64, datatype::Symbol=:bedgraph)
     # write dummy header (filled later)
     write_zeros(output, BBI.HEADER_SIZE)
