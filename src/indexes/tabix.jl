@@ -137,7 +137,7 @@ function read_tabix(input_::IO)
     if !eof(input)
         n_no_coor::Union{Int, Nothing} = read(input, UInt64)
     else
-        n_no_coor::Union{Int, Nothing} = nothing
+        n_no_coor = nothing
     end
 
     return Tabix(
