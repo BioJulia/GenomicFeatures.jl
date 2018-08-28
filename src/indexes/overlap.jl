@@ -10,7 +10,7 @@ function Base.eltype(::Type{TabixOverlapIterator{T}}) where T
     return eltype(T)
 end
 
-function Base.iteratorsize(::Type{TabixOverlapIterator{T}}) where T
+function Base.IteratorSize(::Type{TabixOverlapIterator{T}}) where T
     return Base.SizeUnknown()
 end
 
