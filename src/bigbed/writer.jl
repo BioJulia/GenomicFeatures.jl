@@ -99,7 +99,7 @@ write(writer, ("chr2", 211, 250, "gene 2"))
 close(writer)
 ```
 """
-function Writer(output::IO, chromlist::Union{AbstractVector,Associative};
+function Writer(output::IO, chromlist::Union{AbstractVector,AbstractDict};
                 binsize::Integer=64)
     # write dummy header (filled later)
     write_zeros(output, BBI.HEADER_SIZE)
@@ -147,7 +147,7 @@ function Base.write(writer::Writer, record::Tuple{String,Integer,Integer,Vararg}
     return write_impl(writer, chromid, UInt32(chromstart - 1), UInt32(chromend), optionals)
 end
 
-function Base.write(writer::Writer, interval::GenomicFeatures.Interval{Void})
+function Base.write(writer::Writer, interval::GenomicFeatures.Interval{Nothing})
     chromid = writer.chroms[interval.seqname][1]
     return write_impl(writer, chromid, UInt32(interval.first - 1), UInt32(interval.last), ())
 end

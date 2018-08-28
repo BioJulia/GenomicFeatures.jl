@@ -12,7 +12,7 @@ function Base.eltype(::Type{OverlapIterator})
     return Record
 end
 
-function Base.iteratorsize(::Type{OverlapIterator})
+function Base.IteratorSize(::Type{OverlapIterator})
     return Base.SizeUnknown()
 end
 

@@ -1,6 +1,7 @@
 using GenomicFeatures
 using Test
 using Distributions
+import Random
 import BGZFStreams
 import YAML
 import ColorTypes: RGB
@@ -24,7 +25,7 @@ function random_intervals(seqnames, maxpos::Int, n::Int)
     seq_dist = Categorical(length(seqnames))
     strand_dist = Categorical(2)
     length_dist = Normal(1000, 1000)
-    intervals = Vector{Interval{Int}}(n)
+    intervals = Vector{Interval{Int}}(undef, n)
     for i in 1:n
         intlen = maxpos
         while intlen >= maxpos || intlen <= 0
@@ -214,7 +215,7 @@ end
 
     @testset "Intersection" begin
         n = 1000
-        srand(1234)
+        Random.seed!(1234)
         intervals_a = random_intervals(["one", "two", "three"], 1000000, n)
         intervals_b = random_intervals(["one", "three", "four"], 1000000, n)
 
@@ -244,21 +245,21 @@ end
 
     @testset "Show" begin
         ic = IntervalCollection{Int}()
-        show(DevNull, ic)
+        show(devnull, ic)
 
         push!(ic, Interval{Int}("one", 1, 1000, STRAND_POS, 0))
-        show(DevNull, ic)
+        show(devnull, ic)
 
         intervals = random_intervals(["one", "two", "three"], 1000000, 100)
         for interval in intervals
             push!(ic, interval)
         end
-        show(DevNull, ic)
+        show(devnull, ic)
 
-        show(DevNull, STRAND_NA)
-        show(DevNull, STRAND_POS)
-        show(DevNull, STRAND_NEG)
-        show(DevNull, STRAND_BOTH)
+        show(devnull, STRAND_NA)
+        show(devnull, STRAND_POS)
+        show(devnull, STRAND_NEG)
+        show(devnull, STRAND_BOTH)
     end
 end
 
