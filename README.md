@@ -1,4 +1,4 @@
-# GenomicFeatures.jl
+# <img src="sticker.svg" width="30%" align="right" /> GenomicFeatures
 
 [![latest release][release-img]][release-url]
 [![MIT license][license-img]][license-url]

@@ -284,7 +284,7 @@ end
 # Overlaps
 # --------
 
-function eachoverlap(a::IntervalCollection{T}, b::Interval; filter::F=true_cmp) where {F,T}
+function eachoverlap(a::IntervalCollection{T}, b::Interval; filter::F = true_cmp) where {F,T}
     if haskey(a.trees, b.seqname)
         return intersect(a.trees[b.seqname], b)
     else
@@ -292,9 +292,9 @@ function eachoverlap(a::IntervalCollection{T}, b::Interval; filter::F=true_cmp) 
     end
 end
 
-function eachoverlap(a::IntervalCollection, b::IntervalCollection; filter=true_cmp)
+function eachoverlap(a::IntervalCollection, b::IntervalCollection; filter = true_cmp)
     seqnames = collect(AbstractString, keys(a.trees) ∩ keys(b.trees))
-    sort!(seqnames, lt=isless)
+    sort!(seqnames, lt = isless)
     a_trees = [a.trees[seqname] for seqname in seqnames]
     b_trees = [b.trees[seqname] for seqname in seqnames]
     return IntersectIterator(filter, a_trees, b_trees)
@@ -327,6 +327,7 @@ function Base.IteratorSize(::Type{IntersectIterator{F,S,T}}) where {F,S,T}
     return Base.SizeUnknown()
 end
 
+#=
 function Base.start(it::IntersectIterator{F,S,T}) where {F,S,T}
     i = 1
     while i <= length(it.a_trees)
@@ -339,7 +340,25 @@ function Base.start(it::IntersectIterator{F,S,T}) where {F,S,T}
     end
     return IntersectIteratorState{F,S,T}(i)
 end
+=#
 
+# State is a tuple:
+# (tree pair iteration state, current intersect iterator, current intersect iterator state)
+function Base.iterate(it::IntersectIterator{F, S, T}, state = ()) where {F,S,T}
+    if state !== ()
+        # Iterate over each intersection between two trees.
+        isect = iterate(Base.tail(state)...)
+        isect !== nothing && return (isect[1], (state[1], state[2], isect[2]))
+    end
+    # Iterate over tree pairs.
+    treeA = (state === () ? iterate(it.a_trees) : iterate(it.a_trees, state[1]))
+    treeB = (state === () ? iterate(it.b_trees) : iterate(it.b_trees, state[1]))
+    treeA === nothing && return nothing
+    intersect_iterator = intersect(treeA, treeB, it.filter)
+    iterate(it, (treeA[2], intersect_iterator))
+end
+
+#=
 function Base.next(it::IntersectIterator{F, S, T}, state) where {F,S,T}
     i, intersect_iterator = state.i, state.intersect_iterator
     value, intersect_iterator_state = next(intersect_iterator, nothing)
@@ -362,6 +381,7 @@ end
 function Base.done(it::IntersectIterator{F, S, T}, state) where {F, S, T}
     return state.i > length(it.a_trees)
 end
+=#
 
 function eachoverlap(a, b::IntervalCollection; filter=true_cmp)
     return IntervalCollectionStreamIterator(filter, a, b)
