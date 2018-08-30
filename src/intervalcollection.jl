@@ -93,7 +93,7 @@ end
 function update_ordered_trees!(ic::IntervalCollection{T}) where T
     if ic.ordered_trees_outdated
         ic.ordered_trees = collect(ICTree{T}, values(ic.trees))
-        p = sortperm(collect(AbstractString, keys(ic.trees)), lt=isless)
+        p = sortperm(collect(AbstractString, keys(ic.trees)), lt = isless)
         ic.ordered_trees = ic.ordered_trees[p]
         ic.ordered_trees_outdated = false
     end
@@ -152,6 +152,7 @@ end
 # Iterators
 # ---------
 
+#=
 mutable struct IntervalCollectionIteratorState{T}
     i::Int # index into ordered_trees
     tree_state::ICTreeIteratorState{T}
@@ -163,6 +164,19 @@ mutable struct IntervalCollectionIteratorState{T}
     function IntervalCollectionIteratorState{T}(i::Int, tree_state) where T
         return new{T}(i, tree_state)
     end
+end
+
+function iterinitstate(ic::IntervalCollection{T}) where T
+    update_ordered_trees!(ic)
+    i = 1
+    while i <= length(ic.ordered_trees)
+        tree_state = IntervalTrees.iterinitstate(ic.ordered_trees[i])
+        if !(tree_state.leaf === nothing || isempty(tree_state.leaf))
+            return IntervalCollectionIteratorState{T}(i, tree_state)
+        end
+        i += 1
+    end
+    return IntervalCollectionIteratorState{T}(i)
 end
 
 function Base.start(ic::IntervalCollection{T}) where T
@@ -177,7 +191,49 @@ function Base.start(ic::IntervalCollection{T}) where T
     end
     return IntervalCollectionIteratorState{T}(i)
 end
+=#
 
+#=
+function Base.iterate(ic::IntervalCollection, state=iterinitstate(ic))
+    i = state.i
+    treeit = iterate(ic.ordered_trees[i], state.tree_state)
+    if treeit === nothing
+        i += 1
+        while i <= length(ic.ordered_trees)
+            tree_state = IntervalTrees.iterinitstate(ic.ordered_trees[i])
+            if !(tree_state.leaf === nothing || isempty(tree_state.leaf))
+                break
+            end
+            i += 1
+        end
+    end
+    state.i, state.tree_state = i, tree_state
+    return value, state
+end
+=#
+
+function iterprep(ic::IntervalCollection)
+    update_ordered_trees!(ic)
+    return ()
+end
+
+# State is a tuple:
+# (ot iteration state, current ot element, current ot element state)
+# "ot" is shorthand for "ordered_trees"
+# This iterate method basically works like the Iterators.Flatten iterator.
+@propagate_inbounds function Base.iterate(ic::IntervalCollection, state = iterprep(ic))
+    if state !== ()
+        # Iterate over each interval in current ordered tree.
+        tree_it = iterate(Base.tail(state)...)
+        tree_it !== nothing && return (tree_it[1], (state[1], state[2], tree_it[2]))
+    end
+    # Iterate over ordered_trees.
+    ot_it = (state === () ? iterate(ic.ordered_trees) : iterate(ic.ordered_trees, state[1]))
+    ot_it === nothing && return nothing
+    iterate(ic, (ot_it[2], ot_it[1]))
+end
+
+#=
 function Base.next(ic::IntervalCollection, state)
     i = state.i
     value, tree_state = next(ic.ordered_trees[i], state.tree_state)
@@ -198,7 +254,7 @@ end
 function Base.done(ic::IntervalCollection, state)
     return state.i > length(ic.ordered_trees)
 end
-
+=#
 
 # Filter predicates
 # -----------------
