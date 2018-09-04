@@ -306,6 +306,7 @@ struct IntersectIterator{F, S, T}
     b_trees::Vector{ICTree{T}}
 end
 
+#=
 mutable struct IntersectIteratorState{F,S,T}
     i::Int  # index into a_trees/b_trees.
     intersect_iterator::ICTreeIntersectionIterator{F,S,T}
@@ -318,6 +319,7 @@ mutable struct IntersectIteratorState{F,S,T}
         return new{F,S,T}(i, iter)
     end
 end
+=#
 
 function Base.eltype(::Type{IntersectIterator{F,S,T}}) where {F,S,T}
     return Tuple{Interval{S},Interval{T}}
@@ -389,8 +391,8 @@ end
 
 struct IntervalCollectionStreamIterator{F,S,T}
     filter::F
-    a::S
-    b::IntervalCollection{T}
+    stream::S
+    collection::IntervalCollection{T}
 end
 
 function Base.eltype(::Type{IntervalCollectionStreamIterator{F,S,T}}) where {F,S,T}
@@ -401,13 +403,15 @@ function Base.IteratorSize(::Type{IntervalCollectionStreamIterator{F,S,T}}) wher
     return Base.SizeUnknown()
 end
 
+#= ### The old iteration protocol prior to version 0.7 / 1.0 of julia.
+
 mutable struct IntervalCollectionStreamIteratorState{F,Ta,Tb,U}
     intersection::ICTreeIntersection{Tb}
-    a_value::Interval{Ta}
-    a_state::U
+    stream_value::Interval{Ta}
+    stream_state::U
 
-    function IntervalCollectionStreamIteratorState{F,Ta,Tb,U}(intersection, a_value, a_state) where {F,Ta,Tb,U}
-        return new{F,Ta,Tb,U}(intersection, a_value, a_state)
+    function IntervalCollectionStreamIteratorState{F,Ta,Tb,U}(intersection, stream_value, stream_state) where {F,Ta,Tb,U}
+        return new{F,Ta,Tb,U}(intersection, stream_value, stream_state)
     end
 
     function IntervalCollectionStreamIteratorState{F,Ta,Tb,U}() where {F,Ta,Tb,U}
@@ -417,31 +421,31 @@ end
 
 # This mostly follows from SuccessiveTreeIntersectionIterator in IntervalTrees
 function Base.start(it::IntervalCollectionStreamIterator{F,S,T}) where {F,S,T}
-    a_state = start(it.a)
+    stream_state = start(it.stream)
     intersection = ICTreeIntersection{T}()
-    while !done(it.a, a_state)
-        a_value, a_state = next(it.a, a_state)
-        if haskey(it.b.trees, a_value.seqname)
-            tree = it.b.trees[a_value.seqname]
-            IntervalTrees.firstintersection!(tree, a_value, nothing, intersection, it.filter)
+    while !done(it.stream, stream_state)
+        stream_value, stream_state = next(it.stream, stream_state)
+        if haskey(it.collection.trees, stream_value.seqname)
+            tree = it.collection.trees[stream_value.seqname]
+            IntervalTrees.firstintersection!(tree, stream_value, nothing, intersection, it.filter)
             if intersection.index != 0
-                return IntervalCollectionStreamIteratorState{F,T,metadatatype(it.a),typeof(a_state)}(intersection, a_value, a_state)
+                return IntervalCollectionStreamIteratorState{F,T,metadatatype(it.stream),typeof(stream_state)}(intersection, stream_value, stream_state)
             end
         end
     end
-    return IntervalCollectionStreamIteratorState{S,metadatatype(it.a),typeof(a_state)}()
+    return IntervalCollectionStreamIteratorState{S,metadatatype(it.stream),typeof(stream_state)}()
 end
 
 function Base.next(it::IntervalCollectionStreamIterator{F,S,T}, state) where {F,S,T}
     intersection = state.intersection
     entry = intersection.node.entries[intersection.index]
-    return_value = (state.a_value, entry)
-    IntervalTrees.nextintersection!(intersection.node, intersection.index, state.a_value, intersection, it.filter)
-    while intersection.index == 0 && !done(it.a, state.a_state)
-        state.a_value, state.a_state = next(it.a, state.a_state)
-        if haskey(it.b.trees, state.a_value.seqname)
-            tree = it.b.trees[state.a_value.seqname]
-            IntervalTrees.firstintersection!(tree, state.a_value, nothing, intersection, it.filter)
+    return_value = (state.stream_value, entry)
+    IntervalTrees.nextintersection!(intersection.node, intersection.index, state.stream_value, intersection, it.filter)
+    while intersection.index == 0 && !done(it.stream, state.stream_state)
+        state.stream_value, state.stream_state = next(it.stream, state.stream_state)
+        if haskey(it.b.trees, state.stream_value.seqname)
+            tree = it.b.trees[state.stream_value.seqname]
+            IntervalTrees.firstintersection!(tree, state.stream_value, nothing, intersection, it.filter)
         end
     end
     return return_value, state
@@ -449,4 +453,36 @@ end
 
 function Base.done(it::IntervalCollectionStreamIterator, state)
     return state.intersection.index == 0
+end
+=#
+
+# New julia 0.7 / 1.0 iteration protocol for collection stream iterator.
+# State is a tuple: 
+# (current_query, stream_state, intersection_object)
+function Base.iterate(it::IntervalCollectionStreamIterator{F,S,T}, state = ()) where {F,S,T}
+    # If first iteration, make empty intersection, otherwise get it from the state.
+    intersection = (state !== () ? state[3] : ICTreeIntersection{T}()) 
+    
+    # If this is not the first iteration, and there is an available intersection
+    # for the current query, return it and search for the next intersection. 
+    if state !== () && intersection.index != 0
+        entry = intersection.node.entries[intersection.index]
+        return_value = (state[1], entry)
+        IntervalTrees.nextintersection!(intersection.node, intersection.index, state.stream_value, intersection, it.filter)
+        return return_value, (state[1], state[2], intersection)
+    end
+    
+    # If code reaches this point, there is no valid intersection to return for
+    # the current query, so we get the next query and start looking for intersections.
+    while intersection.index == 0
+        # Get a new query from the stream, and its first intersection in the collection.
+        stream_it = (state === () ? iterate(it.stream) : iterate(it.stream, state[2]))
+        stream_it === nothing && return nothing # You have reached the end of the stream, stop iterating.
+        stream_value = stream_it[1]
+        if haskey(it.collection.trees, stream_value.seqname)
+            tree = it.collection.trees[stream_value.seqname]
+            IntervalTrees.firstintersection!(tree, stream_value, nothing, intersection, it.filter)
+            iterate(it, (stream_value, stream_it[2], intersection))
+        end
+    end
 end
