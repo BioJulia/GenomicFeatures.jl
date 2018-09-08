@@ -11,7 +11,7 @@ import BioSequences
 import BufferedStreams
 import GenomicFeatures: GenomicFeatures, Interval, IntervalCollection
 import URIParser
-importall BioCore
+using BioCore
 
 include("record.jl")
 include("reader.jl")

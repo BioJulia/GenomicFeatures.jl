@@ -38,7 +38,7 @@ function Reader(input::IO)
         error("not a supported version of BigBed")
     end
     # read zoom objects
-    zoom_headers = Vector{BBI.ZoomHeader}(header.zoom_levels)
+    zoom_headers = Vector{BBI.ZoomHeader}(undef, header.zoom_levels)
     read!(input, zoom_headers)
     zooms = [BBI.Zoom(input, h, header.uncompress_buf_size) for h in zoom_headers]
     sort!(zooms, by=z->z.header.reduction_level)
@@ -148,20 +148,20 @@ const actions = Dict(
     :record_chromid                => :(record.chromid    = unsafe_load(convert(Ptr{UInt32}, pointer(data, p-4))); record.ncols += 1),
     :record_chromstart             => :(record.chromstart = unsafe_load(convert(Ptr{UInt32}, pointer(data, p-4))); record.ncols += 1),
     :record_chromend               => :(record.chromend   = unsafe_load(convert(Ptr{UInt32}, pointer(data, p-4))); record.ncols += 1),
-    :record_name                   => :(record.name       = (mark:p-1) - offset; record.ncols += 1),
-    :record_score                  => :(record.score      = (mark:p-1) - offset; record.ncols += 1),
-    :record_strand                 => :(record.strand     =       p    - offset; record.ncols += 1),
-    :record_thickstart             => :(record.thickstart = (mark:p-1) - offset; record.ncols += 1),
-    :record_thickend               => :(record.thickend   = (mark:p-1) - offset; record.ncols += 1),
-    :record_itemrgb                => :(record.itemrgb    = (mark:p-1) - offset; record.ncols += 1),
-    :record_blockcount             => :(record.blockcount = (mark:p-1) - offset; record.ncols += 1),
-    :record_blocksizes_blocksize   => :(push!(record.blocksizes, (mark:p-1) - offset)),
+    :record_name                   => :(record.name       = (mark:p-1) .- offset; record.ncols += 1),
+    :record_score                  => :(record.score      = (mark:p-1) .- offset; record.ncols += 1),
+    :record_strand                 => :(record.strand     =       p    .- offset; record.ncols += 1),
+    :record_thickstart             => :(record.thickstart = (mark:p-1) .- offset; record.ncols += 1),
+    :record_thickend               => :(record.thickend   = (mark:p-1) .- offset; record.ncols += 1),
+    :record_itemrgb                => :(record.itemrgb    = (mark:p-1) .- offset; record.ncols += 1),
+    :record_blockcount             => :(record.blockcount = (mark:p-1) .- offset; record.ncols += 1),
+    :record_blocksizes_blocksize   => :(push!(record.blocksizes, (mark:p-1) .- offset)),
     :record_blocksizes             => :(record.ncols += 1),
-    :record_blockstarts_blockstart => :(push!(record.blockstarts, (mark:p-1) - offset)),
+    :record_blockstarts_blockstart => :(push!(record.blockstarts, (mark:p-1) .- offset)),
     :record_blockstarts            => :(record.ncols += 1),
     :record => quote
         BioCore.ReaderHelper.resize_and_copy!(record.data, data, BioCore.ReaderHelper.upanchor!(stream):p-1)
-        record.filled = (offset+1:p-1) - offset
+        record.filled = (offset+1:p-1) .- offset
         found_record = true
         @escape
     end,
@@ -215,33 +215,28 @@ eval(
 
 mutable struct IteratorState
     state::BioCore.Ragel.State
-    done::Bool
     record::Record
     n_records::UInt64
     current_record::UInt64
 end
 
-function Base.start(reader::Reader)
+function Base.iterate(reader::Reader)
     seek(reader.stream, reader.header.full_data_offset)
     # this is defined as UInt32 in the spces but actually UInt64
     record_count = read(reader.stream, UInt64)
     datastream = Libz.ZlibInflateInputStream(reader.stream)
     parser_state = BioCore.Ragel.State(data_machine.start_state, datastream)
-    return IteratorState(parser_state, false, Record(), record_count, 0)
+    state = IteratorState(parser_state, Record(), record_count, 0)
+    return iterate(reader, state)
 end
 
-function Base.done(reader::Reader, state::IteratorState)
+function Base.iterate(reader::Reader, state::IteratorState)
     if state.current_record < state.n_records
-        @assert !state.done
         _read!(reader, state.state, state.record)
         state.record.reader = reader
         state.current_record += 1
+        return copy(state.record), state
     else
-        state.done = true
+        return nothing
     end
-    return state.done
-end
-
-function Base.next(reader::Reader, state::IteratorState)
-    return copy(state.record), state
 end

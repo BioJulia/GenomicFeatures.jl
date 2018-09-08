@@ -38,27 +38,28 @@ mutable struct OverlapIteratorState
     current_record::UInt16
 end
 
-function Base.start(iter::OverlapIterator)
-    data = Vector{UInt8}(iter.reader.header.uncompress_buf_size)
+function Base.iterate(iter::OverlapIterator)
+    data = Vector{UInt8}(undef, iter.reader.header.uncompress_buf_size)
     blocks = BBI.find_overlapping_blocks(iter.reader.index, iter.chromid, iter.chromstart, iter.chromend)
     # dummy header
     header = SectionHeader(0, 0, 0, 0, 0, 0, 0, 0)
-    return OverlapIteratorState(IOBuffer(), data, false, header, Record(), blocks, 1, 0, 0)
+    state = OverlapIteratorState(IOBuffer(), data, false, header, Record(), blocks, 1, 0, 0)
+    return iterate(iter, state)
 end
 
-function Base.done(iter::OverlapIterator, state::OverlapIteratorState)
+function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState)
     advance!(iter, state)
-    return state.done
-end
-
-function Base.next(iter::OverlapIterator, state::OverlapIteratorState)
-    return copy(state.record), state
+    if state.done
+        return nothing
+    else
+        return copy(state.record), state
+    end
 end
 
 function advance!(iter::OverlapIterator, state::OverlapIteratorState)
     while true
         # find a section that has at least one record
-        while state.current_record == state.n_records && state.current_block ≤ endof(state.blocks)
+        while state.current_record == state.n_records && state.current_block ≤ lastindex(state.blocks)
             block = state.blocks[state.current_block]
             seek(iter.reader.stream, block.offset)
             size = BBI.uncompress!(state.data, read(iter.reader.stream, block.size))
@@ -68,7 +69,7 @@ function advance!(iter::OverlapIterator, state::OverlapIteratorState)
             state.n_records = state.header.itemcount
             state.current_record = 0
         end
-        if state.current_record == state.n_records && state.current_block > endof(state.blocks)
+        if state.current_record == state.n_records && state.current_block > lastindex(state.blocks)
             state.done = true
             return state
         end

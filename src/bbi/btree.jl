@@ -61,7 +61,7 @@ end
 function chromlist(tree::BTree)
     list = Tuple{String,UInt32,UInt32}[]
     # traverse tree
-    key = Vector{UInt8}(tree.header.key_size)
+    key = Vector{UInt8}(undef, tree.header.key_size)
     stack = UInt64[tree.offset + sizeof(BTreeHeader)]
     while !isempty(stack)
         offset = pop!(stack)
@@ -70,8 +70,8 @@ function chromlist(tree::BTree)
         for i in 1:node.count
             if isleaf(node)
                 read!(tree.stream, key)
-                i = findfirst(key, 0x00)
-                chromname = i == 0 ? String(copy(key)) : String(key[1:i-1])
+                i = findfirst(isequal(0x00), key)
+                chromname = i === nothing ? String(copy(key)) : String(key[1:i-1])
                 chromid = read(tree.stream, UInt32)
                 chromsize = read(tree.stream, UInt32)
                 push!(list, (chromname, chromid, chromsize))
@@ -100,7 +100,7 @@ function write_btree(stream::IO, chromlist::Vector{Tuple{String,UInt32,UInt32}})
     n += write(stream, BTreeNode(0x01, 0x00, length(chromlist)))
 
     # write the root node
-    key = Vector{UInt8}(keysize)
+    key = Vector{UInt8}(undef, keysize)
     for (name, id, len) in sort(chromlist, by=x->x[1])  # sort by name
         fill!(key, 0x00)
         @assert sizeof(name) ≤ keysize

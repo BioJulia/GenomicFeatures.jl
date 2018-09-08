@@ -21,19 +21,21 @@ mutable struct TabixOverlapIteratorState{T}
     record::T
 end
 
-function Base.start(iter::TabixOverlapIterator)
-    @assert !isnull(iter.reader.index)
+function Base.iterate(iter::TabixOverlapIterator)
+    @assert iter.reader.index !== nothing
     # TODO: Use a method that resets the reading position.
     buffer = BioCore.IO.stream(iter.reader)
     iter.reader.state = BioCore.Ragel.State(1, BufferedStreams.BufferedInputStream(buffer.source))
-    return TabixOverlapIteratorState(
-        Indexes.overlapchunks(get(iter.reader.index), iter.interval),
+    state = TabixOverlapIteratorState(
+        Indexes.overlapchunks(iter.reader.index, iter.interval),
         0,
         false,
         eltype(iter)())
+
+    return iterate(iter, state)
 end
 
-function Base.done(iter::TabixOverlapIterator, state)
+function done(iter::TabixOverlapIterator, state)
     buffer = BioCore.IO.stream(iter.reader)
     source = buffer.source
     if state.chunkid == 0
@@ -43,13 +45,13 @@ function Base.done(iter::TabixOverlapIterator, state)
         state.chunkid += 1
         seek(source, state.chunks[state.chunkid].start)
     end
-    while state.chunkid ≤ endof(state.chunks)
+    while state.chunkid ≤ lastindex(state.chunks)
         chunk = state.chunks[state.chunkid]
         # The `virtualoffset(source)` is not synchronized with the current
         # reading position because data are buffered in `buffer` for parsing
         # text. So we need to check not only `virtualoffset` but also
         # `nb_available`, which returns the current buffered data size.
-        while nb_available(buffer) > 0 || BGZFStreams.virtualoffset(source) < chunk.stop
+        while bytesavailable(buffer) > 0 || BGZFStreams.virtualoffset(source) < chunk.stop
             read!(iter.reader, state.record)
             c = icmp(state.record, iter.interval)
             if c == 0  # overlapping
@@ -60,7 +62,7 @@ function Base.done(iter::TabixOverlapIterator, state)
             end
         end
         state.chunkid += 1
-        if state.chunkid ≤ endof(state.chunks)
+        if state.chunkid ≤ lastindex(state.chunks)
             seek(source, state.chunks[state.chunkid].start)
         end
     end
@@ -68,8 +70,12 @@ function Base.done(iter::TabixOverlapIterator, state)
     return true
 end
 
-function Base.next(iter::TabixOverlapIterator, state)
-    return copy(state.record), state
+function Base.iterate(iter::TabixOverlapIterator, state)
+    if done(iter, state)
+        return nothing
+    else
+        return copy(state.record), state
+    end
 end
 
 function icmp(record, interval)

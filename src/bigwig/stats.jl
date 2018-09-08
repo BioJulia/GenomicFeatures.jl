@@ -14,8 +14,8 @@ function coverage(reader::Reader, chrom::AbstractString, chromstart::Integer, ch
     chromstart -= 1
     if usezoom
         zoom = BBI.find_best_zoom(reader.zooms, UInt32(chromend - chromstart))
-        if !isnull(zoom)
-            return BBI.coverage(get(zoom), chromid, UInt32(chromstart), UInt32(chromend))
+        if zoom !== nothing
+            return BBI.coverage(zoom, chromid, UInt32(chromstart), UInt32(chromend))
         end
     end
     return exact_coverage(reader, chromid, UInt32(chromstart), UInt32(chromend))
@@ -42,8 +42,8 @@ function mean(reader::Reader, chrom::AbstractString, chromstart::Integer, chrome
     chromstart -= 1
     if usezoom
         zoom = BBI.find_best_zoom(reader.zooms, UInt32(chromend - chromstart))
-        if !isnull(zoom)
-            return BBI.mean(get(zoom), chromid, UInt32(chromstart), UInt32(chromend))
+        if zoom !== nothing
+            return BBI.mean(zoom, chromid, UInt32(chromstart), UInt32(chromend))
         end
     end
     return exact_mean(reader, chromid, UInt32(chromstart), UInt32(chromend))
@@ -74,8 +74,8 @@ function minimum(reader::Reader, chrom::AbstractString, chromstart::Integer, chr
     chromstart -= 1
     if usezoom
         zoom = BBI.find_best_zoom(reader.zooms, UInt32(chromend - chromstart))
-        if !isnull(zoom)
-            return BBI.minimum(get(zoom), chromid, UInt32(chromstart), UInt32(chromend))
+        if zoom !== nothing
+            return BBI.minimum(zoom, chromid, UInt32(chromstart), UInt32(chromend))
         end
     end
     return exact_extrema(reader, chromid, UInt32(chromstart), UInt32(chromend))[1]
@@ -94,8 +94,8 @@ function maximum(reader::Reader, chrom::AbstractString, chromstart::Integer, chr
     chromstart -= 1
     if usezoom
         zoom = BBI.find_best_zoom(reader.zooms, UInt32(chromend - chromstart))
-        if !isnull(zoom)
-            return BBI.maximum(get(zoom), chromid, UInt32(chromstart), UInt32(chromend))
+        if zoom !== nothing
+            return BBI.maximum(zoom, chromid, UInt32(chromstart), UInt32(chromend))
         end
     end
     return exact_extrema(reader, chromid, UInt32(chromstart), UInt32(chromend))[2]
@@ -125,8 +125,8 @@ function std(reader::Reader, chrom::AbstractString, chromstart::Integer, chromen
     chromstart -= 1
     if usezoom
         zoom = BBI.find_best_zoom(reader.zooms, UInt32(chromend - chromstart))
-        if !isnull(zoom)
-            return BBI.std(get(zoom), chromid, UInt32(chromstart), UInt32(chromend))
+        if zoom !== nothing
+            return BBI.std(zoom, chromid, UInt32(chromstart), UInt32(chromend))
         end
     end
     return exact_std(reader, chromid, UInt32(chromstart), UInt32(chromend))

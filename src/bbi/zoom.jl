@@ -34,7 +34,7 @@ struct Zoom{T<:IO}
 end
 
 function Zoom(stream::IO, header::ZoomHeader, maxsize::Integer)
-    return Zoom(header, RTree(stream, header.indexoffset), Vector{UInt8}(maxsize))
+    return Zoom(header, RTree(stream, header.indexoffset), Vector{UInt8}(undef, maxsize))
 end
 
 # Supplemental Table 19.
@@ -131,12 +131,12 @@ end
 
 function minimum(zoom::Zoom, chromid::UInt32, chromstart::UInt32, chromend::UInt32)
     data = find_overlapping_zoomdata(zoom, chromid, chromstart, chromend)
-    return isempty(data) ? NaN32 : foldl((x, d) -> min(x, d.min), +Inf32, data)
+    return isempty(data) ? NaN32 : foldl((x, d) -> min(x, d.min), data, init=+Inf32)
 end
 
 function maximum(zoom::Zoom, chromid::UInt32, chromstart::UInt32, chromend::UInt32)
     data = find_overlapping_zoomdata(zoom, chromid, chromstart, chromend)
-    return isempty(data) ? NaN32 : foldl((x, d) -> max(x, d.max), -Inf32, data)
+    return isempty(data) ? NaN32 : foldl((x, d) -> max(x, d.max), data, init=-Inf32)
 end
 
 function std(zoom::Zoom, chromid::UInt32, chromstart::UInt32, chromend::UInt32)
@@ -158,7 +158,7 @@ function find_best_zoom(zooms::Vector{Zoom}, size::UInt32)::Union{Zoom, Nothing}
     # NOTE: This assumes zooms are sorted by reduction_level.
     halfsize = div(size, 2)
     i = 0
-    while i ≤ endof(zooms) && zooms[i+1].header.reduction_level ≤ halfsize
+    while i ≤ lastindex(zooms) && zooms[i+1].header.reduction_level ≤ halfsize
         i += 1
     end
     if i == 0
@@ -240,7 +240,7 @@ mutable struct ZoomBuffer
                 false,
                 stream1, stream2, tmpdir,
                 0)
-            finalizer(buffer, buffer -> rm(buffer.tmpdir; force=true, recursive=true))
+            finalizer(buffer -> rm(buffer.tmpdir; force=true, recursive=true), buffer)
             return buffer
         catch
             rm(tmpdir; recursive=true)
@@ -292,7 +292,7 @@ end
 function write_buffered_data(buffer::ZoomBuffer)
     @assert buffer.chromid != typemax(UInt32)
     # write zoom data to a temporary file
-    for i in 1:endof(buffer.cov)
+    for i in 1:lastindex(buffer.cov)
         chromstart = (i - 1) * buffer.binsize
         write(
             buffer.stream1,
@@ -331,7 +331,7 @@ function write_zoom_impl(output::IO, buffer::ZoomBuffer, scale::Int)
     tmpbuf = IOBuffer()
     blocksize = 0
     higher = ZoomData[]
-    compressed = Vector{UInt8}(div(buffer.max_buffer_size * 11, 10))
+    compressed = Vector{UInt8}(undef, div(buffer.max_buffer_size * 11, 10))
     dataperblock = div(buffer.max_buffer_size, ZOOM_DATA_SIZE)
     seekstart(buffer.stream1)
     # stream2 is now empty
@@ -399,7 +399,7 @@ function aggregate(data::Vector{ZoomData})
     max = data[1].max
     sum = data[1].sum
     ssq = data[1].ssq
-    for i in 2:endof(data)
+    for i in 2:lastindex(data)
         cov += data[i].cov
         min = Base.min(min, data[i].min)
         max = Base.max(max, data[i].max)

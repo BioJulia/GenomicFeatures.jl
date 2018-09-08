@@ -57,7 +57,7 @@ function BioCore.IO.stream(reader::Reader)
 end
 
 function GenomicFeatures.eachoverlap(reader::Reader, interval::GenomicFeatures.Interval)
-    if isnull(reader.index)
+    if reader.index === nothing
         throw(ArgumentError("index is null"))
     end
     return GenomicFeatures.Indexes.TabixOverlapIterator(reader, interval)
@@ -164,19 +164,19 @@ run(`dot -Tsvg -o bed.svg bed.dot`)
 =#
 
 const record_actions = Dict(
-    :record_chrom                  => :(record.chrom      = (mark:p-1) - offset; record.ncols += 1),
-    :record_chromstart             => :(record.chromstart = (mark:p-1) - offset; record.ncols += 1),
-    :record_chromend               => :(record.chromend   = (mark:p-1) - offset; record.ncols += 1),
-    :record_name                   => :(record.name       = (mark:p-1) - offset; record.ncols += 1),
-    :record_score                  => :(record.score      = (mark:p-1) - offset; record.ncols += 1),
-    :record_strand                 => :(record.strand     =       p    - offset; record.ncols += 1),
-    :record_thickstart             => :(record.thickstart = (mark:p-1) - offset; record.ncols += 1),
-    :record_thickend               => :(record.thickend   = (mark:p-1) - offset; record.ncols += 1),
-    :record_itemrgb                => :(record.itemrgb    = (mark:p-1) - offset; record.ncols += 1),
-    :record_blockcount             => :(record.blockcount = (mark:p-1) - offset; record.ncols += 1),
-    :record_blocksizes_blocksize   => :(push!(record.blocksizes, (mark:p-1) - offset)),
+    :record_chrom                  => :(record.chrom      = (mark:p-1) .- offset; record.ncols += 1),
+    :record_chromstart             => :(record.chromstart = (mark:p-1) .- offset; record.ncols += 1),
+    :record_chromend               => :(record.chromend   = (mark:p-1) .- offset; record.ncols += 1),
+    :record_name                   => :(record.name       = (mark:p-1) .- offset; record.ncols += 1),
+    :record_score                  => :(record.score      = (mark:p-1) .- offset; record.ncols += 1),
+    :record_strand                 => :(record.strand     =       p     - offset; record.ncols += 1),
+    :record_thickstart             => :(record.thickstart = (mark:p-1) .- offset; record.ncols += 1),
+    :record_thickend               => :(record.thickend   = (mark:p-1) .- offset; record.ncols += 1),
+    :record_itemrgb                => :(record.itemrgb    = (mark:p-1) .- offset; record.ncols += 1),
+    :record_blockcount             => :(record.blockcount = (mark:p-1) .- offset; record.ncols += 1),
+    :record_blocksizes_blocksize   => :(push!(record.blocksizes, (mark:p-1) .- offset)),
     :record_blocksizes             => :(record.ncols += 1),
-    :record_blockstarts_blockstart => :(push!(record.blockstarts, (mark:p-1) - offset)),
+    :record_blockstarts_blockstart => :(push!(record.blockstarts, (mark:p-1) .- offset)),
     :record_blockstarts            => :(record.ncols += 1),
     :record => :(record.filled = 1:p-1),
     :countline => :(),
@@ -196,7 +196,7 @@ eval(
         merge(record_actions, Dict(
             :record => quote
                 BioCore.ReaderHelper.resize_and_copy!(record.data, data, BioCore.ReaderHelper.upanchor!(stream):p-1)
-                record.filled = (offset+1:p-1) - offset
+                record.filled = (offset+1:p-1) .- offset
                 found_record = true
                 @escape
             end,

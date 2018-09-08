@@ -17,7 +17,7 @@ import ColorTypes
 import FixedPointNumbers: N0f8
 import GenomicFeatures: GenomicFeatures, BBI, BED, Interval
 import Libz
-importall BioCore
+using BioCore
 
 include("reader.jl")
 include("writer.jl")

@@ -38,7 +38,7 @@ function Reader(input::IO)
         error("not a supported version of bigWig")
     end
     # read zoom objects
-    zoom_headers = Vector{BBI.ZoomHeader}(header.zoom_levels)
+    zoom_headers = Vector{BBI.ZoomHeader}(undef, header.zoom_levels)
     read!(input, zoom_headers)
     zooms = [BBI.Zoom(input, h, header.uncompress_buf_size) for h in zoom_headers]
     sort!(zooms, by=z->z.header.reduction_level)
@@ -80,16 +80,16 @@ Get a vector of values within `range` of `chrom` from `reader`.
 This function fills missing values with `NaN32`.
 """
 function values(reader::Reader, chrom::AbstractString, range::UnitRange)::Vector{Float32}
-    values = Vector{Float32}(length(range))
+    values = Vector{Float32}(undef, length(range))
     if isempty(range)
         return values
     end
     fill!(values, NaN32)
     offset = first(range) - 1
     for record in GenomicFeatures.eachoverlap(reader, Interval(chrom, first(range), last(range)))
-        rstart = clamp(record.chromstart+1-offset, 1, endof(values))
-        rend = clamp(record.chromend-offset, 1, endof(values))
-        values[rstart:rend] = record.value
+        rstart = clamp(record.chromstart+1-offset, 1, lastindex(values))
+        rend = clamp(record.chromend-offset, 1, lastindex(values))
+        values[rstart:rend] .= record.value
     end
     return values
 end
@@ -125,22 +125,23 @@ mutable struct IteratorState
     current_record::UInt16
 end
 
-function Base.start(reader::Reader)
+function Base.iterate(reader::Reader)
     seek(reader.stream, reader.header.full_data_offset)
     # this is defined as UInt32 in the spces but actually UInt64
     section_count = read(reader.stream, UInt64)
     # dummy header
     header = SectionHeader(0, 0, 0, 0, 0, 0, 0, 0)
-    return IteratorState(Libz.ZlibInflateInputStream(reader.stream), false, header, Record(), section_count, 0, 0, 0)
+    state = IteratorState(Libz.ZlibInflateInputStream(reader.stream), false, header, Record(), section_count, 0, 0, 0)
+    return iterate(reader, state)
 end
 
-function Base.done(reader::Reader, state)
+function Base.iterate(reader::Reader, state)
     advance!(reader, state)
-    return state.done
-end
-
-function Base.next(reader::Reader, state)
-    return copy(state.record), state
+    if state.done
+        return nothing
+    else
+        return copy(state.record), state
+    end
 end
 
 function advance!(reader::Reader, state::IteratorState)
