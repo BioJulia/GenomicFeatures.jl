@@ -79,7 +79,7 @@ Note that records within the returned chunks are not guaranteed to actually
 overlap the query interval.
 """
 function overlapchunks(tabix::Tabix, interval::Interval)
-    seqid = findfirst(tabix.names, interval.seqname)
+    seqid = findfirst(isequal(interval.seqname), tabix.names)
     if seqid == 0
         throw(ArgumentError("failed to find sequence name '$(interval.seqname)'"))
     end
@@ -128,8 +128,8 @@ function read_tabix(input_::IO)
     meta = read(input, Int32)
     skip = read(input, Int32)
     l_nm = read(input, Int32)
-    data = read(input, UInt8, l_nm)
-    names = split(String(data), '\0', keep=false)
+    data = read(input, l_nm)
+    names = split(String(data), '\0', keepempty=false)
     if length(names) != n_refs
         error("the number of sequence names doesn't match the expacted value")
     end

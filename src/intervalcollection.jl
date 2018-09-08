@@ -120,7 +120,7 @@ function Base.show(io::IO, ic::IntervalCollection{T}) where T
             if k > 8
                 break
             end
-            println(IOContext(io, compact=true), "  ", i)
+            println(IOContext(io, :compact=>true), "  ", i)
         end
         if n_entries > 8
             print(io, "  ⋮")
@@ -356,7 +356,7 @@ function Base.iterate(it::IntersectIterator{F, S, T}, state = ()) where {F,S,T}
     treeA = (state === () ? iterate(it.a_trees) : iterate(it.a_trees, state[1]))
     treeB = (state === () ? iterate(it.b_trees) : iterate(it.b_trees, state[1]))
     treeA === nothing && return nothing
-    intersect_iterator = intersect(treeA, treeB, it.filter)
+    intersect_iterator = intersect(treeA[1], treeB[1], it.filter)
     iterate(it, (treeA[2], intersect_iterator))
 end
 
@@ -468,10 +468,10 @@ function Base.iterate(it::IntervalCollectionStreamIterator{F,S,T}, state = ()) w
     if state !== () && intersection.index != 0
         entry = intersection.node.entries[intersection.index]
         return_value = (state[1], entry)
-        IntervalTrees.nextintersection!(intersection.node, intersection.index, state.stream_value, intersection, it.filter)
+        IntervalTrees.nextintersection!(intersection.node, intersection.index, state[1], intersection, it.filter)
         return return_value, (state[1], state[2], intersection)
     end
-    
+
     # If code reaches this point, there is no valid intersection to return for
     # the current query, so we get the next query and start looking for intersections.
     while intersection.index == 0
@@ -482,7 +482,10 @@ function Base.iterate(it::IntervalCollectionStreamIterator{F,S,T}, state = ()) w
         if haskey(it.collection.trees, stream_value.seqname)
             tree = it.collection.trees[stream_value.seqname]
             IntervalTrees.firstintersection!(tree, stream_value, nothing, intersection, it.filter)
-            iterate(it, (stream_value, stream_it[2], intersection))
+            iterate_result = iterate(it, (stream_value, stream_it[2], intersection))
+            if iterate_result !== nothing
+                return iterate_result
+            end
         end
     end
 end

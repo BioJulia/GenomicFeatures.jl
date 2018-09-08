@@ -382,8 +382,9 @@ function optionals(record::Record)::Vector{String}
     p = 13
     p_end = last(record.filled)
     while p ≤ p_end
-        p_delim = search(record.data, '\t', p)
-        if p_delim == 0
+        p_delim = findnext(isequal(UInt8('\t')), record.data, p)
+
+        if p_delim === nothing
             p_delim = p_end + 1
         end
         push!(ret, String(record.data[p:p_delim-1]))

@@ -38,7 +38,7 @@ const LinearWindowSize = 16 * 1024
 
 # Find chunks overlapping with `(seqid, interval)` in `index`.
 function overlapchunks(index::BGZFIndex, seqid::Integer, interval::UnitRange)
-    if !(1 ≤ seqid ≤ endof(index.data))
+    if !(1 ≤ seqid ≤ lastindex(index.data))
         throw(ArgumentError("sequence id $(seqid) is out of range"))
     end
 
@@ -50,7 +50,7 @@ function overlapchunks(index::BGZFIndex, seqid::Integer, interval::UnitRange)
     bins = reg2bins(first(interval), last(interval))
     ret = Chunk[]
     idx = cld(first(interval), LinearWindowSize)
-    if endof(linindex) ≥ idx
+    if lastindex(linindex) ≥ idx
         # `linindex` may be empty for contigs with no records
         offset = linindex[idx]
         for bin in bins
@@ -90,7 +90,7 @@ function reduce!(chunks)
     # NOTE: the maximum size of a BGZF block is 64KiB
     merge_threshold = 64 * 1024 * 2
     i = 1
-    while i < endof(chunks)
+    while i < lastindex(chunks)
         chunk = chunks[i]
         next = chunks[i+1]
         if chunk.stop > next.start || next.start[1] - chunk.stop[1] ≤ merge_threshold
