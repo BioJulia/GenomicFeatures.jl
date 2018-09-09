@@ -26,8 +26,8 @@ function coverage(stream, seqname_isless::Function=isless)
     cov = IntervalCollection{UInt32}()
     lasts = Int64[]
 
-    stream_state = start(stream)
-    if done(stream, stream_state)
+    stream_next = iterate(stream)
+    if stream_next === nothing
         return cov
     end
 
@@ -35,7 +35,9 @@ function coverage(stream, seqname_isless::Function=isless)
     coverage_seqname = ""
     coverage_first = 0
     last_interval_first = 0
-    interval, stream_state = next(stream, stream_state)
+    interval, stream_state = stream_next
+    stream_next = iterate(stream, stream_state)
+
     while true
         if interval.seqname != coverage_seqname
             coverage_process_lasts_heap!(cov, current_coverage, coverage_seqname,
@@ -58,11 +60,12 @@ function coverage(stream, seqname_isless::Function=isless)
             pos = DataStructures.heappop!(lasts)
             if first(interval) == pos + 1
                 DataStructures.heappush!(lasts, last(interval))
-                if done(stream, stream_state)
+                if stream_next === nothing
                     break
                 end
                 last_interval_first = first(interval)
-                interval, stream_state = next(stream, stream_state)
+                interval, stream_state = stream_next
+                stream_next = iterate(stream, stream_state)
             elseif pos == coverage_first - 1
                 current_coverage -= 1
             else
@@ -89,11 +92,12 @@ function coverage(stream, seqname_isless::Function=isless)
             end
 
             DataStructures.heappush!(lasts, last(interval))
-            if done(stream, stream_state)
+            if stream_next === nothing
                 break
             end
             last_interval_first = first(interval)
-            interval, stream_state = next(stream, stream_state)
+            interval, stream_state = stream_next
+            stream_next = iterate(stream, stream_state)
         end
     end
 

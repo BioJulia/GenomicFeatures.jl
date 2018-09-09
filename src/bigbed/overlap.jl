@@ -12,7 +12,7 @@ function Base.eltype(::Type{OverlapIterator})
     return Record
 end
 
-function Base.iteratorsize(::Type{OverlapIterator})
+function Base.IteratorSize(::Type{OverlapIterator})
     return Base.SizeUnknown()
 end
 
@@ -34,39 +34,40 @@ mutable struct OverlapIteratorState
     current_block::Int
 end
 
-function Base.start(iter::OverlapIterator)
-    data = Vector{UInt8}(iter.reader.header.uncompress_buf_size)
+function Base.iterate(iter::OverlapIterator)
+    data = Vector{UInt8}(undef, iter.reader.header.uncompress_buf_size)
     blocks = BBI.find_overlapping_blocks(iter.reader.index, iter.chromid, iter.chromstart, iter.chromend)
     if !isempty(blocks)
         seek(iter.reader.stream, blocks[1].offset)
     end
-    return OverlapIteratorState(
+    state = OverlapIteratorState(
         BioCore.Ragel.State(
             data_machine.start_state,
             Libz.ZlibInflateInputStream(iter.reader.stream, reset_on_end=false)),
         data,
         isempty(blocks), Record(), blocks, isempty(blocks) ? 1 : 2)
+    return iterate(iter, state)
 end
 
-function Base.done(iter::OverlapIterator, state::OverlapIteratorState)
+function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState)
     advance!(iter, state)
-    return state.done
-end
-
-function Base.next(iter::OverlapIterator, state::OverlapIteratorState)
-    return copy(state.record), state
+    if state.done
+        return nothing
+    else
+        return copy(state.record), state
+    end
 end
 
 function advance!(iter::OverlapIterator, state::OverlapIteratorState)
     while true
-        while state.current_block ≤ endof(state.blocks) && eof(state.state.stream)
+        while state.current_block ≤ lastindex(state.blocks) && eof(state.state.stream)
             block = state.blocks[state.current_block]
             seek(iter.reader.stream, block.offset)
             size = BBI.uncompress!(state.data, read(iter.reader.stream, block.size))
             state.state = BioCore.Ragel.State(data_machine.start_state, BufferedStreams.BufferedInputStream(state.data[1:size]))
             state.current_block += 1
         end
-        if state.done || (state.current_block > endof(state.blocks) && eof(state.state.stream))
+        if state.done || (state.current_block > lastindex(state.blocks) && eof(state.state.stream))
             state.done = true
             return state
         end

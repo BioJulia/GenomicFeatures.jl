@@ -15,7 +15,7 @@ mutable struct WriterState
     started::Bool
     buffer::IOBuffer
     compressed::Vector{UInt8}
-    intervals::Vector{Interval{Void}}
+    intervals::Vector{Interval{Nothing}}
 
     # record buffer
     recordbuffer::IOBuffer
@@ -37,7 +37,7 @@ mutable struct WriterState
             # last record info
             0, 0,
             # section state
-            false, IOBuffer(), UInt8[], Interval{Void}[],
+            false, IOBuffer(), UInt8[], Interval{Nothing}[],
             # record buffer
             IOBuffer(),
             # global info
@@ -99,7 +99,7 @@ write(writer, ("chr2", 211, 250, "gene 2"))
 close(writer)
 ```
 """
-function Writer(output::IO, chromlist::Union{AbstractVector,Associative};
+function Writer(output::IO, chromlist::Union{AbstractVector,AbstractDict};
                 binsize::Integer=64)
     # write dummy header (filled later)
     write_zeros(output, BBI.HEADER_SIZE)
@@ -147,7 +147,7 @@ function Base.write(writer::Writer, record::Tuple{String,Integer,Integer,Vararg}
     return write_impl(writer, chromid, UInt32(chromstart - 1), UInt32(chromend), optionals)
 end
 
-function Base.write(writer::Writer, interval::GenomicFeatures.Interval{Void})
+function Base.write(writer::Writer, interval::GenomicFeatures.Interval{Nothing})
     chromid = writer.chroms[interval.seqname][1]
     return write_impl(writer, chromid, UInt32(interval.first - 1), UInt32(interval.last), ())
 end
@@ -354,7 +354,7 @@ function finish_section!(writer::Writer)
     return
 end
 
-function compute_section_summary(intervals::Vector{Interval{Void}})
+function compute_section_summary(intervals::Vector{Interval{Nothing}})
     cov = 0
     min = Inf
     max = -Inf

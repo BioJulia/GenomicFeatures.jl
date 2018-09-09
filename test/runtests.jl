@@ -1,6 +1,7 @@
 using GenomicFeatures
-using Base.Test
+using Test
 using Distributions
+import Random
 import BGZFStreams
 import YAML
 import ColorTypes: RGB
@@ -24,7 +25,7 @@ function random_intervals(seqnames, maxpos::Int, n::Int)
     seq_dist = Categorical(length(seqnames))
     strand_dist = Categorical(2)
     length_dist = Normal(1000, 1000)
-    intervals = Vector{Interval{Int}}(n)
+    intervals = Vector{Interval{Int}}(undef, n)
     for i in 1:n
         intlen = maxpos
         while intlen >= maxpos || intlen <= 0
@@ -214,7 +215,7 @@ end
 
     @testset "Intersection" begin
         n = 1000
-        srand(1234)
+        Random.seed!(1234)
         intervals_a = random_intervals(["one", "two", "three"], 1000000, n)
         intervals_b = random_intervals(["one", "three", "four"], 1000000, n)
 
@@ -244,28 +245,28 @@ end
 
     @testset "Show" begin
         ic = IntervalCollection{Int}()
-        show(DevNull, ic)
+        show(devnull, ic)
 
         push!(ic, Interval{Int}("one", 1, 1000, STRAND_POS, 0))
-        show(DevNull, ic)
+        show(devnull, ic)
 
         intervals = random_intervals(["one", "two", "three"], 1000000, 100)
         for interval in intervals
             push!(ic, interval)
         end
-        show(DevNull, ic)
+        show(devnull, ic)
 
-        show(DevNull, STRAND_NA)
-        show(DevNull, STRAND_POS)
-        show(DevNull, STRAND_NEG)
-        show(DevNull, STRAND_BOTH)
+        show(devnull, STRAND_NA)
+        show(devnull, STRAND_POS)
+        show(devnull, STRAND_NEG)
+        show(devnull, STRAND_BOTH)
     end
 end
 
 @testset "IntervalStream" begin
     @testset "Intersection" begin
         n = 1000
-        srand(1234)
+        Random.seed!(1234)
         intervals_a = random_intervals(["one", "two", "three"], 1000000, n)
         intervals_b = random_intervals(["one", "three", "four"], 1000000, n)
 
@@ -323,7 +324,7 @@ end
 
     @testset "IntervalStream Intersection" begin
         n = 1000
-        srand(1234)
+        Random.seed!(1234)
         intervals_a = random_intervals(["one", "two", "three"], 1000000, n)
         intervals_b = random_intervals(["one", "two", "three"], 1000000, n)
 
@@ -346,7 +347,7 @@ end
 
     @testset "IntervalStream Coverage" begin
         n = 10000
-        srand(1234)
+        Random.seed!(1234)
         intervals = random_intervals(["one", "two", "three"], 1000000, n)
 
         ic = IntervalCollection{Int}()
@@ -414,7 +415,7 @@ end
 
 @testset "BED" begin
     @testset "Record" begin
-        record = BED.Record(b"chr1\t17368\t17436")
+        record = BED.Record("chr1\t17368\t17436")
         @test BED.chrom(record) == "chr1"
         @test BED.chromstart(record) === 17369
         @test BED.chromend(record) === 17436
@@ -430,7 +431,7 @@ end
         @test startswith(repr(record), "GenomicFeatures.BED.Record:\n")
         @test string(record) == "chr1\t17368\t17436"
 
-        record = BED.Record(b"chrXIII\t854794\t855293\tYMR292W\t0\t+\t854794\t855293\t0\t2\t22,395,\t0,104,")
+        record = BED.Record("chrXIII\t854794\t855293\tYMR292W\t0\t+\t854794\t855293\t0\t2\t22,395,\t0,104,")
         @test BED.chrom(record) == "chrXIII"
         @test BED.chromstart(record) === 854795
         @test BED.chromend(record) === 855293
@@ -446,7 +447,7 @@ end
         @test startswith(repr(record), "GenomicFeatures.BED.Record:\n")
         @test string(record) == "chrXIII\t854794\t855293\tYMR292W\t0\t+\t854794\t855293\t0\t2\t22,395,\t0,104,"
 
-        record = BED.Record(b"chrX\t151080532\t151081699\tCHOCOLATE1\t0\t-\t151080532\t151081699\t255,127,36")
+        record = BED.Record("chrX\t151080532\t151081699\tCHOCOLATE1\t0\t-\t151080532\t151081699\t255,127,36")
         @test BED.chrom(record) == "chrX"
         @test BED.chromstart(record) === 151080533
         @test BED.chromend(record) === 151081699
@@ -558,7 +559,7 @@ end
     end
 
     n = 10000
-    srand(1234)
+    Random.seed!(1234)
     intervals_a = random_intervals(["one", "two", "three", "four", "five"],
                                    1000000, n)
     intervals_b = random_intervals(["one", "two", "three", "four", "five"],
@@ -1077,7 +1078,7 @@ end
 
     @testset "overlap" begin
         chromlen = 1_000_000
-        srand(1234)
+        Random.seed!(1234)
         chroms = ["one", "two", "three", "four", "five"]
         intervals = IntervalCollection(
              [Interval(i.seqname, i.first, i.last)

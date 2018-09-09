@@ -66,7 +66,7 @@ function Record(str::AbstractString)
 end
 
 function Base.convert(::Type{Record}, str::AbstractString)
-    return Record(convert(Vector{UInt8}, str))
+    return Record(Vector{UInt8}(str))
 end
 
 function initialize!(record::Record)
@@ -100,7 +100,7 @@ function Base.convert(::Type{Interval{Record}}, record::Record)
     return convert(Interval, record)
 end
 
-function isfilled(record::Record)
+function BioCore.isfilled(record::Record)
     return !isempty(record.filled)
 end
 
@@ -409,7 +409,7 @@ end
 function attrvals(record::Record, i::Int)
     key = record.attribute_keys[i]
     @assert record.data[last(key)+1] == UInt8('=')
-    if i == endof(record.attribute_keys)
+    if i == lastindex(record.attribute_keys)
         valsrange = last(key)+2:last(datarange(record))
     else
         nextkey = record.attribute_keys[i+1]
@@ -509,7 +509,7 @@ end
 
 # Decode the percent-encoded string if needed.
 function decode(str::String)
-    if search(str, '%') > 0
+    if '%' ∈ str
         return URIParser.unescape(str)
     else
         return str
@@ -523,5 +523,5 @@ function isequaldata(str::String, data::Vector{UInt8}, range::UnitRange{Int})
 end
 
 function memcmp(p1::Ptr, p2::Ptr, n::Integer)
-    return ccall(:memcmp, Cint, (Ptr{Void}, Ptr{Void}, Csize_t), p1, p2, n)
+    return ccall(:memcmp, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Csize_t), p1, p2, n)
 end

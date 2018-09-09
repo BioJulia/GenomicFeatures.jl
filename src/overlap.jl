@@ -12,7 +12,7 @@ function Base.eltype(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
     return Tuple{Interval{metadatatype(Sa)},Interval{metadatatype(Sb)}}
 end
 
-function Base.iteratorsize(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
+function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
     return Base.SizeUnknown()
 end
 
@@ -33,120 +33,116 @@ function eachoverlap(intervals_a, intervals_b, seqname_isless=Base.isless; filte
     return OverlapIterator(intervals_a, intervals_b, seqname_isless, filter)
 end
 
-mutable struct OverlapIteratorState{Sa,Sb,Ta,Tb}
-    state_a::Sa
-    state_b::Sb
+struct OverlapIteratorState{Sa,Sb,Ta,Tb}
+    next_a::Sa
+    next_b::Sb
     queue::Queue{Interval{Tb}}
-    state_queue::Int
-    done::Bool
-    interval_a::Interval{Ta}
-    interval_b::Interval{Tb}
-
-    function OverlapIteratorState{Sa,Sb,Ta,Tb}(state_a, state_b) where {Sa,Sb,Ta,Tb}
-        queue = Queue{Interval{Tb}}()
-        return new{Sa,Sb,Ta,Tb}(state_a, state_b, queue, start(queue), false)
-    end
+    queue_index::Int
 end
 
-function Base.start(iter::OverlapIterator)
-    state_a = start(iter.intervals_a)
-    state_b = start(iter.intervals_b)
-    Sa = typeof(state_a)
-    Sb = typeof(state_b)
+function OverlapIteratorState(
+        Ta::Type, Tb::Type, next_a::Sa, next_b::Sb, queue::Queue, queue_index::Int) where {Sa, Sb}
+    return OverlapIteratorState{Sa,Sb,Ta,Tb}(next_a, next_b, queue, queue_index)
+end
+
+function OverlapIteratorState(Ta::Type, Tb::Type, next_a::Sa, next_b::Sb) where {Sa, Sb}
+    queue = Queue{Interval{Tb}}()
+    return OverlapIteratorState{Sa,Sb,Ta,Tb}(next_a, next_b, queue, 1)
+end
+
+
+function Base.iterate(iter::OverlapIterator)
+    next_a = iterate(iter.intervals_a)
+    next_b = iterate(iter.intervals_b)
+
     Ta = metadatatype(iter.intervals_a)
     Tb = metadatatype(iter.intervals_b)
-    state = OverlapIteratorState{Sa,Sb,Ta,Tb}(state_a, state_b)
-    if done(iter.intervals_a, state_a) || done(iter.intervals_b, state_b)
-        state.done = true
-    else
-        state.interval_a, state.state_a = next(iter.intervals_a, state_a)
-        state.interval_b, state.state_b = next(iter.intervals_b, state_b)
-        push!(state.queue, state.interval_b)
+    state = OverlapIteratorState(Ta, Tb, next_a, next_b)
+
+    return iterate(iter, state)
+end
+
+
+# check i1 and i2 are ordered
+function check_ordered(i1, i2, compare_func)
+    if !isordered(i1, i2, compare_func)
+        error("intervals are not sorted")
     end
-    return advance!(state, iter)
+    return nothing
 end
 
-function Base.done(iter::OverlapIterator, state)
-    return state.done
-end
 
-function Base.next(iter::OverlapIterator, state)
-    interval_a = state.interval_a
-    interval_b, state.state_queue = next(state.queue, state.state_queue)
-    return (interval_a, interval_b), advance!(state, iter)
-end
+function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,Ta,Tb}) where {Sa,Sb,Ta,Tb}
+    next_a      = state.next_a
+    next_b      = state.next_b
+    queue       = state.queue
+    queue_index = state.queue_index
 
-function advance!(state::OverlapIteratorState, iter::OverlapIterator)
-    # queue a new interval from intervals_b if possible
-    function queue!()
-        if done(iter.intervals_b, state.state_b)
-            if !done(iter.intervals_a, state.state_a)
-                elem_a, state.state_a = next(iter.intervals_a, state.state_a)
-                next_interval_a = convert(typeof(state.interval_a), elem_a)
-                check_ordered(state.interval_a, next_interval_a)
-                state.interval_a = next_interval_a
-                state.state_queue = start(state.queue)
+    if next_a === nothing
+        return nothing
+    end
+
+    entry_a, state_a = next_a
+    interval_a = convert(Interval{Ta}, entry_a)
+
+    while true
+        if queue_index > lastindex(state.queue)
+            # end of queue: add more to queue, or advance a
+            if next_b === nothing
+                next_a = iterate(iter.intervals_a, state_a)
+                if next_a === nothing
+                    return break
+                end
+
+                entry_a, state_a = next_a
+                next_interval_a = convert(Interval{Ta}, entry_a)
+                check_ordered(interval_a, next_interval_a, iter.isless)
+                interval_a = next_interval_a
+                queue_index = firstindex(state.queue)
+            else
+                entry_b, state_b = next_b
+                interval_b = convert(Interval{Tb}, entry_b)
+                if !isempty(queue)
+                    check_ordered(queue[end], interval_b, iter.isless)
+                end
+                push!(queue, interval_b)
+                next_b = iterate(iter.intervals_b, state_b)
             end
         else
-            elem_b, state.state_b = next(iter.intervals_b, state.state_b)
-            next_interval_b = convert(typeof(state.interval_b), elem_b)
-            check_ordered(state.interval_b, next_interval_b)
-            state.interval_b = next_interval_b
-            push!(state.queue, next_interval_b)
-        end
-        return nothing
-    end
+            entry_a, state_a = next_a
+            interval_a = convert(Interval{Ta}, entry_a)
+            interval_b = queue[queue_index]
+            c = compare_overlap(interval_a, interval_b, iter.isless)
+            queue_index += 1
 
-    # check i1 and i2 are ordered
-    function check_ordered(i1, i2)
-        if !isordered(i1, i2, iter.isless)
-            error("intervals are not sorted")
-        end
-        return nothing
-    end
+            if c < 0
+                # No more possible intersections with interval_a, advance
+                next_a = iterate(iter.intervals_a, state_a)
+                if next_a === nothing
+                    break
+                end
+                entry_a, state_a = next_a
+                next_interval_a = convert(Interval{Ta}, entry_a)
 
-    # find overlapping intervals if any and return there
-    if state.done
-        return state
-    elseif done(state.queue, state.state_queue)
-        queue!()
-    end
-    while !done(state.queue, state.state_queue)
-        interval_b, next_state_queue = next(state.queue, state.state_queue)
-        c = compare_overlap(state.interval_a, interval_b, iter.isless)
-        if c < 0
-            if done(iter.intervals_a, state.state_a)
-                break
+                check_ordered(interval_a, next_interval_a, iter.isless)
+                interval_a = next_interval_a
+                queue_index = firstindex(state.queue)
+            elseif c == 0
+                if iter.filter(interval_a, interval_b)
+                    return ((interval_a, interval_b),
+                        OverlapIteratorState(Ta, Tb, next_a, next_b, queue, queue_index))
+                end
             else
-                elem_a, state.state_a = next(iter.intervals_a, state.state_a)
-                next_interval_a = convert(typeof(state.interval_a), elem_a)
-                check_ordered(state.interval_a, next_interval_a)
-                state.interval_a = next_interval_a
-                state.state_queue = start(state.queue)
-            end
-        elseif c == 0
-            if iter.filter(state.interval_a, interval_b)
-                return state
-            else
-                state.state_queue = next_state_queue
-                if done(state.queue, state.state_queue)
-                    queue!()
+                if queue_index == firstindex(queue) + 1
+                    # noting else can intersect front of queue
+                    popfirst!(queue)
                 end
             end
-        else
-            if interval_b === first(state.queue)
-                shift!(state.queue)
-            end
-            state.state_queue = next_state_queue
-            if done(state.queue, state.state_queue)
-                queue!()
-            end
         end
     end
 
-    # no overlapping intervals found
-    state.done = true
-    return state
+    # no more intersections found
+    return nothing
 end
 
 # Return:

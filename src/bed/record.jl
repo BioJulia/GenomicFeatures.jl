@@ -75,7 +75,7 @@ function Record(str::AbstractString)
 end
 
 function Base.convert(::Type{Record}, str::AbstractString)
-    return convert(Record, convert(Vector{UInt8}, str))
+    return convert(Record, Vector{UInt8}(str))
 end
 
 function initialize!(record::Record)
@@ -96,12 +96,16 @@ function initialize!(record::Record)
     return record
 end
 
-function Base.convert(::Type{GenomicFeatures.Interval}, record::Record)
+function GenomicFeatures.Interval(record::Record)
     name = BioCore.seqname(record)
     lpos = BioCore.leftposition(record)
     rpos = BioCore.rightposition(record)
     strd = hasstrand(record) ? GenomicFeatures.strand(record) : GenomicFeatures.STRAND_BOTH
     return GenomicFeatures.Interval(name, lpos, rpos, strd, record)
+end
+
+function Base.convert(::Type{GenomicFeatures.Interval}, record::Record)
+    return GenomicFeatures.Interval(record)
 end
 
 function Base.convert(::Type{GenomicFeatures.Interval{Record}}, record::Record)
@@ -494,5 +498,5 @@ function unsafe_parse_decimal(::Type{T}, data::Vector{UInt8}, range::UnitRange{I
 end
 
 function memcmp(p1::Ptr, p2::Ptr, n::Integer)
-    return ccall(:memcmp, Cint, (Ptr{Void}, Ptr{Void}, Csize_t), p1, p2, n)
+    return ccall(:memcmp, Cint, (Ptr{Cvoid}, Ptr{Cvoid}, Csize_t), p1, p2, n)
 end

@@ -115,14 +115,16 @@ end
 
 function Base.show(io::IO, i::Interval)
     if get(io, :compact, false)
-        print(io, i.seqname, ":", i.first, "-", i.last, "  ", i.strand, "  ", i.metadata)
+        print(io, i.seqname, ":", i.first, "-", i.last, "  ", i.strand,
+            "  ", i.metadata === nothing ? "nothing" : i.metadata)
     else
         println(io, summary(i), ':')
         println(io, "  sequence name: ", i.seqname)
         println(io, "  leftmost position: ", i.first)
         println(io, "  rightmost position: ", i.last)
         println(io, "  strand: ", i.strand)
-          print(io, "  metadata: ", i.metadata)
+          print(io, "  metadata: ",
+            i.metadata === nothing ? "nothing" : i.metadata)
     end
 end
 

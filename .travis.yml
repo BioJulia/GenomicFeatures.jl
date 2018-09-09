@@ -4,28 +4,15 @@ os:
   - linux
   - osx
 julia:
-  - 0.6
+  - 0.7
+  - 1.0
   - nightly
 matrix:
   allow_failures:
     - julia: nightly
 notifications:
   email: false
-git:
-  depth: 99999999
-
-## uncomment and modify the following lines to manually install system packages
-#addons:
-#  apt: # apt-get for linux
-#    packages:
-#    - gfortran
-#before_script: # homebrew for mac
-#  - if [ $TRAVIS_OS_NAME = osx ]; then brew install gcc; fi
-
-## uncomment the following lines to override the default test script
-#script:
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("GenomicFeatures"); Pkg.test("GenomicFeatures"; coverage=true)'
 after_success:
-  # push coverage results to Codecov
   - julia -e 'cd(Pkg.dir("GenomicFeatures")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
+  - julia -e 'cd(joinpath(Pkg.dir("GenomicFeatures"), "docs/src")); mkdir("assets"); cd("assets"); run(pipeline(`curl https://codeload.github.com/BioJulia/assets/tar.gz/master`, `tar -xz --strip=2 assets-master/doc_assets`))'
   - julia -e 'cd(Pkg.dir("GenomicFeatures")); Pkg.add("Documenter"); include(joinpath("docs", "make.jl"))'

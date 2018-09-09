@@ -96,7 +96,7 @@ write(writer, ("chr2", 301, 450, 3.0))
 close(writer)
 ```
 """
-function Writer(output::IO, chromlist::Union{AbstractVector,Associative};
+function Writer(output::IO, chromlist::Union{AbstractVector,AbstractDict};
                 binsize::Integer=64, datatype::Symbol=:bedgraph)
     # write dummy header (filled later)
     write_zeros(output, BBI.HEADER_SIZE)
@@ -148,7 +148,7 @@ function Base.write(writer::Writer, interval::GenomicFeatures.Interval{T}) where
     return write_impl(writer, chromid, UInt32(interval.first - 1), UInt32(interval.last), Float32(interval.metadata))
 end
 
-function Base.close(writer::Writer)
+function finalize_file(writer::Writer)
     state = writer.state
     if state.started
         finish_section!(writer)
@@ -195,8 +195,11 @@ function Base.close(writer::Writer)
     for zheader in zoomheaders
         write(stream, zheader)
     end
+end
 
-    close(stream)
+function Base.close(writer::Writer)
+    finalize_file(writer)
+    close(writer.stream)
     return
 end
 

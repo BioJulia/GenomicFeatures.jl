@@ -245,7 +245,7 @@ function write_rtree(stream::IO, blocks::Vector{Block})
         seek(stream, offset)
         @assert position(stream) == offset
         write(stream, RTreeNodeFormat(isleaf(node) ? 0x01 : 0x00, 0x00, length(node.children)))
-        for i in 1:endof(node.children)
+        for i in 1:lastindex(node.children)
             child = node.children[i]
             if isleaf(node)
                 write(stream, RTreeLeafNode(child.lo, child.up, offsets[i], datasizes[i]))
@@ -285,13 +285,13 @@ function build_inmemory_rtree(blocks::Vector{Block}, blocksize::Int)
             d = cld(length(blocks), blocksize)
             children = InMemoryRTree[]
             for i in 1:blocksize
-                idx = (i-1)*d+1:min(i*d,endof(blocks))
+                idx = (i-1)*d+1:min(i*d,lastindex(blocks))
                 push!(children, rec(view(blocks, idx)))
             end
             return InMemoryRTree(children)
         end
     end
-    return rec(view(blocks, 1:endof(blocks)))
+    return rec(view(blocks, 1:lastindex(blocks)))
 end
 
 function readbound(stream::IO)

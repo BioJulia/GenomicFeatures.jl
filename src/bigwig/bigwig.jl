@@ -13,7 +13,7 @@ module BigWig
 import BufferedStreams
 import GenomicFeatures: GenomicFeatures, BBI, Interval
 import Libz
-importall BioCore
+using BioCore
 
 include("header.jl")
 include("reader.jl")

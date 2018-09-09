@@ -3,7 +3,7 @@
 
 mutable struct Reader <: BioCore.IO.AbstractReader
     state::BioCore.Ragel.State
-    index::Nullable{GenomicFeatures.Indexes.Tabix}
+    index::Union{GenomicFeatures.Indexes.Tabix, Nothing}
     save_directives::Bool
     targets::Vector{Symbol}
     found_fasta::Bool
@@ -121,7 +121,7 @@ function IntervalCollection(reader::Reader)
 end
 
 function GenomicFeatures.eachoverlap(reader::Reader, interval::Interval)
-    if isnull(reader.index)
+    if reader.index === nothing
         throw(ArgumentError("index is null"))
     end
     return GenomicFeatures.Indexes.TabixOverlapIterator(reader, interval)
@@ -137,7 +137,7 @@ and then `directives(reader)`.
 """
 function directives(reader::Reader)
     ret = String[]
-    for i in endof(reader.directives)-reader.directive_count+1:endof(reader.directives)
+    for i in lastindex(reader.directives)-reader.directive_count+1:lastindex(reader.directives)
         push!(ret, content(reader.directives[i]))
     end
     return ret
@@ -257,21 +257,21 @@ const record_machine, body_machine = (function ()
 end)()
 
 const record_actions = Dict(
-    :feature_seqid   => :(record.seqid  = (mark:p-1) - offset),
-    :feature_source  => :(record.source = (mark:p-1) - offset),
-    :feature_type_   => :(record.type_  = (mark:p-1) - offset),
-    :feature_start   => :(record.start  = (mark:p-1) - offset),
-    :feature_end_    => :(record.end_   = (mark:p-1) - offset),
-    :feature_score   => :(record.score  = (mark:p-1) - offset),
+    :feature_seqid   => :(record.seqid  = (mark:p-1) .- offset),
+    :feature_source  => :(record.source = (mark:p-1) .- offset),
+    :feature_type_   => :(record.type_  = (mark:p-1) .- offset),
+    :feature_start   => :(record.start  = (mark:p-1) .- offset),
+    :feature_end_    => :(record.end_   = (mark:p-1) .- offset),
+    :feature_score   => :(record.score  = (mark:p-1) .- offset),
     :feature_strand  => :(record.strand = p - offset),
     :feature_phase   => :(record.phase  = p - offset),
-    :feature_attribute_key => :(push!(record.attribute_keys, (mark:p-1) - offset)),
+    :feature_attribute_key => :(push!(record.attribute_keys, (mark:p-1) .- offset)),
     :feature         => :(record.kind = :feature),
     :directive       => :(record.kind = :directive),
     :comment         => :(record.kind = :comment),
     :record          => quote
         BioCore.ReaderHelper.resize_and_copy!(record.data, data, 1:p-1)
-        record.filled = (offset+1:p-1) - offset
+        record.filled = (offset+1:p-1) .- offset
     end,
     :anchor          => :(),
     :mark            => :(mark = p))
@@ -293,7 +293,7 @@ eval(
         merge(record_actions, Dict(
             :record => quote
                 BioCore.ReaderHelper.resize_and_copy!(record.data, data, BioCore.ReaderHelper.upanchor!(stream):p-1)
-                record.filled = (offset+1:p-1) - offset
+                record.filled = (offset+1:p-1) .- offset
                 if isfeature(record)
                     reader.directive_count = reader.preceding_directive_count
                     reader.preceding_directive_count = 0

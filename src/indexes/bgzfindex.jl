@@ -30,7 +30,7 @@ end
 # Index for BGZFStream; used in BAI and Tabix index.
 struct BGZFIndex
     # indexes of contigs (chromosomes)
-    data::Vector{Tuple{BinIndex,LinearIndex,Nullable{PseudoBin}}}
+    data::Vector{Tuple{BinIndex,LinearIndex,Union{PseudoBin, Nothing}}}
 end
 
 # 16Kbp
@@ -38,7 +38,7 @@ const LinearWindowSize = 16 * 1024
 
 # Find chunks overlapping with `(seqid, interval)` in `index`.
 function overlapchunks(index::BGZFIndex, seqid::Integer, interval::UnitRange)
-    if !(1 ≤ seqid ≤ endof(index.data))
+    if !(1 ≤ seqid ≤ lastindex(index.data))
         throw(ArgumentError("sequence id $(seqid) is out of range"))
     end
 
@@ -50,7 +50,7 @@ function overlapchunks(index::BGZFIndex, seqid::Integer, interval::UnitRange)
     bins = reg2bins(first(interval), last(interval))
     ret = Chunk[]
     idx = cld(first(interval), LinearWindowSize)
-    if endof(linindex) ≥ idx
+    if lastindex(linindex) ≥ idx
         # `linindex` may be empty for contigs with no records
         offset = linindex[idx]
         for bin in bins
@@ -90,7 +90,7 @@ function reduce!(chunks)
     # NOTE: the maximum size of a BGZF block is 64KiB
     merge_threshold = 64 * 1024 * 2
     i = 1
-    while i < endof(chunks)
+    while i < lastindex(chunks)
         chunk = chunks[i]
         next = chunks[i+1]
         if chunk.stop > next.start || next.start[1] - chunk.stop[1] ≤ merge_threshold
@@ -106,12 +106,12 @@ end
 
 # Read `n_refs` BAI/Tabix-compatible indexes from `input`.
 function read_bgzfindex(input, n_refs)
-    indexes = Tuple{BinIndex,LinearIndex,Nullable{PseudoBin}}[]
+    indexes = Tuple{BinIndex,LinearIndex,Union{PseudoBin, Nothing}}[]
     for _ in 1:n_refs
         # load a binning index (and a pseudo bin)
         n_bins = read(input, Int32)
         binindex = BinIndex()
-        pbin = Nullable{PseudoBin}()
+        pbin::Union{PseudoBin,Nothing} = nothing
         for _ in 1:n_bins
             bin = read(input, UInt32)
             n_chunks = read(input, Int32)
@@ -122,10 +122,10 @@ function read_bgzfindex(input, n_refs)
                 chunk_end = read(input, UInt64)
                 n_mapped = read(input, UInt64)
                 n_unmapped = read(input, UInt64)
-                pbin = Nullable(PseudoBin(
+                pbin = PseudoBin(
                     Chunk(chunk_beg, chunk_end),
                     n_mapped,
-                    n_unmapped))
+                    n_unmapped)
             else
                 chunks = Chunk[]
                 for i in 1:n_chunks

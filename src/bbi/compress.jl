@@ -6,7 +6,7 @@ function compress!(dst::Vector{UInt8}, src::Vector{UInt8})::UInt64
     code = ccall(
         (:compress, Libz.zlib),
         Cint,
-        (Ptr{Void}, Ref{Culong}, Ptr{Void}, Culong),
+        (Ptr{Cvoid}, Ref{Culong}, Ptr{Cvoid}, Culong),
         dst, sz, src, sizeof(src))
     if code != Libz.Z_OK
         Libz.zerror(code)
@@ -19,7 +19,7 @@ function uncompress!(dst::Vector{UInt8}, src::Vector{UInt8})::UInt64
     code = ccall(
         (:uncompress, Libz.zlib),
         Cint,
-        (Ptr{Void}, Ref{Culong}, Ptr{Void}, Culong),
+        (Ptr{Cvoid}, Ref{Culong}, Ptr{Cvoid}, Culong),
         dst, sz, src, sizeof(src))
     if code != Libz.Z_OK
         Libz.zerror(code)
