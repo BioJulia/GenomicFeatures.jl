@@ -6,13 +6,24 @@ os:
 julia:
   - 0.7
   - 1.0
+  - 1.1
+  - 1.2
   - nightly
-matrix:
-  allow_failures:
-    - julia: nightly
 notifications:
   email: false
+
+matrix:
+ allow_failures:
+ - julia: nightly
+
 after_success:
-  - julia -e 'cd(Pkg.dir("GenomicFeatures")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
-  - julia -e 'cd(joinpath(Pkg.dir("GenomicFeatures"), "docs/src")); mkdir("assets"); cd("assets"); run(pipeline(`curl https://codeload.github.com/BioJulia/assets/tar.gz/master`, `tar -xz --strip=2 assets-master/doc_assets`))'
-  - julia -e 'cd(Pkg.dir("GenomicFeatures")); Pkg.add("Documenter"); include(joinpath("docs", "make.jl"))'
+  - julia --project=coverage/ coverage/coverage.jl
+
+jobs:
+  include:
+    - stage: "Documentation"
+      julia: 1.2
+      os: linux
+      script:
+        - julia --project=docs/ docs/make.jl
+      after_success: skip
