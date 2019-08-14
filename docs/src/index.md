@@ -5,17 +5,22 @@ GenomicFeatures.jl
 GenomicFeatures provides utilities for working with interval based genomic annotations.
 It builds on [IntervalTrees](https://github.com/biojulia/intervaltrees.jl) to provide a data-structures and algorithms for various formats such as BED, GFF3, bigWig and bigBed. 
 
+## Installation
+GenomicFeatures is made available to install through BioJulia's package registry.
 
+Julia by default only watches the "General" package registry, so before you start, you should add the BioJulia package registry.
 
-
-Installation
-------------
-
-Install GenomicFeatures from the Julia REPL:
+Start a julia terminal, hit the `]` key to enter pkg mode (you should see the prompt change from `julia>` to `pkg>` ), then enter the following command:
 
 ```julia
-julia> Pkg.add("GenomicFeatures")
+registry add https://github.com/BioJulia/BioJuliaRegistry.git
 ```
 
-If you are interested in the cutting edge of the development, please check out
-the master branch to try new features before release.
+After you've added the registry, you can install GenomicFeatures from the julia REPL.
+Press `]` to enter pkg mode again, and enter the following:
+
+```julia
+add GenomicFeatures
+```
+
+If you are interested in the cutting edge of the development, please check out the [develop branch](https://github.com/BioJulia/GenomicFeatures.jl/tree/develop) to try new features before release.
