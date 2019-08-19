@@ -151,35 +151,6 @@ end
 ```
 
 
-## Interval streams
-
-Intervals need not necessarily stored in an indexed data structure for efficient
-intersection to be practical. Two collections of intervals need only be both
-sorted to compute all overlapping pairs. This is particularly useful in genomics
-where datasets are sometimes so large that loading them entirely into memory is
-not practical.
-
-The `GenomicFeatures` module is able to intersect any two iterators that yield
-intervals in sorted order, which we refer to as "interval streams". An
-`IntervalCollection` is also an interval stream, but so is a sorted array of
-intervals, and parsers over interval file formats. This allows for a very
-general notion of intersection.
-
-```julia
-features_x = open(BED.Reader, "features_x.bed")
-features_y = open(BED.Reader, "features_y.bed")
-for (x, y) in eachoverlap(features_x, features_y)
-    println("intersection found between ", x, " and ", y)
-end
-close(features_x)
-close(features_y)
-```
-
-An exception will be thrown if an interval in encountered out of order while
-processing an interval stream. Ordering of intervals has one complication: there
-is not necessarily a standardized way to order sequence names. By default in
-GenomicFeatures.jl intervals are sorted using a `Base.isless` comparison
-function that is a default order in most command-line tools.
 ## Coverage
 
 A special sort of intersection can also be performed on an interval stream
