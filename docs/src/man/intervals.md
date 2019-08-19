@@ -5,7 +5,7 @@ The `GenomicFeatures` module consists of tools for working efficiently with
 genomic intervals.
 
 
-## Interval type
+## Interval Type
 
 Intervals in GenomicFeatures.jl are consistent with ranges in Julia: *1-based
 and end-inclusive*. When data is read from formats with different
@@ -91,7 +91,7 @@ julia> metadata(i)
 ```
 
 
-## Collections of intervals
+## Collections of Intervals
 
 Collections of intervals are represented using the `IntervalCollection` type,
 which is a general purpose indexed container for intervals. It supports fast
@@ -129,7 +129,7 @@ features = IntervalCollection(reader)
 ```
 
 
-## Overlap query
+## Overlap Query
 
 There are number of `eachoverlap` function in the `GenomicFeatures` module. They
 follow two patterns: interval versus collection queries which return an iterator
