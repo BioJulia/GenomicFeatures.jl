@@ -1,5 +1,4 @@
-GenomicFeatures.jl
-==================
+# GenomicFeatures.jl
 
 ## Description
 GenomicFeatures provides utilities for working with interval based genomic annotations.
