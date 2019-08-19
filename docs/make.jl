@@ -13,8 +13,8 @@ makedocs(
     sitename = "GenomicFeatures.jl",
     pages = [
         "Home" => "index.md",
-        "Intervals" => "intervals.md",
-    ],
+        "man/intervals.md",
+        ],
     authors = replace(join(Pkg.TOML.parsefile("Project.toml")["authors"], ", "), r" <.*?>" => "" ) * ", The BioJulia Organisation, and other contributors."
 )
 deploydocs(
