@@ -14,6 +14,7 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "man/intervals.md",
+        "API Reference" =>  "api/api.md"
         ],
     authors = replace(join(Pkg.TOML.parsefile("Project.toml")["authors"], ", "), r" <.*?>" => "" ) * ", The BioJulia Organisation, and other contributors."
 )
