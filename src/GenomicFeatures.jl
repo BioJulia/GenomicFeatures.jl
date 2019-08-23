@@ -26,7 +26,7 @@ export
     hasleftposition,
     hasrightposition
 
-import BioCore: BioCore, seqname, leftposition, rightposition, isoverlapping, isfilled, hasseqname, hasleftposition, hasrightposition, metadata
+import BioGenerics: BioGenerics, seqname, leftposition, rightposition, isoverlapping, isfilled, hasseqname, hasleftposition, hasrightposition, metadata
 import DataStructures
 import IntervalTrees
 import Base.@propagate_inbounds
