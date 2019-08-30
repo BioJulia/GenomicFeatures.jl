@@ -21,13 +21,11 @@ end
 
 Create an iterator of overlapping intervals between `intervals_a` and `intervals_b`.
 
-This function assumes elements of `intervals_a` and `intervals_b` are sorted by
-its sequence name and left position.  If the element type is not a subtype of
-`GenomicFeatures.Interval`, elements are converted to `Interval` objects.
+This function assumes elements of `intervals_a` and `intervals_b` are sorted by its sequence name and left position.
+If the element type is not a subtype of `GenomicFeatures.Interval`, elements are converted to `Interval` objects.
 
-The third optional argument is a function that defines the order of sequence
-names. The default function is `Base.isless`, which is the lexicographical
-order.
+The third optional argument is a function that defines the order of sequence names.
+The default function is `Base.isless`, which is the lexicographical order.
 """
 function eachoverlap(intervals_a, intervals_b, seqname_isless=Base.isless; filter=true_cmp)
     return OverlapIterator(intervals_a, intervals_b, seqname_isless, filter)
@@ -40,8 +38,7 @@ struct OverlapIteratorState{Sa,Sb,Ta,Tb}
     queue_index::Int
 end
 
-function OverlapIteratorState(
-        Ta::Type, Tb::Type, next_a::Sa, next_b::Sb, queue::Queue, queue_index::Int) where {Sa, Sb}
+function OverlapIteratorState(Ta::Type, Tb::Type, next_a::Sa, next_b::Sb, queue::Queue, queue_index::Int) where {Sa, Sb}
     return OverlapIteratorState{Sa,Sb,Ta,Tb}(next_a, next_b, queue, queue_index)
 end
 
@@ -129,8 +126,7 @@ function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,T
                 queue_index = firstindex(state.queue)
             elseif c == 0
                 if iter.filter(interval_a, interval_b)
-                    return ((interval_a, interval_b),
-                        OverlapIteratorState(Ta, Tb, next_a, next_b, queue, queue_index))
+                    return ((interval_a, interval_b), OverlapIteratorState(Ta, Tb, next_a, next_b, queue, queue_index))
                 end
             else
                 if queue_index == firstindex(queue) + 1
@@ -165,8 +161,7 @@ function compare_overlap(i1::Interval, i2::Interval, isless::Function)
     end
 end
 
-# Faster comparison for `Base.isless`.  Note that `Base.isless` must be
-# consistent wtih `Base.cmp` to work correctly.
+# Faster comparison for `Base.isless`.  Note that `Base.isless` must be consistent wtih `Base.cmp` to work correctly.
 function compare_overlap(i1::Interval, i2::Interval, ::typeof(Base.isless))
     c = cmp(i1.seqname, i2.seqname)
     if c != 0

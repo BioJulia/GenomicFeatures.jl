@@ -15,8 +15,8 @@ function is_all_ordered(intervals::Vector{I}) where I <: Interval
     return true
 end
 
-# Generate an array of n random Interval{Int} object. With sequence names
-# samples from seqnames, and intervals drawn to lie in [1, maxpos].
+# Generate an array of n random Interval{Int} object.
+# With sequence names, samples from seqnames, and intervals drawn to lie in [1, maxpos].
 function random_intervals(seqnames, maxpos::Int, n::Int)
     seq_dist = Categorical(length(seqnames))
     strand_dist = Categorical(2)
@@ -30,8 +30,7 @@ function random_intervals(seqnames, maxpos::Int, n::Int)
         first = rand(1:maxpos-intlen)
         last = first + intlen - 1
         strand = rand(strand_dist) == 1 ? STRAND_POS : STRAND_NEG
-        intervals[i] = Interval{Int}(seqnames[rand(seq_dist)],
-                                     first, last, strand, i)
+        intervals[i] = Interval{Int}(seqnames[rand(seq_dist)], first, last, strand, i)
     end
     return intervals
 end
@@ -46,11 +45,9 @@ function simple_intersection(intervals_a, intervals_b; filter=(a,b)->true)
     while i <= length(intervals_a) && j <= length(intervals_b)
         ai = intervals_a[i]
         bj = intervals_b[j]
-        if isless(ai.seqname, bj.seqname) ||
-           (ai.seqname == bj.seqname && ai.last < bj.first)
+        if isless(ai.seqname, bj.seqname) || (ai.seqname == bj.seqname && ai.last < bj.first)
             i += 1
-        elseif isless(bj.seqname, ai.seqname) ||
-               (ai.seqname == bj.seqname && bj.last < ai.first)
+        elseif isless(bj.seqname, ai.seqname) || (ai.seqname == bj.seqname && bj.last < ai.first)
             j += 1
         else
             k = j
@@ -95,8 +92,7 @@ function simple_coverage(intervals)
                 while j <= length(arr) && arr[j] == arr[i]
                     j += 1
                 end
-                push!(covintervals,
-                      Interval{UInt32}(seqname, i, j - 1, STRAND_BOTH, arr[i]))
+                push!(covintervals, Interval{UInt32}(seqname, i, j - 1, STRAND_BOTH, arr[i]))
                 i = j
             else
                 i += 1
@@ -224,10 +220,8 @@ end
             push!(ic_b, interval)
         end
 
-        @test sort(collect(eachoverlap(ic_a, ic_b))) ==
-              sort(simple_intersection(intervals_a, intervals_b))
-        @test sort(collect(eachoverlap(ic_a, ic_b, filter=(a,b) -> isodd(first(a))))) ==
-              sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
+        @test sort(collect(eachoverlap(ic_a, ic_b))) == sort(simple_intersection(intervals_a, intervals_b))
+        @test sort(collect(eachoverlap(ic_a, ic_b, filter=(a,b) -> isodd(first(a))))) == sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
     end
 
     @testset "Show" begin
@@ -273,8 +267,7 @@ end
         @test sort(collect(it)) == sort(simple_intersection(intervals_a, intervals_b))
 
         it = eachoverlap(ic_a, ic_b, isless, filter=(a,b) -> isodd(first(a)))
-        @test sort(collect(it)) ==
-              sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
+        @test sort(collect(it)) == sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
 
         it = eachoverlap(
             [Interval("a", 1, 100, STRAND_POS, nothing), Interval("c", 1, 100, STRAND_POS, nothing)],
@@ -326,10 +319,8 @@ end
             push!(ic_b, interval)
         end
 
-        @test sort(collect(eachoverlap(ic_a, ic_b, isless))) ==
-              sort(simple_intersection(intervals_a, intervals_b))
-        @test sort(collect(eachoverlap(ic_a, ic_b, isless, filter=(a,b) -> isodd(first(a))))) ==
-              sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
+        @test sort(collect(eachoverlap(ic_a, ic_b, isless))) == sort(simple_intersection(intervals_a, intervals_b))
+        @test sort(collect(eachoverlap(ic_a, ic_b, isless, filter=(a,b) -> isodd(first(a))))) == sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
     end
 
     @testset "IntervalStream Coverage" begin

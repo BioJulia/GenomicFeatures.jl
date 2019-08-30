@@ -9,16 +9,14 @@
 """
     coverage(intervals)
 
-Compute the coverage of a collection of intervals and return an
-`IntervalCollection` that contains run-length encoded coverage data.
+Compute the coverage of a collection of intervals and return an `IntervalCollection` that contains run-length encoded coverage data.
 
 For example, given intervals like:
 
     [------]     [------------]
        [---------------]
 
-This function would return a new set of disjoint intervals with annotated
-coverage like:
+This function would return a new set of disjoint intervals with annotated coverage like:
 
     [1][-2-][-1-][--2--][--1--]
 """
@@ -40,8 +38,7 @@ function coverage(stream, seqname_isless::Function=isless)
 
     while true
         if interval.seqname != coverage_seqname
-            coverage_process_lasts_heap!(cov, current_coverage, coverage_seqname,
-                                         coverage_first, lasts)
+            coverage_process_lasts_heap!(cov, current_coverage, coverage_seqname, coverage_first, lasts)
             if !(isempty(coverage_seqname) || seqname_isless(coverage_seqname, interval.seqname))
                 error("Intervals must be sorted to compute coverage.")
             end
@@ -70,8 +67,7 @@ function coverage(stream, seqname_isless::Function=isless)
                 current_coverage -= 1
             else
                 @assert pos >= coverage_first
-                push!(cov, Interval{UInt32}(coverage_seqname, coverage_first,
-                                            pos, STRAND_BOTH, current_coverage))
+                push!(cov, Interval{UInt32}(coverage_seqname, coverage_first, pos, STRAND_BOTH, current_coverage))
                 current_coverage -= 1
                 coverage_first = pos + 1
             end
@@ -83,9 +79,7 @@ function coverage(stream, seqname_isless::Function=isless)
                 current_coverage += 1
             else
                 if current_coverage > 0
-                    push!(cov, Interval{UInt32}(coverage_seqname, coverage_first,
-                                                first(interval) - 1, STRAND_BOTH,
-                                                current_coverage))
+                    push!(cov, Interval{UInt32}(coverage_seqname, coverage_first, first(interval) - 1, STRAND_BOTH, current_coverage))
                 end
                 current_coverage += 1
                 coverage_first = first(interval)
@@ -101,8 +95,7 @@ function coverage(stream, seqname_isless::Function=isless)
         end
     end
 
-    coverage_process_lasts_heap!(cov, current_coverage, coverage_seqname,
-                                 coverage_first, lasts)
+    coverage_process_lasts_heap!(cov, current_coverage, coverage_seqname, coverage_first, lasts)
 
     return cov
 end
@@ -111,19 +104,15 @@ function coverage(ic::IntervalCollection)
     return coverage(ic, isless)
 end
 
-# Helper function for coverage. Process remaining interval end points after
-# all intervals have been read.
-function coverage_process_lasts_heap!(cov::IntervalCollection{UInt32},
-                                      current_coverage, coverage_seqname,
-                                      coverage_first, lasts)
+# Helper function for coverage. Process remaining interval end points after all intervals have been read.
+function coverage_process_lasts_heap!(cov::IntervalCollection{UInt32}, current_coverage, coverage_seqname, coverage_first, lasts)
     while !isempty(lasts)
         pos = DataStructures.heappop!(lasts)
         if pos == coverage_first - 1
             current_coverage -= 1
         else
             @assert pos >= coverage_first
-            push!(cov, Interval{UInt32}(coverage_seqname, coverage_first,
-                                        pos, STRAND_BOTH, current_coverage))
+            push!(cov, Interval{UInt32}(coverage_seqname, coverage_first, pos, STRAND_BOTH, current_coverage))
             current_coverage -= 1
             coverage_first = pos + 1
         end

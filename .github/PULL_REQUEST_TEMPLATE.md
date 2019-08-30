@@ -1,6 +1,8 @@
 # A clear and descriptive title (No issue numbers please)
 
-> _This template is rather extensive. Fill out all that you can, if are a new contributor or you're unsure about any section, leave it unchanged and a reviewer will help you_ :smile:. _This template is simply a tool to help everyone remember the BioJulia guidelines, if you feel anything in this template is not relevant, simply delete it._
+> _This template is rather extensive.
+> Fill out all that you can, if are a new contributor or you're unsure about any section, leave it unchanged and a reviewer will help you_ :smile:.
+> _This template is simply a tool to help everyone remember the BioJulia guidelines, if you feel anything in this template is not relevant, simply delete it._
 
 ## Types of changes
 
@@ -18,22 +20,20 @@ _(Please tick any or all of the following that are applicable)_
 
   - **Provide justification of the addition**.
 
-  - **Provide a runnable example of use of your addition**. This lets reviewers
-    and others try out the feature before it is merged or makes it's way to release.
+  - **Provide a runnable example of use of your addition**.
+  This lets reviewers and others try out the feature before it is merged or makes it's way to release.
 
 - If you have changed current behaviour...
   - **Describe the behaviour prior to you changes**
 
-  - **Describe the behaviour after your changes** and justify why you have made the changes,
-    Please describe any breakages you anticipate as a result of these changes.
+  - **Describe the behaviour after your changes** and justify why you have made the changes.
+  Please describe any breakages you anticipate as a result of these changes.
 
   - **Does your change alter APIs or existing exposed methods/types?**
-    If so, this may cause dependency issues and breakages, so the maintainer
-    will need to consider this when versioning the next release.
+    If so, this may cause dependency issues and breakages, so the maintainer will need to consider this when versioning the next release.
 
-  - If you are implementing changes that are intended to increase performance, you
-    should provide the results of a simple performance benchmark exercise
-    demonstrating the improvement. Especially if the changes make code less legible.
+  - If you are implementing changes that are intended to increase performance, you should provide the results of a simple performance benchmark exercise demonstrating the improvement.
+  Especially if the changes make code less legible.
 
 ## :ballot_box_with_check: Checklist
 
