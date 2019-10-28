@@ -56,7 +56,7 @@ mutable struct GenomicIntervalCollection{T}
     end
 
     # bulk insertion
-    function GenomicIntervalCollection{T}(intervals::AbstractVector{GenomicInterval{T}}, sort=false) where T
+    function GenomicIntervalCollection{T}(intervals::AbstractVector{<:AbstractGenomicInterval{T}}, sort=false) where T
         if sort
             sort!(intervals)
         else
@@ -80,7 +80,7 @@ mutable struct GenomicIntervalCollection{T}
     end
 end
 
-function GenomicIntervalCollection(intervals::AbstractVector{GenomicInterval{T}}, sort=false) where T
+function GenomicIntervalCollection(intervals::AbstractVector{<:AbstractGenomicInterval{T}}, sort=false) where T
     return GenomicIntervalCollection{T}(intervals, sort)
 end
 
@@ -97,7 +97,7 @@ function update_ordered_trees!(ic::GenomicIntervalCollection{T}) where T
     end
 end
 
-function Base.push!(ic::GenomicIntervalCollection{T}, i::GenomicInterval{T}) where T
+function Base.push!(ic::GenomicIntervalCollection{T}, i::AbstractGenomicInterval{T}) where T
     if !haskey(ic.trees, i.seqname)
         tree = ICTree{T}()
         ic.trees[i.seqname] = tree
@@ -269,7 +269,7 @@ Find a the first interval with matching start and end points.
 
 Returns that interval, or 'nothing' if no interval was found.
 """
-function Base.findfirst(a::GenomicIntervalCollection{T}, b::GenomicInterval{S}; filter=true_cmp) where {T,S}
+function Base.findfirst(a::GenomicIntervalCollection{T}, b::AbstractGenomicInterval{S}; filter=true_cmp) where {T,S}
     if !haskey(a.trees, b.seqname)
         return nothing
     else
@@ -281,7 +281,7 @@ end
 # Overlaps
 # --------
 
-function eachoverlap(a::GenomicIntervalCollection{T}, b::GenomicInterval; filter::F = true_cmp) where {F,T}
+function eachoverlap(a::GenomicIntervalCollection{T}, b::AbstractGenomicInterval; filter::F = true_cmp) where {F,T}
     if haskey(a.trees, b.seqname)
         return intersect(a.trees[b.seqname], b)
     else
@@ -319,7 +319,7 @@ end
 =#
 
 function Base.eltype(::Type{IntersectIterator{F,S,T}}) where {F,S,T}
-    return Tuple{GenomicInterval{S},GenomicInterval{T}}
+    return Tuple{GenomicInterval{S},GenomicInterval{T}} #TODO: use AbstractGenomicInterval and retrieve interval type.
 end
 
 function Base.IteratorSize(::Type{IntersectIterator{F,S,T}}) where {F,S,T}
@@ -393,7 +393,7 @@ struct GenomicIntervalCollectionStreamIterator{F,S,T}
 end
 
 function Base.eltype(::Type{GenomicIntervalCollectionStreamIterator{F,S,T}}) where {F,S,T}
-    return Tuple{GenomicInterval{metadatatype(S)},GenomicInterval{T}}
+    return Tuple{GenomicInterval{metadatatype(S)},GenomicInterval{T}} #TODO: use AbstractGenomicInterval and retrieve inteval type.
 end
 
 function Base.IteratorSize(::Type{GenomicIntervalCollectionStreamIterator{F,S,T}}) where {F,S,T}
