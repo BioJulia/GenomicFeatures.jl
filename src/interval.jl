@@ -6,8 +6,10 @@
 # This file is a part of BioJulia.
 # License is MIT: https://github.com/BioJulia/Bio.jl/blob/master/LICENSE.md
 
+abstract type AbstractGenomicInterval{T} <: IntervalTrees.AbstractInterval{Int64} end
+
 "A genomic interval specifies interval with some associated metadata."
-struct GenomicInterval{T} <: IntervalTrees.AbstractInterval{Int64}
+struct GenomicInterval{T} <: AbstractGenomicInterval{T}
     seqname::String
     first::Int64
     last::Int64
