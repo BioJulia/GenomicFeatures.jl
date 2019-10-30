@@ -385,3 +385,26 @@ end
         @test collect(iter1) == collect(iter2) == collect(iter3) == collect(iter4)
     end
 end
+
+@testset "Custom Concrete Types" begin
+
+    # Define custom Interval type.
+    struct GATC{T} <: GenomicFeatures.AbstractGenomicInterval{T}
+        seqname::String
+        first::Int64
+        last::Int64
+        metadata::T
+    end
+
+    gatcs = [GATC("test1",left,right,nothing) for (left, right) in zip(1:4:3*4, 4:4:3*4)]
+
+    # Collection.
+    col_gatc = GenomicIntervalCollection(gatcs[1:2])
+
+    push!(col_gatc, gatcs[3])
+
+    @test collect(col_gatc) == gatcs
+
+    # TODO: Mixed types.
+    # push!(gatc_col, GenomicInterval("test1", 9, 12))
+end
