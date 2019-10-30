@@ -407,4 +407,15 @@ end
 
     # TODO: Mixed types.
     # push!(gatc_col, GenomicInterval("test1", 9, 12))
+    
+    # Overlap.
+    intervals_b = intervals_a = gatcs
+    ic_a = GenomicIntervalCollection(intervals_a)
+    ic_b = GenomicIntervalCollection(intervals_b)
+    iter1 = eachoverlap(intervals_a, intervals_b)
+    iter2 = eachoverlap(intervals_a, ic_b)
+    iter3 = eachoverlap(ic_a, intervals_b)
+    iter4 = eachoverlap(ic_a, ic_b)
+    @test collect(iter1) == collect(iter2) == collect(iter3) == collect(iter4)
+
 end
