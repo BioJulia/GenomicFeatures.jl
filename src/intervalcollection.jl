@@ -60,7 +60,7 @@ mutable struct GenomicIntervalCollection{I}
     end
 
     # bulk insertion
-    function GenomicIntervalCollection{I}(intervals::AbstractVector{I}, sort=false) where {T,I<:AbstractGenomicInterval{T}}
+    function GenomicIntervalCollection{I}(intervals::AbstractVector{I}, sort::Bool=false) where {T,I<:AbstractGenomicInterval{T}}
         if sort
             sort!(intervals)
         else
@@ -84,7 +84,7 @@ mutable struct GenomicIntervalCollection{I}
     end
 end
 
-function GenomicIntervalCollection(intervals::AbstractVector{I}, sort=false) where {T,I<:AbstractGenomicInterval{T}}
+function GenomicIntervalCollection(intervals::AbstractVector{I}, sort::Bool=false) where {T,I<:AbstractGenomicInterval{T}}
     return GenomicIntervalCollection{I}(intervals, sort)
 end
 
