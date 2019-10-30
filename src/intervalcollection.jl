@@ -323,7 +323,7 @@ end
 =#
 
 function Base.eltype(::Type{IntersectIterator{F,I,J}}) where {F,S,I<:AbstractGenomicInterval{S},T,J<:AbstractGenomicInterval{T}}
-    return Tuple{I,J} #TODO: use AbstractGenomicInterval and retrieve interval type.
+    return Tuple{I,J}
 end
 
 function Base.IteratorSize(::Type{IntersectIterator{F,S,T}}) where {F,S,T}
@@ -397,7 +397,11 @@ struct GenomicIntervalCollectionStreamIterator{F,S,I}
 end
 
 function Base.eltype(::Type{GenomicIntervalCollectionStreamIterator{F,S,I}}) where {F,S,T,I<:AbstractGenomicInterval{T}}
-    return Tuple{GenomicInterval{metadatatype(S)},I} #TODO: use AbstractGenomicInterval and retrieve inteval type.
+    return Tuple{GenomicInterval{metadatatype(S)},I}
+end
+
+function Base.eltype(::Type{GenomicIntervalCollectionStreamIterator{F,S,I}}) where {F,J, S<:Union{<:GenomicIntervalCollection{J},<:AbstractVector{J}},T,I<:AbstractGenomicInterval{T}}
+    return Tuple{J,I}
 end
 
 function Base.IteratorSize(::Type{GenomicIntervalCollectionStreamIterator{F,S,I}}) where {F,S,T,I<:AbstractGenomicInterval{T}}
