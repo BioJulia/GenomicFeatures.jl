@@ -35,7 +35,7 @@
 # Aliases for types of IntervalTrees.jl (IC: GenomicInterval Collection).
 const ICTree{I}                               = IntervalTrees.IntervalBTree{Int64,I,64}
 # const ICTreeIteratorState{I}                  = IntervalTrees.IntervalBTreeIteratorState{Int64,I,64}
-# const ICTreeIntersection{T}                   = IntervalTrees.Intersection{Int64,GenomicInterval{T},64}
+const ICTreeIntersection{I}                   = IntervalTrees.Intersection{Int64,I,64}
 # const ICTreeIntersectionIterator{F,S,T}       = IntervalTrees.IntersectionIterator{F,Int64,GenomicInterval{S},64,GenomicInterval{T},64}
 # const ICTreeIntervalIntersectionIterator{F,T} = IntervalTrees.IntervalIntersectionIterator{F, Int64,GenomicInterval{T},64}
 
@@ -466,7 +466,7 @@ end
 # (current_query, stream_state, intersection_object)
 function Base.iterate(it::GenomicIntervalCollectionStreamIterator{F,S,I}, state = ()) where {F,S,T,I<:AbstractGenomicInterval{T}}
     # If first iteration, make empty intersection, otherwise get it from the state.
-    intersection = (state !== () ? state[3] : IntervalTrees.Intersection{Int64,I,64}())
+    intersection = (state !== () ? state[3] : ICTreeIntersection{I}())
 
     # If this is not the first iteration, and there is an available intersection
     # for the current query, return it and search for the next intersection.
