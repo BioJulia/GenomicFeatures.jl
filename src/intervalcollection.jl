@@ -91,6 +91,11 @@ function GenomicIntervalCollection(intervals::AbstractVector{I}, sort::Bool=fals
     return GenomicIntervalCollection{I}(intervals, sort)
 end
 
+# Shorthand for metatype specified bulk insertion (backwards compatibility with deprecated IntervalCollection).
+function GenomicIntervalCollection{T}(intervals::AbstractVector{I}, sort::Bool=false) where {T,I<:AbstractGenomicInterval{T}}
+    return GenomicIntervalCollection{I}(intervals, sort)
+end
+
 # Shorthand bulk insertion fallback.
 function GenomicIntervalCollection(intervals)
     return GenomicIntervalCollection(collect(GenomicInterval{metadatatype(intervals)}, intervals), true)

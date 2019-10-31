@@ -185,6 +185,9 @@ end
 
     @testset "Constructor" begin
         @test GenomicIntervalCollection{Int}() == GenomicIntervalCollection{GenomicInterval{Int}}()
+
+        intervals = [GenomicInterval("test", 1, 2)]
+        @test GenomicIntervalCollection{Nothing}(intervals) == GenomicIntervalCollection{GenomicInterval{Nothing}}(intervals)
     end
 
     @testset "Insertion/Iteration" begin
@@ -412,7 +415,7 @@ end
 
     # TODO: Mixed types.
     # push!(gatc_col, GenomicInterval("test1", 9, 12))
-    
+
     # Overlap.
     intervals_b = intervals_a = gatcs
     ic_a = GenomicIntervalCollection(intervals_a)
@@ -425,5 +428,18 @@ end
 
     # Coverage.
     @test collect(coverage(col_gatc)) == [GenomicInterval{UInt32}("test1",1,12,'.',1)] #TODO: relax Number comparisons.
+
+end
+
+@testset "Check Deprecated" begin
+    # Interval
+    @test (@test_deprecated Interval("test", 1, 2)) == GenomicInterval("test", 1, 2)
+    @test (@test_deprecated Interval("test", 1:2)) == GenomicInterval("test", 1, 2)
+
+    @test_deprecated intervals = [Interval("test", 1, 2)]
+
+    # IntervalCollection
+    @test (@test_deprecated IntervalCollection{Nothing}()) == GenomicIntervalCollection{Nothing}() == GenomicIntervalCollection{GenomicInterval{Nothing}}()
+    @test (@test_deprecated IntervalCollection(intervals)) == (@test_deprecated IntervalCollection{Nothing}(intervals)) == GenomicIntervalCollection(intervals) == GenomicIntervalCollection{Nothing}(intervals) == GenomicIntervalCollection{GenomicInterval{Nothing}}(intervals)
 
 end
