@@ -36,7 +36,7 @@
 const ICTree{I}                               = IntervalTrees.IntervalBTree{Int64,I,64}
 # const ICTreeIteratorState{I}                  = IntervalTrees.IntervalBTreeIteratorState{Int64,I,64}
 const ICTreeIntersection{I}                   = IntervalTrees.Intersection{Int64,I,64}
-# const ICTreeIntersectionIterator{F,S,T}       = IntervalTrees.IntersectionIterator{F,Int64,GenomicInterval{S},64,GenomicInterval{T},64}
+# const ICTreeIntersectionIterator{F,J,I}       = IntervalTrees.IntersectionIterator{F,Int64,J,64,I,64}
 # const ICTreeIntervalIntersectionIterator{F,T} = IntervalTrees.IntervalIntersectionIterator{F, Int64,GenomicInterval{T},64}
 
 mutable struct GenomicIntervalCollection{I}
