@@ -9,7 +9,7 @@ export
     STRAND_NEG,
     STRAND_BOTH,
 
-    Interval,
+    GenomicInterval,
     seqname,
     leftposition,
     rightposition,
@@ -17,7 +17,7 @@ export
     metadata,
     isoverlapping,
 
-    IntervalCollection,
+    GenomicIntervalCollection,
     eachoverlap,
     coverage,
 

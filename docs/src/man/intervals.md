@@ -3,15 +3,15 @@
 The `GenomicFeatures` module consists of tools for working efficiently with genomic intervals.
 
 
-## Interval Type
+## GenomicInterval Type
 
-Intervals in GenomicFeatures.jl are consistent with ranges in Julia: *1-based and end-inclusive*.
+`GenomicInterval`s in GenomicFeatures.jl are consistent with ranges in Julia: *1-based and end-inclusive*.
 When data is read from formats with different representations (i.e. 0-based and/or end-exclusive) they are always converted automatically.
 Similarly when writing data, you should not have to reason about off-by-one errors due to format differences while using functionality provided in GenomicFeatures.jl.
 
-The `Interval` type is defined as
+The `GenomicInterval` type is defined as
 ```julia
-struct Interval{T} <: AbstractInterval{Int64}
+struct GenomicInterval{T} <: AbstractInterval{Int64}
     seqname::String
     first::Int64
     last::Int64
@@ -20,7 +20,7 @@ struct Interval{T} <: AbstractInterval{Int64}
 end
 ```
 
-The first three fields (`seqname`, `first`, and `last`) are mandatory arguments when constructing an `Interval` object.
+The first three fields (`seqname`, `first`, and `last`) are mandatory arguments when constructing an `GenomicInterval` object.
 `seqname` is the sequence name associated with the interval.
 The `first` and `last` fields are the leftmost and rightmost positions of the interval, which can be accessed with `leftposition` and `rightposition` functions, respectively.
 
@@ -33,20 +33,20 @@ The `strand` field can take four kinds of values listed in the next table:
 | `'-'`  | `STRAND_NEG`  | negative strand                   |
 | `'.'`  | `STRAND_BOTH` | non-strand-specific feature       |
 
-`Interval` is parameterized on metadata type, which lets it efficiently and precisely be specialized to represent intervals from a variety of formats.
+`GenomicInterval` is parameterized on metadata type, which lets it efficiently and precisely be specialized to represent intervals from a variety of formats.
 
 The default strand and metadata value are `STRAND_BOTH` and `nothing`:
 ```jlcon
-julia> Interval("chr1", 10000, 20000)
-GenomicFeatures.Interval{Void}:
+julia> GenomicInterval("chr1", 10000, 20000)
+GenomicFeatures.GenomicInterval{Void}:
   sequence name: chr1
   leftmost position: 10000
   rightmost position: 20000
   strand: .
   metadata: nothing
 
-julia> Interval("chr1", 10000, 20000, '+')
-GenomicFeatures.Interval{Void}:
+julia> GenomicInterval("chr1", 10000, 20000, '+')
+GenomicFeatures.GenomicInterval{Void}:
   sequence name: chr1
   leftmost position: 10000
   rightmost position: 20000
@@ -57,8 +57,8 @@ GenomicFeatures.Interval{Void}:
 
 The following example shows all accessor functions for the five fields:
 ```jlcon
-julia> i = Interval("chr1", 10000, 20000, '+', "some annotation")
-GenomicFeatures.Interval{String}:
+julia> i = GenomicInterval("chr1", 10000, 20000, '+', "some annotation")
+GenomicFeatures.GenomicInterval{String}:
   sequence name: chr1
   leftmost position: 10000
   rightmost position: 20000
@@ -83,35 +83,35 @@ julia> metadata(i)
 ```
 
 
-## Collections of Intervals
+## Collections of GenomicIntervals
 
-Collections of intervals are represented using the `IntervalCollection` type, which is a general purpose indexed container for intervals.
+Collections of intervals are represented using the `GenomicIntervalCollection` type, which is a general purpose indexed container for intervals.
 It supports fast intersection operations as well as insertion, deletion, and sorted iteration.
 
-Interval collections can be initialized by inserting elements one by one using `push!`.
+GenomicInterval collections can be initialized by inserting elements one by one using `push!`.
 
 ```julia
 # The type parameter (Void here) indicates the interval metadata type.
-col = IntervalCollection{Void}()
+col = GenomicIntervalCollection{Void}()
 
 for i in 1:100:10000
-    push!(col, Interval("chr1", i, i + 99))
+    push!(col, GenomicInterval("chr1", i, i + 99))
 end
 ```
 
-Incrementally building an interval collection like this works, but `IntervalCollection` also has a bulk insertion constructor that is able to build the indexed data structure extremely efficiently from an array of intervals.
+Incrementally building an interval collection like this works, but `GenomicIntervalCollection` also has a bulk insertion constructor that is able to build the indexed data structure extremely efficiently from an array of intervals.
 
 ```julia
-col = IntervalCollection([Interval("chr1", i, i + 99) for i in 1:100:10000])
+col = GenomicIntervalCollection([GenomicInterval("chr1", i, i + 99) for i in 1:100:10000])
 ```
 
-Bulding `IntervalCollections` in one shot like this should be preferred when it's convenient or speed in an issue.
+Bulding `GenomicIntervalCollections` in one shot like this should be preferred when it's convenient or speed in an issue.
 
-`IntervalCollection`s can also be build directly from a genome annotation file, here in GFF3 format:
+`GenomicIntervalCollection`s can also be build directly from a genome annotation file, here in GFF3 format:
 
 ```julia
 reader = open(GFF3.Reader, "some_genome.gff3")
-features = IntervalCollection(reader)
+features = GenomicIntervalCollection(reader)
 ```
 
 

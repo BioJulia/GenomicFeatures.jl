@@ -9,7 +9,7 @@
 """
     coverage(intervals)
 
-Compute the coverage of a collection of intervals and return an `IntervalCollection` that contains run-length encoded coverage data.
+Compute the coverage of a collection of intervals and return an `GenomicIntervalCollection` that contains run-length encoded coverage data.
 
 For example, given intervals like:
 
@@ -21,7 +21,7 @@ This function would return a new set of disjoint intervals with annotated covera
     [1][-2-][-1-][--2--][--1--]
 """
 function coverage(stream, seqname_isless::Function=isless)
-    cov = IntervalCollection{UInt32}()
+    cov = GenomicIntervalCollection{UInt32}()
     lasts = Int64[]
 
     stream_next = iterate(stream)
@@ -67,7 +67,7 @@ function coverage(stream, seqname_isless::Function=isless)
                 current_coverage -= 1
             else
                 @assert pos >= coverage_first
-                push!(cov, Interval{UInt32}(coverage_seqname, coverage_first, pos, STRAND_BOTH, current_coverage))
+                push!(cov, GenomicInterval{UInt32}(coverage_seqname, coverage_first, pos, STRAND_BOTH, current_coverage))
                 current_coverage -= 1
                 coverage_first = pos + 1
             end
@@ -79,7 +79,7 @@ function coverage(stream, seqname_isless::Function=isless)
                 current_coverage += 1
             else
                 if current_coverage > 0
-                    push!(cov, Interval{UInt32}(coverage_seqname, coverage_first, first(interval) - 1, STRAND_BOTH, current_coverage))
+                    push!(cov, GenomicInterval{UInt32}(coverage_seqname, coverage_first, first(interval) - 1, STRAND_BOTH, current_coverage))
                 end
                 current_coverage += 1
                 coverage_first = first(interval)
@@ -100,19 +100,19 @@ function coverage(stream, seqname_isless::Function=isless)
     return cov
 end
 
-function coverage(ic::IntervalCollection)
+function coverage(ic::GenomicIntervalCollection)
     return coverage(ic, isless)
 end
 
 # Helper function for coverage. Process remaining interval end points after all intervals have been read.
-function coverage_process_lasts_heap!(cov::IntervalCollection{UInt32}, current_coverage, coverage_seqname, coverage_first, lasts)
+function coverage_process_lasts_heap!(cov::GenomicIntervalCollection{UInt32}, current_coverage, coverage_seqname, coverage_first, lasts)
     while !isempty(lasts)
         pos = DataStructures.heappop!(lasts)
         if pos == coverage_first - 1
             current_coverage -= 1
         else
             @assert pos >= coverage_first
-            push!(cov, Interval{UInt32}(coverage_seqname, coverage_first, pos, STRAND_BOTH, current_coverage))
+            push!(cov, GenomicInterval{UInt32}(coverage_seqname, coverage_first, pos, STRAND_BOTH, current_coverage))
             current_coverage -= 1
             coverage_first = pos + 1
         end
