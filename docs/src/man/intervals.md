@@ -11,7 +11,7 @@ Similarly when writing data, you should not have to reason about off-by-one erro
 
 The `GenomicInterval` type is defined as
 ```julia
-struct GenomicInterval{T} <: AbstractInterval{Int64}
+struct GenomicInterval{T} <: AbstractGenomicInterval{T}
     seqname::String
     first::Int64
     last::Int64
@@ -91,8 +91,8 @@ It supports fast intersection operations as well as insertion, deletion, and sor
 GenomicInterval collections can be initialized by inserting elements one by one using `push!`.
 
 ```julia
-# The type parameter (Void here) indicates the interval metadata type.
-col = GenomicIntervalCollection{Void}()
+# The type parameter (Nothing here) indicates the interval metadata type.
+col = GenomicIntervalCollection{Nothing}()
 
 for i in 1:100:10000
     push!(col, GenomicInterval("chr1", i, i + 99))
@@ -105,7 +105,7 @@ Incrementally building an interval collection like this works, but `GenomicInter
 col = GenomicIntervalCollection([GenomicInterval("chr1", i, i + 99) for i in 1:100:10000])
 ```
 
-Bulding `GenomicIntervalCollections` in one shot like this should be preferred when it's convenient or speed in an issue.
+Building `GenomicIntervalCollections` in one shot like this should be preferred when it's convenient or speed in an issue.
 
 `GenomicIntervalCollection`s can also be build directly from a genome annotation file, here in GFF3 format:
 

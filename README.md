@@ -10,7 +10,7 @@
 
 ## Description
 GenomicFeatures provides utilities for working with interval based genomic annotations.
-It builds on [IntervalTrees](https://github.com/biojulia/intervaltrees.jl) to provide a data-structures and algorithms for various formats such as [BED](https://github.com/biojulia/bed.jl), [GFF3](https://github.com/biojulia/gff3.jl), [bigWig](https://github.com/biojulia/bigwig.jl) and [bigBed](https://github.com/biojulia/bigbed.jl).
+It builds on [IntervalTrees](https://github.com/biojulia/intervaltrees.jl) to provide data-structures and algorithms for various formats such as [BED](https://github.com/biojulia/bed.jl), [GFF3](https://github.com/biojulia/gff3.jl), [bigWig](https://github.com/biojulia/bigwig.jl), and [bigBed](https://github.com/biojulia/bigbed.jl).
 
 ## Installation
 GenomicFeatures is made available to install through BioJulia's package registry.
