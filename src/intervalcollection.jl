@@ -37,7 +37,7 @@ const ICTree{I}                               = IntervalTrees.IntervalBTree{Int6
 # const ICTreeIteratorState{I}                  = IntervalTrees.IntervalBTreeIteratorState{Int64,I,64}
 const ICTreeIntersection{I}                   = IntervalTrees.Intersection{Int64,I,64}
 # const ICTreeIntersectionIterator{F,J,I}       = IntervalTrees.IntersectionIterator{F,Int64,J,64,I,64}
-# const ICTreeIntervalIntersectionIterator{F,T} = IntervalTrees.IntervalIntersectionIterator{F, Int64,GenomicInterval{T},64}
+const ICTreeIntervalIntersectionIterator{F,I} = IntervalTrees.IntervalIntersectionIterator{F,Int64,I,64}
 
 mutable struct GenomicIntervalCollection{I}
     # Sequence name mapped to IntervalTree, which in turn maps intervals to a list of metadata.
@@ -289,7 +289,7 @@ function eachoverlap(a::GenomicIntervalCollection{I}, b::AbstractGenomicInterval
     if haskey(a.trees, b.seqname)
         return intersect(a.trees[b.seqname], b)
     else
-        return IntervalTrees.IntervalIntersectionIterator{F,Int64,I,64}()
+        return ICTreeIntervalIntersectionIterator{F,I}()
     end
 end
 
