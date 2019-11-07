@@ -45,13 +45,13 @@ function simple_intersection(intervals_a, intervals_b; filter=(a,b)->true)
     while i <= length(intervals_a) && j <= length(intervals_b)
         ai = intervals_a[i]
         bj = intervals_b[j]
-        if isless(ai.seqname, bj.seqname) || (ai.seqname == bj.seqname && ai.last < bj.first)
+        if isless(seqname(ai), seqname(bj)) || (seqname(ai) == seqname(bj) && rightposition(ai) < leftposition(bj))
             i += 1
-        elseif isless(bj.seqname, ai.seqname) || (ai.seqname == bj.seqname && bj.last < ai.first)
+        elseif isless(seqname(bj), seqname(ai)) || (seqname(ai) == seqname(bj) && rightposition(bj) < leftposition(ai))
             j += 1
         else
             k = j
-            while k <= length(intervals_b) && intervals_b[k].first <= ai.last
+            while k <= length(intervals_b) && leftposition(intervals_b[k]) <= rightposition(ai)
                 if isoverlapping(ai, intervals_b[k]) && filter(ai, intervals_b[k])
                     push!(intersections, (ai, intervals_b[k]))
                 end
@@ -66,8 +66,8 @@ end
 function simple_coverage(intervals)
     seqlens = Dict{String, Int}()
     for interval in intervals
-        if get(seqlens, interval.seqname, -1) < interval.last
-            seqlens[interval.seqname] = interval.last
+        if get(seqlens, seqname(interval), -1) < rightposition(interval)
+            seqlens[seqname(interval)] = rightposition(interval)
         end
     end
 
@@ -77,8 +77,8 @@ function simple_coverage(intervals)
     end
 
     for interval in intervals
-        arr = covarrays[interval.seqname]
-        for i in interval.first:interval.last
+        arr = covarrays[seqname(interval)]
+        for i in leftposition(interval):rightposition(interval)
             arr[i] += 1
         end
     end

@@ -37,19 +37,19 @@ function coverage(stream, seqname_isless::Function=isless)
     stream_next = iterate(stream, stream_state)
 
     while true
-        if interval.seqname != coverage_seqname
+        if seqname(interval) != coverage_seqname
             coverage_process_lasts_heap!(cov, current_coverage, coverage_seqname, coverage_first, lasts)
-            if !(isempty(coverage_seqname) || seqname_isless(coverage_seqname, interval.seqname))
+            if !(isempty(coverage_seqname) || seqname_isless(coverage_seqname, seqname(interval)))
                 error("Intervals must be sorted to compute coverage.")
             end
 
-            coverage_seqname = interval.seqname
+            coverage_seqname = seqname(interval)
             current_coverage = 0
             coverage_first = 0
             last_interval_first = 0
         end
 
-        if interval.first < last_interval_first
+        if leftposition(interval) < last_interval_first
             error("Intervals must be sorted to compute coverage.")
         end
 

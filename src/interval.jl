@@ -55,16 +55,16 @@ function BioGenerics.rightposition(i::AbstractGenomicInterval)
     return i.last
 end
 
-IntervalTrees.first(i::AbstractGenomicInterval) = i.first
-IntervalTrees.last(i::AbstractGenomicInterval) = i.last
+IntervalTrees.first(i::AbstractGenomicInterval) = leftposition(i)
+IntervalTrees.last(i::AbstractGenomicInterval) = rightposition(i)
 
 function Base.isless(a::AbstractGenomicInterval{T}, b::AbstractGenomicInterval{T}, seqname_isless::Function=isless) where T
-    if a.seqname != b.seqname
-        return seqname_isless(a.seqname, b.seqname)::Bool
-    elseif a.first != b.first
-        return a.first < b.first
-    elseif a.last != b.last
-        return a.last < b.last
+    if seqname(a) != seqname(b)
+        return seqname_isless(seqname(a), seqname(b))::Bool
+    elseif leftposition(a) != leftposition(b)
+        return leftposition(a) < leftposition(b)
+    elseif rightposition(a) != rightposition(b)
+        return rightposition(a) < rightposition(b)
     else
         return false
     end
@@ -87,13 +87,13 @@ end
 """
 Check if two intervals are well ordered.
 
-AbstractGenomicIntervals are considered well ordered if a.seqname <= b.seqnamend and a.first <= b.first.
+AbstractGenomicIntervals are considered well ordered if seqname(a) <= seqname(b)nd and leftposition(a) <= leftposition(b).
 """
 function isordered(a::AbstractGenomicInterval{T}, b::AbstractGenomicInterval{T}, seqname_isless::Function=isless) where T
-    if a.seqname != b.seqname
-        return seqname_isless(a.seqname, b.seqname)::Bool
-    elseif a.first != b.first
-        return a.first < b.first
+    if seqname(a) != seqname(b)
+        return seqname_isless(seqname(a), seqname(b))::Bool
+    elseif leftposition(a) != leftposition(b)
+        return leftposition(a) < leftposition(b)
     else
         return true
     end
@@ -103,13 +103,13 @@ end
 Return true if interval `a` entirely precedes `b`.
 """
 function precedes(a::AbstractGenomicInterval{T}, b::AbstractGenomicInterval{T}, seqname_isless::Function=isless) where T
-    return (a.last < b.first && a.seqname == b.seqname) || seqname_isless(a.seqname, b.seqname)::Bool
+    return (rightposition(a) < leftposition(b) && seqname(a) == seqname(b)) || seqname_isless(seqname(a), seqname(b))::Bool
 end
 
 function Base.:(==)(a::AbstractGenomicInterval{T}, b::AbstractGenomicInterval{T}) where T
-    return a.seqname  == b.seqname &&
-           a.first    == b.first &&
-           a.last     == b.last
+    return seqname(a) == seqname(b) &&
+           leftposition(a) == leftposition(b) &&
+           rightposition(a) == rightposition(b)
 end
 
 function Base.:(==)(a::GenomicInterval{T}, b::GenomicInterval{T}) where T
@@ -122,17 +122,17 @@ end
 
 "Return true if interval `a` overlaps interval `b`, with no consideration to strand"
 function BioGenerics.isoverlapping(a::AbstractGenomicInterval{S}, b::AbstractGenomicInterval{T}) where {S, T}
-    return a.first <= b.last && b.first <= a.last && a.seqname == b.seqname
+    return leftposition(a) <= rightposition(b) && leftposition(b) <= rightposition(a) && seqname(a) == seqname(b)
 end
 
 function Base.show(io::IO, i::AbstractGenomicInterval)
     if get(io, :compact, false)
-        print(io, i.seqname, ":", i.first, "-", i.last)
+        print(io, seqname(i), ":", leftposition(i), "-", rightposition(i))
     else
         println(io, summary(i), ':')
-        println(io, "  sequence name: ", i.seqname)
-        println(io, "  leftmost position: ", i.first)
-        print(io, "  rightmost position: ", i.last)
+        println(io, "  sequence name: ", seqname(i))
+        println(io, "  leftmost position: ", leftposition(i))
+          print(io, "  rightmost position: ", rightposition(i))
     end
 end
 
