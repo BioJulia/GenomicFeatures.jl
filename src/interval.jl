@@ -59,15 +59,29 @@ IntervalTrees.first(i::AbstractGenomicInterval) = leftposition(i)
 IntervalTrees.last(i::AbstractGenomicInterval) = rightposition(i)
 
 function Base.isless(a::AbstractGenomicInterval{T}, b::AbstractGenomicInterval{T}, seqname_isless::Function=isless) where T
-    if seqname(a) != seqname(b)
-        return seqname_isless(seqname(a), seqname(b))::Bool
-    elseif leftposition(a) != leftposition(b)
-        return leftposition(a) < leftposition(b)
-    elseif rightposition(a) != rightposition(b)
-        return rightposition(a) < rightposition(b)
-    else
-        return false
+
+    a_seqname = seqname(a)
+    b_seqname = seqname(b)
+
+    if a_seqname != b_seqname
+        return seqname_isless(a_seqname, b_seqname)::Bool
     end
+
+    a_leftposition = leftposition(a)
+    b_leftposition = leftposition(b)
+
+    if a_leftposition != b_leftposition
+        return a_leftposition < b_leftposition
+    end
+
+    a_rightposition = rightposition(a)
+    b_rightposition = rightposition(b)
+    
+    if a_rightposition != b_rightposition
+        return a_rightposition < b_rightposition
+    end
+
+    return false
 end
 
 function Base.isless(a::GenomicInterval{T}, b::GenomicInterval{T}, seqname_isless::Function=isless) where T
