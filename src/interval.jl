@@ -17,12 +17,12 @@ struct GenomicInterval{T} <: AbstractGenomicInterval{T}
     metadata::T
 end
 
-function GenomicInterval(seqname::AbstractString, first::Integer, last::Integer, strand::Union{Strand,Char}=STRAND_BOTH, metadata=nothing)
-    return GenomicInterval{typeof(metadata)}(seqname, first, last, strand, metadata)
+function GenomicInterval(seqname::AbstractString, first::Integer, last::Integer, strand::Union{Strand,Char}=STRAND_BOTH, metadata::T=nothing) where T
+    return GenomicInterval{T}(seqname, first, last, strand, metadata)
 end
 
-function GenomicInterval(seqname::AbstractString, range::UnitRange{T}, strand::Union{Strand,Char}=STRAND_BOTH, metadata=nothing) where T<:Integer
-    return GenomicInterval{typeof(metadata)}(seqname, first(range), last(range), strand, metadata)
+function GenomicInterval(seqname::AbstractString, range::UnitRange{<:Integer}, strand::Union{Strand,Char}=STRAND_BOTH, metadata::T=nothing) where T
+    return GenomicInterval{T}(seqname, first(range), last(range), strand, metadata)
 end
 
 function BioGenerics.seqname(i::AbstractGenomicInterval)
