@@ -132,7 +132,8 @@ end
 function Base.:(==)(a::AbstractGenomicInterval{T}, b::AbstractGenomicInterval{T}) where T
     return seqname(a) == seqname(b) &&
            leftposition(a) == leftposition(b) &&
-           rightposition(a) == rightposition(b)
+           rightposition(a) == rightposition(b) &&
+           metadata(a) == metadata(b)
 end
 
 function Base.:(==)(a::GenomicInterval{T}, b::GenomicInterval{T}) where T
@@ -150,12 +151,13 @@ end
 
 function Base.show(io::IO, i::AbstractGenomicInterval)
     if get(io, :compact, false)
-        print(io, seqname(i), ":", leftposition(i), "-", rightposition(i))
+        print(io, seqname(i), ":", leftposition(i), "-", rightposition(i), "  ", metadata(i) === nothing ? "nothing" : metadata(i))
     else
         println(io, summary(i), ':')
         println(io, "  sequence name: ", seqname(i))
         println(io, "  leftmost position: ", leftposition(i))
-          print(io, "  rightmost position: ", rightposition(i))
+        println(io, "  rightmost position: ", rightposition(i))
+          print(io, "  metadata: ", metadata(i) === nothing ? "nothing" : metadata(i))
     end
 end
 
