@@ -130,10 +130,10 @@ function precedes(a::AbstractGenomicInterval{T}, b::AbstractGenomicInterval{T}, 
 end
 
 function Base.:(==)(a::AbstractGenomicInterval{T}, b::AbstractGenomicInterval{T}) where T
-    return seqname(a) == seqname(b) &&
-           leftposition(a) == leftposition(b) &&
+    return seqname(a)       == seqname(b) &&
+           leftposition(a)  == leftposition(b) &&
            rightposition(a) == rightposition(b) &&
-           metadata(a) == metadata(b)
+           metadata(a)      == metadata(b)
 end
 
 function Base.:(==)(a::GenomicInterval{T}, b::GenomicInterval{T}) where T
