@@ -105,14 +105,14 @@ function coverage(ic::GenomicIntervalCollection)
 end
 
 # Helper function for coverage. Process remaining interval end points after all intervals have been read.
-function coverage_process_lasts_heap!(cov::GenomicIntervalCollection{UInt32}, current_coverage, coverage_seqname, coverage_first, lasts)
+function coverage_process_lasts_heap!(cov::GenomicIntervalCollection{I}, current_coverage, coverage_seqname, coverage_first, lasts) where {T<:Number,I<:AbstractGenomicInterval{T}} #Note: T would typically be type UInt32.
     while !isempty(lasts)
         pos = DataStructures.heappop!(lasts)
         if pos == coverage_first - 1
             current_coverage -= 1
         else
             @assert pos >= coverage_first
-            push!(cov, GenomicInterval{UInt32}(coverage_seqname, coverage_first, pos, STRAND_BOTH, current_coverage)) #TODO: use AbstractGenomicInterval and retrieve interval type.
+            push!(cov, I(coverage_seqname, coverage_first, pos, STRAND_BOTH, current_coverage))
             current_coverage -= 1
             coverage_first = pos + 1
         end
