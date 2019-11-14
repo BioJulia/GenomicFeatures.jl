@@ -105,7 +105,7 @@ Incrementally building an interval collection like this works, but `GenomicInter
 col = GenomicIntervalCollection([GenomicInterval("chr1", i, i + 99) for i in 1:100:10000])
 ```
 
-Building `GenomicIntervalCollections` in one shot like this should be preferred when it's convenient or speed in an issue.
+Building `GenomicIntervalCollections` in one shot like this should be preferred when it's convenient or speed is an issue.
 
 `GenomicIntervalCollection`s can also be build directly from a genome annotation file, here in GFF3 format:
 
