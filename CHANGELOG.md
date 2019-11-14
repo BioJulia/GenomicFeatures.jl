@@ -6,16 +6,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.0]
+
 ### Added
 - Support for julia v1.1 and v1.2.
 - Autodocs for public functions.
-- `GenomicInterval` is now a subtype of `AbstractGenomicInterval`.
+- New `AbstractGenomicInterval` type.
+- New `GenomicPosition` type.
+- Support for `AbstractGenomicInterval` types in `GenomicIntervalCollection`.
 
 ### Changed
 - Migrated from BioCore to [BioGenerics](https://github.com/BioJulia/BioGenerics.jl/tree/v0.1.0).
-- Renamed `Interval` to `GenomicInterval`.
+- Renamed `Interval` to `GenomicInterval` and made it a subtype of `AbstractGenomicInterval`.
 - Renamed `IntervalCollection` to `GenomicIntervalCollection`.
-
 
 ### Removed
 - :exclamation: BED module was moved to [BED.jl](https://github.com/BioJulia/BED.jl).
@@ -41,7 +44,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Move code from Bio.jl.
 - Add support for GFF3 and BigWig.
 
-[Unreleased]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.0...v2.0.0
 [1.0.0]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v0.2.1...v1.0.0
 [0.2.1]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v0.1.0...v0.2.0
