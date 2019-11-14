@@ -154,13 +154,6 @@ col = GenomicIntervalCollection([GenomicInterval("chr1", i, i + 99) for i in 1:1
 
 Building `GenomicIntervalCollections` in one shot like this should be preferred when it's convenient or speed is an issue.
 
-`GenomicIntervalCollection`s can also be build directly from a genome annotation file, here in GFF3 format:
-
-```julia
-reader = open(GFF3.Reader, "some_genome.gff3")
-features = GenomicIntervalCollection(reader)
-```
-
 
 ## Overlap Query
 
