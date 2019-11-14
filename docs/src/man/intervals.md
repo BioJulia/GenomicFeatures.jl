@@ -38,7 +38,7 @@ The `strand` field can take four kinds of values listed in the next table:
 The default strand and metadata value are `STRAND_BOTH` and `nothing`:
 ```jlcon
 julia> GenomicInterval("chr1", 10000, 20000)
-GenomicFeatures.GenomicInterval{Void}:
+GenomicFeatures.GenomicInterval{Nothing}:
   sequence name: chr1
   leftmost position: 10000
   rightmost position: 20000
@@ -46,7 +46,7 @@ GenomicFeatures.GenomicInterval{Void}:
   metadata: nothing
 
 julia> GenomicInterval("chr1", 10000, 20000, '+')
-GenomicFeatures.GenomicInterval{Void}:
+GenomicFeatures.GenomicInterval{Nothing}:
   sequence name: chr1
   leftmost position: 10000
   rightmost position: 20000
