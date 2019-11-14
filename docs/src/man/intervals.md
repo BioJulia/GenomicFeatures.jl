@@ -79,9 +79,56 @@ STRAND_POS
 
 julia> metadata(i)
 "some annotation"
-
 ```
 
+## GenomicPosition type
+The `GenomicPosition` type is defined as
+```julia
+struct GenomicPosition{T} <: AbstractGenomicInterval{T}
+    seqname::String
+    pos::Int64
+    metadata::T
+end
+```
+
+The default metadata value is `nothing`:
+```jlcon
+julia> p = GenomicPosition("chr1", 200)
+GenomicPosition{Nothing}:
+  sequence name: chr1
+  position: 200
+  metadata: nothing
+
+julia> p = GenomicPosition("chr1", 200, "some annotation")
+GenomicPosition{String}:
+  sequence name: chr1
+  position: 200
+  metadata: some annotation
+```
+
+The following example shows all accessor functions for the three fields:
+```jlcon
+julia> p = GenomicPosition("chr1", 200, "some annotation")
+GenomicPosition{String}:
+  sequence name: chr1
+  position: 200
+  metadata: some annotation
+
+julia> seqname(p)
+"chr1"
+
+julia> leftposition(p)
+200
+
+julia> rightposition(p)
+200
+
+julia> position(p)
+200
+
+julia> metadata(p)
+"some annotation"
+```
 
 ## Collections of GenomicIntervals
 
