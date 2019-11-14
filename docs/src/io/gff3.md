@@ -33,7 +33,7 @@ reader = open(GFF3.Reader, "data.gff3")
 # Iterate over records.
 for record in reader
     # Do something on record (see Accessors section).
-    seqid = GFF3.seqid(reader)
+    seqid = GFF3.seqid(record)
     # ...
 end
 
