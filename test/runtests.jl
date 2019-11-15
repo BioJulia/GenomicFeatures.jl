@@ -432,6 +432,22 @@ end
 
     @test 4 == length(col)
 
+    # Check overlap.
+    interval_p1_equiv = GenomicInterval("chr1", 2,2)
+    @test true == isoverlapping(i,interval_p1_equiv)
+    @test interval_p1_equiv == p1
+
+    @test true == isoverlapping(i, p1)
+    @test false == isoverlapping(i, p2) == isoverlapping(i, p3)
+
+    # Check eachoverlap.
+    # @test [(i, p1)] == collect(eachoverlap(i, [p1,p2,p3])) #Note: attempts to broadcast i.
+    @test [(i, p1)] == collect(eachoverlap([i], [p1,p2,p3]))
+    @test [(i, p1)] == collect(eachoverlap(GenomicIntervalCollection([i]), GenomicIntervalCollection([p1,p2,p3])))
+    # @test [(p1, i)] == collect(eachoverlap([p1,p2,p3], i)) #Note: attempts to broadcast i.
+    @test [(p1, i)] == collect(eachoverlap([p1,p2,p3], [i]))
+    @test [(p1, i)] == collect(eachoverlap(GenomicIntervalCollection([p1,p2,p3]), GenomicIntervalCollection([i])))
+
 end
 
 @testset "Custom Concrete Types" begin
