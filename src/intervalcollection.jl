@@ -477,8 +477,7 @@ function Base.iterate(it::GenomicIntervalCollectionStreamIterator{F,S,I}, state 
     # If first iteration, make empty intersection, otherwise get it from the state.
     intersection = (state !== () ? state[3] : ICTreeIntersection{I}())
 
-    # If this is not the first iteration, and there is an available intersection
-    # for the current query, return it and search for the next intersection.
+    # If this is not the first iteration, and there is an available intersection for the current query, return it and search for the next intersection.
     if state !== () && intersection.index != 0
         entry = intersection.node.entries[intersection.index]
         return_value = (state[1], entry)
@@ -486,8 +485,7 @@ function Base.iterate(it::GenomicIntervalCollectionStreamIterator{F,S,I}, state 
         return return_value, (state[1], state[2], intersection)
     end
 
-    # If code reaches this point, there is no valid intersection to return for
-    # the current query, so we get the next query and start looking for intersections.
+    # If code reaches this point, there is no valid intersection to return for the current query, so we get the next query and start looking for intersections.
     while intersection.index == 0
         # Get a new query from the stream, and its first intersection in the collection.
         stream_it = (state === () ? iterate(it.stream) : iterate(it.stream, state[2]))
