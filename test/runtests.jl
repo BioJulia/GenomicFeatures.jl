@@ -181,6 +181,20 @@ end
     end
 end
 
+@testset "GenomicPosition" begin
+    @testset "Constructor" begin
+
+        p = GenomicPosition("chr1", 1)
+        @test seqname(p) == "chr1"
+        @test leftposition(p) == 1
+        @test rightposition(p) == 1
+        @test position(p) == 1
+
+        @test GenomicPosition("chr1", 1) == GenomicPosition("chr1", 1:1)
+
+    end
+end
+
 @testset "GenomicIntervalCollection" begin
 
     @testset "Constructor" begin
@@ -394,6 +408,32 @@ end
     end
 end
 
+@testset "Mixed types" begin
+
+    i = GenomicInterval("chr1", 1,4)
+    p1 = GenomicPosition("chr1", 2)
+    p2 = GenomicPosition("chr1", 5)
+    p3 = GenomicPosition("chr2", 5)
+
+    # Sorting.
+    @test [i, p1, p2, p3] == sort([p2, p1, p3, i])
+
+    # Push out of order mixed types.
+    col = GenomicIntervalCollection{GenomicFeatures.AbstractGenomicInterval{Nothing}}()
+    push!(col, p2)
+    push!(col, p1)
+    push!(col, p3)
+    push!(col, i)
+
+    @test collect(col) == [i, p1, p2, p3]
+
+    # Bulk insertion of mixed types.
+    col = GenomicIntervalCollection([i, p1, p2, p3])
+
+    @test 4 == length(col)
+
+end
+
 @testset "Custom Concrete Types" begin
 
     # Define custom Interval type.
@@ -412,9 +452,6 @@ end
     push!(col_gatc, gatcs[3])
 
     @test collect(col_gatc) == gatcs
-
-    # TODO: Mixed types.
-    # push!(gatc_col, GenomicInterval("test1", 9, 12))
 
     # Overlap.
     intervals_b = intervals_a = gatcs
