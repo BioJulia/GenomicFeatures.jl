@@ -448,6 +448,12 @@ end
     @test [(p1, i)] == collect(eachoverlap([p1,p2,p3], [i]))
     @test [(p1, i)] == collect(eachoverlap(GenomicIntervalCollection([p1,p2,p3]), GenomicIntervalCollection([i])))
 
+    # Pushing mixed types to Queue.
+    @test [(i, p1), (p1,p1)] == collect(eachoverlap([i, p1], [p1,p2,p3]))
+    @test [(i, p1), (p1,p1)] == collect(eachoverlap(GenomicIntervalCollection([i,p1]), GenomicIntervalCollection([p1,p2,p3])))
+    # @test [(p1, i), (p1,p1)] == collect(eachoverlap([p1,p2,p3], [i, p1])) #Fails because queue does not accept or was not constructed with a union.
+    # @test [(p1, i), (p1,p1)] == collect(eachoverlap(GenomicIntervalCollection([p1,p2,p3]), GenomicIntervalCollection([i,p1]))) #Fails because queue does not accept or was not constructed with a union.
+
 end
 
 @testset "Custom Concrete Types" begin
