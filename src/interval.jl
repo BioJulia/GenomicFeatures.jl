@@ -29,6 +29,10 @@ function BioGenerics.seqname(i::AbstractGenomicInterval)
     return i.seqname
 end
 
+function BioGenerics.metadata(i::AbstractGenomicInterval{Nothing})
+    return nothing
+end
+
 function BioGenerics.metadata(i::AbstractGenomicInterval)
     return i.metadata
 end
