@@ -503,16 +503,3 @@ end
     @test String(take!(buf)) == "WithoutMetadatata:\n  sequence name: chr1\n  leftmost position: 1\n  rightmost position: 2\n  metadata: nothing"
 
 end
-
-@testset "Check Deprecated" begin
-    # Interval
-    @test (@test_deprecated Interval("test", 1, 2)) == GenomicInterval("test", 1, 2)
-    @test (@test_deprecated Interval("test", 1:2)) == GenomicInterval("test", 1, 2)
-
-    @test_deprecated intervals = [Interval("test", 1, 2)]
-
-    # IntervalCollection
-    @test (@test_deprecated IntervalCollection{Nothing}()) == GenomicIntervalCollection{Nothing}() == GenomicIntervalCollection{GenomicInterval{Nothing}}()
-    @test (@test_deprecated IntervalCollection(intervals)) == (@test_deprecated IntervalCollection{Nothing}(intervals)) == GenomicIntervalCollection(intervals) == GenomicIntervalCollection{Nothing}(intervals) == GenomicIntervalCollection{GenomicInterval{Nothing}}(intervals)
-
-end

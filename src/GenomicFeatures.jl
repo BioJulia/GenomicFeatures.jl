@@ -41,6 +41,4 @@ include("queue.jl")
 include("overlap.jl")
 include("coverage.jl")
 
-include("deprecated.jl")
-
 end # module
