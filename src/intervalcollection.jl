@@ -57,12 +57,12 @@ mutable struct GenomicIntervalCollection{I}
     end
 
     # Longhand constructor.
-    function GenomicIntervalCollection{I}() where {T,I<:AbstractGenomicInterval{T}}
+    function GenomicIntervalCollection{I}() where {I<:AbstractGenomicInterval}
         return new{I}(Dict{String,ICTree{I}}(), 0, ICTree{I}[], false)
     end
 
     # Bulk insertion.
-    function GenomicIntervalCollection{I}(intervals::AbstractVector{I}, sort::Bool=false) where {T,I<:AbstractGenomicInterval{T}}
+    function GenomicIntervalCollection{I}(intervals::AbstractVector{I}, sort::Bool=false) where {I<:AbstractGenomicInterval}
         if sort
             sort!(intervals)
         else
@@ -87,7 +87,7 @@ mutable struct GenomicIntervalCollection{I}
 end
 
 # Shorthand bulk insertion.
-function GenomicIntervalCollection(intervals::AbstractVector{I}, sort::Bool=false) where {T,I<:AbstractGenomicInterval{T}}
+function GenomicIntervalCollection(intervals::AbstractVector{I}, sort::Bool=false) where {I<:AbstractGenomicInterval}
     return GenomicIntervalCollection{I}(intervals, sort)
 end
 
@@ -101,7 +101,7 @@ function GenomicIntervalCollection(intervals)
     return GenomicIntervalCollection(collect(GenomicInterval{metadatatype(intervals)}, intervals), true)
 end
 
-function update_ordered_trees!(ic::GenomicIntervalCollection{I}) where {T,I<:AbstractGenomicInterval{T}}
+function update_ordered_trees!(ic::GenomicIntervalCollection{I}) where {I<:AbstractGenomicInterval}
     if ic.ordered_trees_outdated
         ic.ordered_trees = collect(ICTree{I}, values(ic.trees))
         p = sortperm(collect(AbstractString, keys(ic.trees)), lt = isless)
@@ -110,7 +110,7 @@ function update_ordered_trees!(ic::GenomicIntervalCollection{I}) where {T,I<:Abs
     end
 end
 
-function Base.push!(ic::GenomicIntervalCollection{I}, i::I) where {T,I<:AbstractGenomicInterval{T}}
+function Base.push!(ic::GenomicIntervalCollection{I}, i::I) where {I<:AbstractGenomicInterval}
     if !haskey(ic.trees, seqname(i))
         tree = ICTree{I}()
         ic.trees[seqname(i)] = tree
@@ -143,7 +143,7 @@ function Base.length(ic::GenomicIntervalCollection)
     return ic.length
 end
 
-function Base.eltype(::Type{GenomicIntervalCollection{I}}) where {T,I<:AbstractGenomicInterval{T}}
+function Base.eltype(::Type{GenomicIntervalCollection{I}}) where {I<:AbstractGenomicInterval}
     return I
 end
 
