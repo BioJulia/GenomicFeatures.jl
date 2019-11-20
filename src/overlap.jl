@@ -155,9 +155,9 @@ end
 #   0 when `i1` overlaps with `i2`, and
 #   +1 when `i1` follows `i2`.
 function compare_overlap(i1::AbstractGenomicInterval, i2::AbstractGenomicInterval, isless::Function)
-    if isless(seqname(i1), seqname(i2))::Bool
+    if isless(seqname(i1), seqname(i2))
         return -1
-    elseif isless(seqname(i2), seqname(i1))::Bool
+    elseif isless(seqname(i2), seqname(i1))
         return +1
     else  # seqname(i1) == seqname(i2)
         if rightposition(i1) < leftposition(i2)
