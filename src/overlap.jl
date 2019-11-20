@@ -157,30 +157,39 @@ end
 function compare_overlap(i1::AbstractGenomicInterval, i2::AbstractGenomicInterval, isless::Function)
     if isless(seqname(i1), seqname(i2))
         return -1
-    elseif isless(seqname(i2), seqname(i1))
-        return +1
-    else  # seqname(i1) == seqname(i2)
-        if rightposition(i1) < leftposition(i2)
-            return -1
-        elseif leftposition(i1) > rightposition(i2)
-            return +1
-        else
-            return 0
-        end
     end
+
+    if isless(seqname(i2), seqname(i1))
+        return +1
+    end
+
+    # seqname(i1) == seqname(i2)
+    if rightposition(i1) < leftposition(i2)
+        return -1
+    end
+
+    if leftposition(i1) > rightposition(i2)
+        return +1
+    end
+
+    return 0
 end
 
 # Faster comparison for `Base.isless`.  Note that `Base.isless` must be consistent wtih `Base.cmp` to work correctly.
 function compare_overlap(i1::AbstractGenomicInterval, i2::AbstractGenomicInterval, ::typeof(Base.isless))
     c = cmp(seqname(i1), seqname(i2))
+
     if c != 0
         return c
     end
+
     if rightposition(i1) < leftposition(i2)
         return -1
-    elseif leftposition(i1) > rightposition(i2)
-        return +1
-    else
-        return 0
     end
+
+    if leftposition(i1) > rightposition(i2)
+        return +1
+    end
+
+    return 0
 end
