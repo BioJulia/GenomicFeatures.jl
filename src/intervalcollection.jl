@@ -285,9 +285,9 @@ Returns that interval, or 'nothing' if no interval was found.
 function Base.findfirst(a::GenomicIntervalCollection{T}, b::AbstractGenomicInterval{S}; filter=true_cmp) where {T,S}
     if !haskey(a.trees, seqname(b))
         return nothing
-    else
-        return findfirst(a.trees[seqname(b)], b, filter)
     end
+    
+    return findfirst(a.trees[seqname(b)], b, filter)
 end
 
 
@@ -297,9 +297,9 @@ end
 function eachoverlap(a::GenomicIntervalCollection{I}, b::AbstractGenomicInterval; filter::F = true_cmp) where {F,I}
     if haskey(a.trees, seqname(b))
         return intersect(a.trees[seqname(b)], b)
-    else
-        return ICTreeIntervalIntersectionIterator{F,I}()
     end
+
+    return ICTreeIntervalIntersectionIterator{F,I}()
 end
 
 function eachoverlap(a::GenomicIntervalCollection, b::GenomicIntervalCollection; filter = true_cmp)
