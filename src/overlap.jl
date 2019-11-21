@@ -9,7 +9,7 @@ struct OverlapIterator{A,B,F,G}
 end
 
 function Base.eltype(::Type{OverlapIterator{A,B,F,G}}) where {A,B,F,G}
-    return Tuple{GenomicInterval{metadatatype(A)},GenomicInterval{metadatatype(B)}}
+    return Tuple{GenomicInterval{metadatatype(A)},GenomicInterval{metadatatype(B)}} #TODO: findout if this can cause conversions of the iterate result value.
 end
 
 function Base.eltype(::Type{OverlapIterator{A,B,F,G}}) where {Ia<:AbstractGenomicInterval, A<:Union{AbstractVector{Ia},GenomicIntervalCollection{Ia}}, Ib<:AbstractGenomicInterval,B<:Union{AbstractVector{Ib},GenomicIntervalCollection{Ib}},F,G}
@@ -42,25 +42,12 @@ struct OverlapIteratorState{Na,Nb,Ea,Eb}
     queue_index::Int
 end
 
-function OverlapIteratorState{Na,Nb,Ea,Eb}(next_a::Na, next_b::Nb) where {Na,Nb,Ea,Eb}
-    Ia = GenomicInterval{Ea}
-    Ib = GenomicInterval{Eb}
-
-    queue = Queue{Union{Ia,Ib}}()
-    return OverlapIteratorState{Na,Nb,Ea,Eb}(next_a, next_b, queue, 1)
-end
-
-function OverlapIteratorState{Na,Nb,Ea,Eb}(next_a::Na, next_b::Nb) where {Na,Nb,Ea<:AbstractGenomicInterval,Eb<:AbstractGenomicInterval}
-    queue = Queue{Union{Ea,Eb}}()
-    return OverlapIteratorState{Na,Nb,Ea,Eb}(next_a, next_b, queue, 1)
-end
-
-function OverlapIteratorState(Ea::Type, Eb::Type, next_a::Na, next_b::Nb) where {Na, Nb}
-    return OverlapIteratorState{Na,Nb,Ea,Eb}(next_a, next_b)
-end
-
-function OverlapIteratorState(Ea::Type, Eb::Type, next_a::Na, next_b::Nb, queue::Queue, queue_index::Int) where {Na, Nb}
+function OverlapIteratorState(E::Type{Tuple{Ea, Eb}}, next_a::Na, next_b::Nb, queue::Queue, queue_index::Int) where {Sa, Sb, Ea<:AbstractGenomicInterval, Eb<:AbstractGenomicInterval, Na <: Union{Nothing, Tuple{Ea,Sa}}, Nb <: Union{Nothing, Tuple{Eb,Sb}}}
     return OverlapIteratorState{Na,Nb,Ea,Eb}(next_a, next_b, queue, queue_index)
+end
+
+function OverlapIteratorState(E::Type{Tuple{Ea,Eb}}, next_a::Na, next_b::Nb) where {Sa, Sb, Ea<:AbstractGenomicInterval, Eb<:AbstractGenomicInterval, Na <: Union{Nothing, Tuple{Ea,Sa}}, Nb <: Union{Nothing, Tuple{Eb,Sb}}}
+    return OverlapIteratorState(E, next_a, next_b, Queue{Union{Ea,Eb}}(), 1)
 end
 
 # Initial iteration.
@@ -68,10 +55,12 @@ function Base.iterate(iter::OverlapIterator{A,B,F,G}) where {A,B,F,G}
     next_a = iterate(iter.intervals_a) #Note: returns (value, state) or nothing.
     next_b = iterate(iter.intervals_b)
 
-    Ea = eltype(iter.intervals_a) #TODO: use eltype of OverlapIterator?
-    Eb = eltype(iter.intervals_b)
+    # Ea = eltype(iter.intervals_a) #TODO: use eltype of OverlapIterator?
+    # Eb = eltype(iter.intervals_b)
 
-    state = OverlapIteratorState(Ea, Eb, next_a, next_b) #TODO: consider doing next_a and next-b conversion here.
+    E = eltype(iter)
+
+    state = OverlapIteratorState(E, next_a, next_b) #TODO: consider doing next_a and next-b conversion here.
 
     return iterate(iter, state)
 end
@@ -143,7 +132,7 @@ function Base.iterate(iter::OverlapIterator{A,B,F,G}, state::OverlapIteratorStat
                 queue_index = firstindex(queue)
             elseif c == 0
                 if iter.filter(interval_a, interval_b)
-                    return ((interval_a, interval_b), OverlapIteratorState(Ea, Eb, next_a, next_b, queue, queue_index))
+                    return ((interval_a, interval_b), OverlapIteratorState(Tuple{Ea,Eb}, next_a, next_b, queue, queue_index))
                 end
             else
                 if queue_index == firstindex(queue) + 1
