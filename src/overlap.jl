@@ -35,35 +35,43 @@ function eachoverlap(intervals_a, intervals_b, seqname_isless=Base.isless; filte
     return OverlapIterator(intervals_a, intervals_b, seqname_isless, filter)
 end
 
-struct OverlapIteratorState{Sa,Sb,Ta,Tb}
-    next_a::Sa
-    next_b::Sb
-    queue::Queue{<:AbstractGenomicInterval{Tb}}
+struct OverlapIteratorState{Sa,Sb,Ea,Eb}
+    next_a::Sa #Note: Sa <: Union{Nothing, Tuple{Ea, Any}}, where Ea <: AbstractGenomicInterval
+    next_b::Sb #Note: Sb <: Union{Nothing, Tuple{Eb, Any}}, where Eb <: AbstractGenomicInterval
+    queue::Queue{Union{Ea,Eb}}
     queue_index::Int
 end
 
-function OverlapIteratorState(Ta::Type, Tb::Type, next_a::Sa, next_b::Sb, queue::Queue, queue_index::Int) where {Sa, Sb}
-    return OverlapIteratorState{Sa,Sb,Ta,Tb}(next_a, next_b, queue, queue_index)
+function OverlapIteratorState{Sa,Sb,Ea,Eb}(next_a::Sa, next_b::Sb) where {Sa,Sb,Ea,Eb}
+    Ia = GenomicInterval{Ea}
+    Ib = GenomicInterval{Eb}
+
+    queue = Queue{Union{Ia,Ib}}()
+    return OverlapIteratorState{Sa,Sb,Ea,Eb}(next_a, next_b, queue, 1)
 end
 
-function OverlapIteratorState(Ta::Type, Tb::Type, next_a::Sa, next_b::Sb) where {Sa, Sb}
-    queue = Queue{GenomicInterval{Tb}}()
-    return OverlapIteratorState{Sa,Sb,Ta,Tb}(next_a, next_b, queue, 1)
+function OverlapIteratorState{Sa,Sb,Ea,Eb}(next_a::Sa, next_b::Sb) where {Sa,Sb,Ea<:AbstractGenomicInterval,Eb<:AbstractGenomicInterval}
+    queue = Queue{Union{Ea,Eb}}()
+    return OverlapIteratorState{Sa,Sb,Ea,Eb}(next_a, next_b, queue, 1)
 end
 
-function OverlapIteratorState(Ta::Type, Tb::Type, next_a::Sa, next_b::Sb) where {Sa, Ib<:AbstractGenomicInterval, Sb<:Tuple{Ib, Number}}
-    queue = Queue{Ib}()
-    return OverlapIteratorState{Sa,Sb,Ta,Tb}(next_a, next_b, queue, 1)
+function OverlapIteratorState(Ea::Type, Eb::Type, next_a::Sa, next_b::Sb) where {Sa, Sb}
+    return OverlapIteratorState{Sa,Sb,Ea,Eb}(next_a, next_b)
 end
 
-function Base.iterate(iter::OverlapIterator)
-    next_a = iterate(iter.intervals_a)
+function OverlapIteratorState(Ea::Type, Eb::Type, next_a::Sa, next_b::Sb, queue::Queue, queue_index::Int) where {Sa, Sb}
+    return OverlapIteratorState{Sa,Sb,Ea,Eb}(next_a, next_b, queue, queue_index)
+end
+
+# Initial iteration.
+function Base.iterate(iter::OverlapIterator{Sa,Sb,F,G}) where {Sa,Sb,F,G}
+    next_a = iterate(iter.intervals_a) #Note: returns (value, state) or nothing.
     next_b = iterate(iter.intervals_b)
 
-    Ta = metadatatype(iter.intervals_a)
-    Tb = metadatatype(iter.intervals_b)
+    Ea = eltype(iter.intervals_a) #TODO: use eltype of OverlapIterator?
+    Eb = eltype(iter.intervals_b)
 
-    state = OverlapIteratorState(Ta, Tb, next_a, next_b) #TODO: consider doing next_a and next-b conversion here.
+    state = OverlapIteratorState(Ea, Eb, next_a, next_b) #TODO: consider doing next_a and next-b conversion here.
 
     return iterate(iter, state)
 end
@@ -77,8 +85,8 @@ function check_ordered(i1, i2, compare_func)
     return nothing
 end
 
-
-function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,Ta,Tb}) where {Sa,Sb,Ta,Tb}
+# Subsequent iteration.
+function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,Ea,Eb}) where {Sa,Sb,Ea,Eb}
     next_a      = state.next_a
     next_b      = state.next_b
     queue       = state.queue
@@ -89,7 +97,7 @@ function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,T
     end
 
     entry_a, state_a = next_a
-    interval_a = typeof(entry_a) <: AbstractGenomicInterval{Ta} ? entry_a : convert(GenomicInterval{Ta}, entry_a) #TODO: use AbstractGenomicInterval and retrieve interval type.
+    interval_a = typeof(entry_a) <: Ea ? entry_a : convert(Ea, entry_a) #TODO: handle conversion elsewhere.
 
     while true
         if queue_index > lastindex(queue)
@@ -101,13 +109,13 @@ function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,T
                 end
 
                 entry_a, state_a = next_a
-                next_interval_a = typeof(entry_a) <: AbstractGenomicInterval{Ta} ? entry_a : convert(GenomicInterval{Ta}, entry_a) #TODO: use AbstractGenomicInterval and retrieve interval type.
+                next_interval_a = typeof(entry_a) <: Ea ? entry_a : convert(Ea, entry_a) #TODO: handle conversion elsewhere.
                 check_ordered(interval_a, next_interval_a, iter.isless)
                 interval_a = next_interval_a
                 queue_index = firstindex(queue)
             else
                 entry_b, state_b = next_b
-                interval_b = typeof(entry_b) <: AbstractGenomicInterval{Tb} ? entry_b : convert(GenomicInterval{Tb}, entry_b) #TODO: use AbstractGenomicInterval and retrieve interval type.
+                interval_b = typeof(entry_b) <: Eb ? entry_b : convert(Eb, entry_b) #TODO: handle conversion elsewhere.
                 if !isempty(queue)
                     check_ordered(queue[end], interval_b, iter.isless)
                 end
@@ -116,7 +124,7 @@ function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,T
             end
         else
             entry_a, state_a = next_a
-            interval_a = typeof(entry_a) <: AbstractGenomicInterval{Ta} ? entry_a : convert(GenomicInterval{Ta}, entry_a) #TODO: use AbstractGenomicInterval and retrieve interval type.
+            interval_a = typeof(entry_a) <: Ea ? entry_a : convert(Ea, entry_a) #TODO: handle conversion elsewhere.
             interval_b = queue[queue_index]
             c = compare_overlap(interval_a, interval_b, iter.isless)
             queue_index += 1
@@ -128,14 +136,14 @@ function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,T
                     break
                 end
                 entry_a, state_a = next_a
-                next_interval_a = typeof(entry_a) <: AbstractGenomicInterval{Ta} ? entry_a : convert(GenomicInterval{Ta}, entry_a) #TODO: use AbstractGenomicInterval and retrieve interval type.
+                next_interval_a = typeof(entry_a) <: Ea ? entry_a : convert(Ea, entry_a) #TODO: handle conversion elsewhere.
 
                 check_ordered(interval_a, next_interval_a, iter.isless)
                 interval_a = next_interval_a
                 queue_index = firstindex(queue)
             elseif c == 0
                 if iter.filter(interval_a, interval_b)
-                    return ((interval_a, interval_b), OverlapIteratorState(Ta, Tb, next_a, next_b, queue, queue_index))
+                    return ((interval_a, interval_b), OverlapIteratorState(Ea, Eb, next_a, next_b, queue, queue_index))
                 end
             else
                 if queue_index == firstindex(queue) + 1

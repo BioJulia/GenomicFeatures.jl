@@ -451,8 +451,8 @@ end
     # Pushing mixed types to Queue.
     @test [(i, p1), (p1,p1)] == collect(eachoverlap([i, p1], [p1,p2,p3]))
     @test [(i, p1), (p1,p1)] == collect(eachoverlap(GenomicIntervalCollection([i,p1]), GenomicIntervalCollection([p1,p2,p3])))
-    # @test [(p1, i), (p1,p1)] == collect(eachoverlap([p1,p2,p3], [i, p1])) #Fails because queue does not accept or was not constructed with a union.
-    # @test [(p1, i), (p1,p1)] == collect(eachoverlap(GenomicIntervalCollection([p1,p2,p3]), GenomicIntervalCollection([i,p1]))) #Fails because queue does not accept or was not constructed with a union.
+    @test [(p1, i), (p1,p1)] == collect(eachoverlap([p1,p2,p3], [i, p1]))
+    @test [(p1, i), (p1,p1)] == collect(eachoverlap(GenomicIntervalCollection([p1,p2,p3]), GenomicIntervalCollection([i,p1])))
 
     # Check coverage.
     @test [GenomicInterval{UInt32}("chr1",1,1,'.',1), GenomicInterval{UInt32}("chr1",2,2,'.',2), GenomicInterval{UInt32}("chr1",3,4,'.',1)] == collect(coverage(GenomicIntervalCollection([i,p1]))) #TODO: relax comparisons.
