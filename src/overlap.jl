@@ -1,22 +1,22 @@
 # Overlap Iterator
 # ================
 
-struct OverlapIterator{Sa,Sb,F,G}
-    intervals_a::Sa
-    intervals_b::Sb
+struct OverlapIterator{A,B,F,G}
+    intervals_a::A # Stream A.
+    intervals_b::B # Stream B.
     isless::F
     filter::G
 end
 
-function Base.eltype(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
-    return Tuple{GenomicInterval{metadatatype(Sa)},GenomicInterval{metadatatype(Sb)}}
+function Base.eltype(::Type{OverlapIterator{A,B,F,G}}) where {A,B,F,G}
+    return Tuple{GenomicInterval{metadatatype(A)},GenomicInterval{metadatatype(B)}}
 end
 
-function Base.eltype(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Ia<:AbstractGenomicInterval, Sa<:Union{AbstractVector{Ia},GenomicIntervalCollection{Ia}}, Ib<:AbstractGenomicInterval,Sb<:Union{AbstractVector{Ib},GenomicIntervalCollection{Ib}},F,G}
+function Base.eltype(::Type{OverlapIterator{A,B,F,G}}) where {Ia<:AbstractGenomicInterval, A<:Union{AbstractVector{Ia},GenomicIntervalCollection{Ia}}, Ib<:AbstractGenomicInterval,B<:Union{AbstractVector{Ib},GenomicIntervalCollection{Ib}},F,G}
     return Tuple{Ia,Ib}
 end
 
-function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
+function Base.IteratorSize(::Type{OverlapIterator{A,B,F,G}}) where {A,B,F,G}
     return Base.SizeUnknown()
 end
 
@@ -35,36 +35,36 @@ function eachoverlap(intervals_a, intervals_b, seqname_isless=Base.isless; filte
     return OverlapIterator(intervals_a, intervals_b, seqname_isless, filter)
 end
 
-struct OverlapIteratorState{Sa,Sb,Ea,Eb}
-    next_a::Sa #Note: Sa <: Union{Nothing, Tuple{Ea, Any}}, where Ea <: AbstractGenomicInterval
-    next_b::Sb #Note: Sb <: Union{Nothing, Tuple{Eb, Any}}, where Eb <: AbstractGenomicInterval
+struct OverlapIteratorState{Na,Nb,Ea,Eb}
+    next_a::Na #Note: Na <: Union{Nothing, Tuple{Ea, Sa}}, where Ea <: AbstractGenomicInterval, and state Sa <: Any
+    next_b::Nb #Note: Nb <: Union{Nothing, Tuple{Eb, Sb}}, where Eb <: AbstractGenomicInterval, and state Sb <: Any
     queue::Queue{Union{Ea,Eb}}
     queue_index::Int
 end
 
-function OverlapIteratorState{Sa,Sb,Ea,Eb}(next_a::Sa, next_b::Sb) where {Sa,Sb,Ea,Eb}
+function OverlapIteratorState{Na,Nb,Ea,Eb}(next_a::Na, next_b::Nb) where {Na,Nb,Ea,Eb}
     Ia = GenomicInterval{Ea}
     Ib = GenomicInterval{Eb}
 
     queue = Queue{Union{Ia,Ib}}()
-    return OverlapIteratorState{Sa,Sb,Ea,Eb}(next_a, next_b, queue, 1)
+    return OverlapIteratorState{Na,Nb,Ea,Eb}(next_a, next_b, queue, 1)
 end
 
-function OverlapIteratorState{Sa,Sb,Ea,Eb}(next_a::Sa, next_b::Sb) where {Sa,Sb,Ea<:AbstractGenomicInterval,Eb<:AbstractGenomicInterval}
+function OverlapIteratorState{Na,Nb,Ea,Eb}(next_a::Na, next_b::Nb) where {Na,Nb,Ea<:AbstractGenomicInterval,Eb<:AbstractGenomicInterval}
     queue = Queue{Union{Ea,Eb}}()
-    return OverlapIteratorState{Sa,Sb,Ea,Eb}(next_a, next_b, queue, 1)
+    return OverlapIteratorState{Na,Nb,Ea,Eb}(next_a, next_b, queue, 1)
 end
 
-function OverlapIteratorState(Ea::Type, Eb::Type, next_a::Sa, next_b::Sb) where {Sa, Sb}
-    return OverlapIteratorState{Sa,Sb,Ea,Eb}(next_a, next_b)
+function OverlapIteratorState(Ea::Type, Eb::Type, next_a::Na, next_b::Nb) where {Na, Nb}
+    return OverlapIteratorState{Na,Nb,Ea,Eb}(next_a, next_b)
 end
 
-function OverlapIteratorState(Ea::Type, Eb::Type, next_a::Sa, next_b::Sb, queue::Queue, queue_index::Int) where {Sa, Sb}
-    return OverlapIteratorState{Sa,Sb,Ea,Eb}(next_a, next_b, queue, queue_index)
+function OverlapIteratorState(Ea::Type, Eb::Type, next_a::Na, next_b::Nb, queue::Queue, queue_index::Int) where {Na, Nb}
+    return OverlapIteratorState{Na,Nb,Ea,Eb}(next_a, next_b, queue, queue_index)
 end
 
 # Initial iteration.
-function Base.iterate(iter::OverlapIterator{Sa,Sb,F,G}) where {Sa,Sb,F,G}
+function Base.iterate(iter::OverlapIterator{A,B,F,G}) where {A,B,F,G}
     next_a = iterate(iter.intervals_a) #Note: returns (value, state) or nothing.
     next_b = iterate(iter.intervals_b)
 
@@ -86,7 +86,7 @@ function check_ordered(i1, i2, compare_func)
 end
 
 # Subsequent iteration.
-function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,Ea,Eb}) where {Sa,Sb,Ea,Eb}
+function Base.iterate(iter::OverlapIterator{A,B,F,G}, state::OverlapIteratorState{Na,Nb,Ea,Eb}) where {A,B,F,G,Na,Nb,Ea,Eb}
     next_a      = state.next_a
     next_b      = state.next_b
     queue       = state.queue
