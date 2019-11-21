@@ -42,12 +42,12 @@ struct OverlapIteratorState{Na,Nb,Ea,Eb}
     queue_index::Int
 end
 
-function OverlapIteratorState(E::Type{Tuple{Ea, Eb}}, next_a::Na, next_b::Nb, queue::Queue, queue_index::Int) where {Sa, Sb, Ea<:AbstractGenomicInterval, Eb<:AbstractGenomicInterval, Na <: Union{Nothing, Tuple{Ea,Sa}}, Nb <: Union{Nothing, Tuple{Eb,Sb}}}
+function OverlapIteratorState{Ea,Eb}(next_a::Na, next_b::Nb, queue::Queue, queue_index::Int) where {Sa, Sb, Ea<:AbstractGenomicInterval, Eb<:AbstractGenomicInterval, Na <: Union{Nothing, Tuple{Ea,Sa}}, Nb <: Union{Nothing, Tuple{Eb,Sb}}}
     return OverlapIteratorState{Na,Nb,Ea,Eb}(next_a, next_b, queue, queue_index)
 end
 
 function OverlapIteratorState(E::Type{Tuple{Ea,Eb}}, next_a::Na, next_b::Nb) where {Sa, Sb, Ea<:AbstractGenomicInterval, Eb<:AbstractGenomicInterval, Na <: Union{Nothing, Tuple{Ea,Sa}}, Nb <: Union{Nothing, Tuple{Eb,Sb}}}
-    return OverlapIteratorState(E, next_a, next_b, Queue{Union{Ea,Eb}}(), 1)
+    return OverlapIteratorState{Ea,Eb}(next_a, next_b, Queue{Union{Ea,Eb}}(), 1)
 end
 
 # Initial iteration.
@@ -132,7 +132,7 @@ function Base.iterate(iter::OverlapIterator{A,B,F,G}, state::OverlapIteratorStat
                 queue_index = firstindex(queue)
             elseif c == 0
                 if iter.filter(interval_a, interval_b)
-                    return ((interval_a, interval_b), OverlapIteratorState(Tuple{Ea,Eb}, next_a, next_b, queue, queue_index))
+                    return ((interval_a, interval_b), OverlapIteratorState{Ea,Eb}(next_a, next_b, queue, queue_index)) #TODO: see if explicite conversion can work here.
                 end
             else
                 if queue_index == firstindex(queue) + 1
