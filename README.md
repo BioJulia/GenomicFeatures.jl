@@ -1,4 +1,4 @@
-# <img src="sticker.svg" width="30%" align="right" /> GenomicFeatures
+# <img src="docs/src/assets/logo.svg" width="30%" align="right" /> GenomicFeatures
 
 [![Latest Release](https://img.shields.io/github/release/BioJulia/GenomicFeatures.jl.svg)](https://github.com/BioJulia/GenomicFeatures.jl/releases/latest)
 [![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/GenomicFeatures.jl/blob/master/LICENSE)
