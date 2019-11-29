@@ -1,4 +1,4 @@
-# Public API Reference
+# API Reference
 
 ## Public
 ```@autodocs
