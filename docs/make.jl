@@ -7,7 +7,7 @@ using Documenter, GenomicFeatures
 
 makedocs(
     format = Documenter.HTML(
-        edit_branch = "develop"
+        edit_link = :commit
     ),
     modules = [GenomicFeatures],
     sitename = "GenomicFeatures.jl",
