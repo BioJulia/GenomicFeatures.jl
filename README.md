@@ -9,10 +9,8 @@
 
 ## Description
 
-GenomicFeatures provides utilities for working with interval based genomic
-annotations. It builds on [IntervalTrees]() to provide a data-structures,
-algorithms and IO tools for various formats such as BED, GFF3, bigWig and
-bigBed.  
+GenomicFeatures provides utilities for working with interval based genomic annotations.
+It builds on [IntervalTrees]() to provide a data-structures, algorithms and IO tools for various formats such as BED, GFF3, bigWig and bigBed.  
 
 ## Installation
 
@@ -24,8 +22,7 @@ add("GenomicFeatures")
 #Pkg.add("GenomicFeatures") for julia prior to v 0.7
 ```
 
-If you are interested in the cutting edge of the development, please check out
-the master branch to try new features before release.
+If you are interested in the cutting edge of the development, please check out the master branch to try new features before release.
 
 ## Testing
 
@@ -38,15 +35,11 @@ OS X, and Windows.
 
 ## Contributing and Questions
 
-We appreciate contributions from users including reporting bugs, fixing issues,
-improving performance and adding new features.
+We appreciate contributions from users including reporting bugs, fixing issues, improving performance and adding new features.
 
-Take a look at the [CONTRIBUTING](CONTRIBUTING.md) file provided with this
-package for detailed contributor and maintainer guidelines.
+Take a look at the [CONTRIBUTING](CONTRIBUTING.md) file provided with this package for detailed contributor and maintainer guidelines.
 
-If you have a question about contributing or using this package, come on over
-and chat to us on [Discord][discord-url], or you can try the
-[Bio category of the Julia discourse site](https://discourse.julialang.org/c/domain/bio).
+If you have a question about contributing or using this package, come on over and chat to us on [Discord][discord-url], or you can try the [Bio category of the Julia discourse site](https://discourse.julialang.org/c/domain/bio).
 
 [release-img]:            https://img.shields.io/github/release/BioJulia/GenomicFeatures.jl.svg?style=flat-square
 [release-url]:            https://github.com/BioJulia/GenomicFeatures.jl/releases/latest

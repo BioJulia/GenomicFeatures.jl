@@ -4,19 +4,17 @@ GFF3
 Description
 -----------
 
-GFF3 is a text-based file format for representing genomic annotations. The major
-difference from BED is that GFF3 is more structured and can include sequences in
-the FASTA file format.
+GFF3 is a text-based file format for representing genomic annotations.
+The major difference from BED is that GFF3 is more structured and can include sequences in the FASTA file format.
 
-I/O tools for GFF3 are provided from the `GenomicFeatures.GFF3` module,
-which exports following three types:
+I/O tools for GFF3 are provided from the `GenomicFeatures.GFF3` module, which exports following three types:
 * Reader type: `GFF3.Reader`
 * Writer type: `GFF3.Writer`
 * Element type: `GFF3.Record`
 
-A GFF3 file may contain directives and/or comments in addition to genomic
-features. These lines are skipped by default but you can control the behavior by
-passing keyword arguments to `GFF3.Reader`. See the docstring for details.
+A GFF3 file may contain directives and/or comments in addition to genomic features.
+These lines are skipped by default but you can control the behavior by passing keyword arguments to `GFF3.Reader`.
+See the docstring for details.
 
 
 Examples
@@ -41,9 +39,7 @@ end
 close(reader)
 ```
 
-If you are interested in directives (which starts with '#') in addition to
-genomic features, you need to pass `skip_directives=false` when initializing a
-GFF3 constructor:
+If you are interested in directives (which starts with '#') in addition to genomic features, you need to pass `skip_directives=false` when initializing a GFF3 constructor:
 ```julia
 # Set skip_directives to true (this is set to false by default).
 reader = GFF3.Reader(open("data.gff3"), skip_directives=false)
@@ -61,10 +57,8 @@ end
 close(reader)
 ```
 
-GenomicFeatures.jl supports [tabix](http://www.htslib.org/doc/tabix.html) to
-retrieve records overlapping with a specific interval. First you need to create
-a block compression file from a GFF3 file using bgzip and then index it using
-tabix.
+GenomicFeatures.jl supports [tabix](http://www.htslib.org/doc/tabix.html) to retrieve records overlapping with a specific interval.
+First you need to create a block compression file from a GFF3 file using bgzip and then index it using tabix.
 ```
 cat data.gff3 | grep -v "^#" | sort -k1,1 -k4,4n | bgzip >data.gff3.bgz
 tabix data.gff3.bgz  # this creates data.gff3.bgz.tbi
