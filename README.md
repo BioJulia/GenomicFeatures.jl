@@ -5,7 +5,7 @@
 [![stable documentation][docs-stable-img]][docs-stable-url]
 [![latest documentation][docs-latest-img]][docs-latest-url]
 ![lifecycle][lifecycle-maturing]
-[![Chat on Discord][discord-img]][discord-url]
+[![Chat on Gitter][gitter-img]][gitter-url]
 
 ## Description
 
@@ -38,7 +38,7 @@ We appreciate contributions from users including reporting bugs, fixing issues, 
 
 Take a look at the [CONTRIBUTING](CONTRIBUTING.md) file provided with this package for detailed contributor and maintainer guidelines.
 
-If you have a question about contributing or using this package, come on over and chat to us on [Discord][discord-url], or you can try the [Bio category of the Julia discourse site](https://discourse.julialang.org/c/domain/bio).
+If you have a question about contributing or using this package, come on over and chat to us on [Gitter][gitter-url], or you can try the [Bio category of the Julia discourse site](https://discourse.julialang.org/c/domain/bio).
 
 [release-img]:            https://img.shields.io/github/release/BioJulia/GenomicFeatures.jl.svg
 [release-url]:            https://github.com/BioJulia/GenomicFeatures.jl/releases/latest
@@ -55,8 +55,8 @@ If you have a question about contributing or using this package, come on over an
 [lifecycle-archived]:     https://img.shields.io/badge/lifecycle-archived-red.svg
 [lifecycle-dormant]:      https://img.shields.io/badge/lifecycle-dormant-blue.svg
 [lifecycle-questioning]:  https://img.shields.io/badge/lifecycle-questioning-blue.svg
-[discord-img]:            https://img.shields.io/badge/discord-chat-blue.svg&logo=discord&colorB=%237289DA
-[discord-url]:            https://discord.gg/z73YNFz
+[gitter-img]:             https://img.shields.io/gitter/room/BioJulia/GenomicFeatures.svg
+[gitter-url]:             https://gitter.im/BioJulia/GenomicFeatures.jl
 [juliapkg06-img]:         http://pkg.julialang.org/badges/GenomicFeatures_0.6.svg
 [juliapkg07-img]:         http://pkg.julialang.org/badges/GenomicFeatures_0.7.svg
 [juliapkg-url]:           http://pkg.julialang.org/?pkg=GenomicFeatures
