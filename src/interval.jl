@@ -60,15 +60,21 @@ IntervalTrees.last(i::Interval) = i.last
 function Base.isless(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
     if a.seqname != b.seqname
         return seqname_isless(a.seqname, b.seqname)::Bool
-    elseif a.first != b.first
-        return a.first < b.first
-    elseif a.last != b.last
-        return a.last < b.last
-    elseif a.strand != b.strand
-        return a.strand < b.strand
-    else
-        return false
     end
+
+    if a.first != b.first
+        return a.first < b.first
+    end
+
+    if a.last != b.last
+        return a.last < b.last
+    end
+
+    if a.strand != b.strand
+        return a.strand < b.strand
+    end
+
+    return false
 end
 
 """
