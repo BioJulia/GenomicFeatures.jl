@@ -85,11 +85,13 @@ Intervals are considered well ordered if a.seqname <= b.seqnamend and a.first <=
 function isordered(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
     if a.seqname != b.seqname
         return seqname_isless(a.seqname, b.seqname)::Bool
-    elseif a.first != b.first
-        return a.first < b.first
-    else
-        return true
     end
+
+    if a.first != b.first
+        return a.first < b.first
+    end
+
+    return true
 end
 
 """
