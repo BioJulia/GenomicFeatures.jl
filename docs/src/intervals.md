@@ -1,12 +1,10 @@
-Genomic Interval Manipulation
-=============================
+# Genomic Interval Manipulation
 
 The `GenomicFeatures` module consists of tools for working efficiently with
 genomic intervals.
 
 
-Interval type
--------------
+## Interval type
 
 Intervals in GenomicFeatures.jl are consistent with ranges in Julia: *1-based and end-inclusive*.
 When data is read from formats with different representations (i.e. 0-based and/or end-exclusive) they are always converted automatically.
@@ -86,8 +84,7 @@ julia> metadata(i)
 ```
 
 
-Collections of intervals
-------------------------
+## Collections of intervals
 
 Collections of intervals are represented using the `IntervalCollection` type, which is a general purpose indexed container for intervals.
 It supports fast intersection operations as well as insertion, deletion, and sorted iteration.
@@ -119,8 +116,7 @@ features = IntervalCollection(reader)
 ```
 
 
-Overlap query
--------------
+## Overlap query
 
 There are number of `eachoverlap` function in the `GenomicFeatures` module.
 They follow two patterns: interval versus collection queries which return an iterator over intervals in the collection that overlap the query, and collection versus collection queries which iterate over all pairs of overlapping intervals.
@@ -139,8 +135,7 @@ end
 ```
 
 
-Interval streams
-----------------
+## Interval streams
 
 Intervals need not necessarily stored in an indexed data structure for efficient intersection to be practical.
 Two collections of intervals need only be both sorted to compute all overlapping pairs.

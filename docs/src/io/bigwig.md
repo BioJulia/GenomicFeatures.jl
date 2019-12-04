@@ -1,8 +1,6 @@
-bigWig
-======
+# bigWig
 
-Description
------------
+## Description
 
 bigWig is a binary file format for associating a floating point number with each base in the genome.
 bigWig files are indexed to quickly fetch specific regions.
@@ -13,8 +11,7 @@ I/O tools for bigWig are provided from the `GenomicFeatures.BigWig` module, whic
 * Element type: `BigWig.Record`
 
 
-Examples
---------
+## Examples
 
 A common workflow is to open a file, iterate over records, and close the file:
 ```julia
@@ -72,8 +69,7 @@ close(writer)
 ```
 
 
-API
----
+## API
 
 ```@docs
 GenomicFeatures.BigWig.Reader

@@ -1,8 +1,6 @@
-GFF3
-====
+# GFF3
 
-Description
------------
+## Description
 
 GFF3 is a text-based file format for representing genomic annotations.
 The major difference from BED is that GFF3 is more structured and can include sequences in the FASTA file format.
@@ -17,8 +15,7 @@ These lines are skipped by default but you can control the behavior by passing k
 See the docstring for details.
 
 
-Examples
---------
+## Examples
 
 Here is a common workflow to iterate over all records in a GFF3 file:
 ```julia
@@ -75,8 +72,7 @@ end
 ```
 
 
-API
----
+## API
 
 ```@docs
 GenomicFeatures.GFF3.Reader

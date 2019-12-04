@@ -1,7 +1,6 @@
-bigBed
-======
+# bigBed
 
-Description -----------
+## Description
 
 bigBed is a binary file format for representing genomic annotations and often
 created from BED files.
@@ -15,8 +14,7 @@ which exports following three types:
 * Element type: `BigBed.Record`
 
 
-Examples
---------
+## Examples
 
 A common workflow is to open a file, iterate over records, and close the file:
 ```julia
@@ -61,8 +59,7 @@ close(writer)
 ```
 
 
-API
----
+## API
 
 ```@docs
 GenomicFeatures.BigBed.Reader
