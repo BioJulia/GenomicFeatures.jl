@@ -40,25 +40,25 @@ Take a look at the [CONTRIBUTING](CONTRIBUTING.md) file provided with this packa
 
 If you have a question about contributing or using this package, come on over and chat to us on [Discord][discord-url], or you can try the [Bio category of the Julia discourse site](https://discourse.julialang.org/c/domain/bio).
 
-[release-img]:            https://img.shields.io/github/release/BioJulia/GenomicFeatures.jl.svg?style=flat-square
+[release-img]:            https://img.shields.io/github/release/BioJulia/GenomicFeatures.jl.svg
 [release-url]:            https://github.com/BioJulia/GenomicFeatures.jl/releases/latest
-[license-img]:            https://img.shields.io/badge/license-MIT-green.svg?style=flat-square
+[license-img]:            https://img.shields.io/badge/license-MIT-green.svg
 [license-url]:            https://github.com/BioJulia/GenomicFeatures.jl/blob/master/LICENSE
-[docs-stable-img]:        https://img.shields.io/badge/docs-stable-blue.svg?style=flat-square
+[docs-stable-img]:        https://img.shields.io/badge/docs-stable-blue.svg
 [docs-stable-url]:        https://biojulia.github.io/GenomicFeatures.jl/stable
-[docs-latest-img]:        https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square
+[docs-latest-img]:        https://img.shields.io/badge/docs-latest-blue.svg
 [docs-latest-url]:        https://biojulia.github.io/GenomicFeatures.jl/latest/
-[lifecycle-experimental]: https://img.shields.io/badge/lifecycle-experimental-orange.svg?style=flat-square
-[lifecycle-maturing]:     https://img.shields.io/badge/lifecycle-maturing-blue.svg?style=flat-square
-[lifecycle-stable]:       https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?style=flat-square
-[lifecycle-retired]:      https://img.shields.io/badge/lifecycle-retired-orange.svg?style=flat-square
-[lifecycle-archived]:     https://img.shields.io/badge/lifecycle-archived-red.svg?style=flat-square
-[lifecycle-dormant]:      https://img.shields.io/badge/lifecycle-dormant-blue.svg?style=flat-square
-[lifecycle-questioning]:  https://img.shields.io/badge/lifecycle-questioning-blue.svg?style=flat-square
-[discord-img]:            https://img.shields.io/badge/discord-chat-blue.svg?style=flat-square&logo=discord&colorB=%237289DA
+[lifecycle-experimental]: https://img.shields.io/badge/lifecycle-experimental-orange.svg
+[lifecycle-maturing]:     https://img.shields.io/badge/lifecycle-maturing-blue.svg
+[lifecycle-stable]:       https://img.shields.io/badge/lifecycle-stable-brightgreen.svg
+[lifecycle-retired]:      https://img.shields.io/badge/lifecycle-retired-orange.svg
+[lifecycle-archived]:     https://img.shields.io/badge/lifecycle-archived-red.svg
+[lifecycle-dormant]:      https://img.shields.io/badge/lifecycle-dormant-blue.svg
+[lifecycle-questioning]:  https://img.shields.io/badge/lifecycle-questioning-blue.svg
+[discord-img]:            https://img.shields.io/badge/discord-chat-blue.svg&logo=discord&colorB=%237289DA
 [discord-url]:            https://discord.gg/z73YNFz
-[juliapkg06-img]:         http://pkg.julialang.org/badges/GenomicFeatures_0.6.svg?style=flat-square
-[juliapkg07-img]:         http://pkg.julialang.org/badges/GenomicFeatures_0.7.svg?style=flat-square
+[juliapkg06-img]:         http://pkg.julialang.org/badges/GenomicFeatures_0.6.svg
+[juliapkg07-img]:         http://pkg.julialang.org/badges/GenomicFeatures_0.7.svg
 [juliapkg-url]:           http://pkg.julialang.org/?pkg=GenomicFeatures
 [travis-img]:             https://img.shields.io/travis/BioJulia/GenomicFeatures.jl/master.svg?label=Linux+/+macOS
 [travis-url]:             https://travis-ci.org/BioJulia/GenomicFeatures.jl
