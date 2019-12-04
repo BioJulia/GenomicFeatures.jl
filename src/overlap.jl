@@ -146,11 +146,11 @@ end
 #   0 when `i1` overlaps with `i2`, and
 #   +1 when `i1` follows `i2`.
 function compare_overlap(i1::Interval, i2::Interval, isless::Function)
-    if isless(i1.seqname, i2.seqname)::Bool
+    if isless(i1.seqname, i2.seqname)
         return -1
     end
 
-    if isless(i2.seqname, i1.seqname)::Bool
+    if isless(i2.seqname, i1.seqname)
         return +1
     end
 
