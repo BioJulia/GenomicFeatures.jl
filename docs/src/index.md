@@ -1,8 +1,8 @@
 # GenomicFeatures.jl
 
 ## Description
-GenomicFeatures.jl provides genomic interval arithmetic, data structures, and I/O tools for various data formats including BED, GFF3, bigWig, and bigBed.
-
+GenomicFeatures provides utilities for working with interval based genomic annotations.
+It builds on [IntervalTrees](https://github.com/biojulia/intervaltrees.jl) to provide a data-structures, algorithms and IO tools for various formats such as BED, GFF3, bigWig and bigBed.  
 
 ## Installation
 You can install GenomicFeatures from the [Julia REPL](https://docs.julialang.org/en/v1/manual/getting-started/).
