@@ -273,9 +273,9 @@ function Base.findfirst(a::IntervalCollection{T}, b::Interval{S};
                         filter=true_cmp) where {T,S}
     if !haskey(a.trees, b.seqname)
         return nothing
-    else
-        return findfirst(a.trees[b.seqname], b, filter)
     end
+
+    return findfirst(a.trees[b.seqname], b, filter)
 end
 
 
@@ -285,9 +285,9 @@ end
 function eachoverlap(a::IntervalCollection{T}, b::Interval; filter::F = true_cmp) where {F,T}
     if haskey(a.trees, b.seqname)
         return intersect(a.trees[b.seqname], b)
-    else
-        return ICTreeIntervalIntersectionIterator{F,T}()
     end
+
+    return ICTreeIntervalIntersectionIterator{F,T}()
 end
 
 function eachoverlap(a::IntervalCollection, b::IntervalCollection; filter = true_cmp)
