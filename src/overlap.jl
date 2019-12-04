@@ -148,30 +148,39 @@ end
 function compare_overlap(i1::Interval, i2::Interval, isless::Function)
     if isless(i1.seqname, i2.seqname)::Bool
         return -1
-    elseif isless(i2.seqname, i1.seqname)::Bool
-        return +1
-    else  # i1.seqname == i2.seqname
-        if i1.last < i2.first
-            return -1
-        elseif i1.first > i2.last
-            return +1
-        else
-            return 0
-        end
     end
+
+    if isless(i2.seqname, i1.seqname)::Bool
+        return +1
+    end
+
+    # i1.seqname == i2.seqname
+    if i1.last < i2.first
+        return -1
+    end
+
+    if i1.first > i2.last
+        return +1
+    end
+
+    return 0
 end
 
 # Faster comparison for `Base.isless`.  Note that `Base.isless` must be consistent wtih `Base.cmp` to work correctly.
 function compare_overlap(i1::Interval, i2::Interval, ::typeof(Base.isless))
     c = cmp(i1.seqname, i2.seqname)
+
     if c != 0
         return c
     end
+
     if i1.last < i2.first
         return -1
-    elseif i1.first > i2.last
-        return +1
-    else
-        return 0
     end
+
+    if i1.first > i2.last
+        return +1
+    end
+
+    return 0
 end
