@@ -56,7 +56,7 @@ mutable struct IntervalCollection{T}
     end
 
     # bulk insertion
-    function IntervalCollection{T}(intervals::AbstractVector{Interval{T}}, sort=false) where T
+    function IntervalCollection{T}(intervals::AbstractVector{Interval{T}}, sort::Bool=false) where T
         if sort
             sort!(intervals)
         else
@@ -80,7 +80,7 @@ mutable struct IntervalCollection{T}
     end
 end
 
-function IntervalCollection(intervals::AbstractVector{Interval{T}}, sort=false) where T
+function IntervalCollection(intervals::AbstractVector{Interval{T}}, sort::Bool=false) where T
     return IntervalCollection{T}(intervals, sort)
 end
 
