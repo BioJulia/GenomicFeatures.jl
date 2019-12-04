@@ -1,5 +1,5 @@
-# An IntervalCollection is an efficiently stored and indexed set of annotated
-# genomic intervals. It looks something like this.
+# An IntervalCollection is an efficiently stored and indexed set of annotated genomic intervals.
+# It looks something like this.
 #
 #                                      ┌─────┐
 #                                      │trees│
@@ -40,16 +40,14 @@ const ICTreeIntersectionIterator{F,S,T}       = IntervalTrees.IntersectionIterat
 const ICTreeIntervalIntersectionIterator{F,T} = IntervalTrees.IntervalIntersectionIterator{F, Int64,Interval{T},64}
 
 mutable struct IntervalCollection{T}
-    # Sequence name mapped to IntervalTree, which in turn maps intervals to
-    # a list of metadata.
+    # Sequence name mapped to IntervalTree, which in turn maps intervals to a list of metadata.
     trees::Dict{String,ICTree{T}}
 
     # Keep track of the number of stored intervals
     length::Int
 
     # A vector of values(trees) sorted on sequence name.
-    # This is used to iterate intervals as efficiently as possible, but is only
-    # updated as needed, indicated by the ordered_trees_outdated flag.
+    # This is used to iterate intervals as efficiently as possible, but is only updated as needed, indicated by the ordered_trees_outdated flag.
     ordered_trees::Vector{ICTree{T}}
     ordered_trees_outdated::Bool
 
@@ -457,14 +455,13 @@ end
 =#
 
 # New julia 0.7 / 1.0 iteration protocol for collection stream iterator.
-# State is a tuple: 
+# State is a tuple:
 # (current_query, stream_state, intersection_object)
 function Base.iterate(it::IntervalCollectionStreamIterator{F,S,T}, state = ()) where {F,S,T}
     # If first iteration, make empty intersection, otherwise get it from the state.
-    intersection = (state !== () ? state[3] : ICTreeIntersection{T}()) 
-    
-    # If this is not the first iteration, and there is an available intersection
-    # for the current query, return it and search for the next intersection. 
+    intersection = (state !== () ? state[3] : ICTreeIntersection{T}())
+
+    # If this is not the first iteration, and there is an available intersection for the current query, return it and search for the next intersection.
     if state !== () && intersection.index != 0
         entry = intersection.node.entries[intersection.index]
         return_value = (state[1], entry)
@@ -472,8 +469,7 @@ function Base.iterate(it::IntervalCollectionStreamIterator{F,S,T}, state = ()) w
         return return_value, (state[1], state[2], intersection)
     end
 
-    # If code reaches this point, there is no valid intersection to return for
-    # the current query, so we get the next query and start looking for intersections.
+    # If code reaches this point, there is no valid intersection to return for the current query, so we get the next query and start looking for intersections.
     while intersection.index == 0
         # Get a new query from the stream, and its first intersection in the collection.
         stream_it = (state === () ? iterate(it.stream) : iterate(it.stream, state[2]))

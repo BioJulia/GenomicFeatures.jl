@@ -16,13 +16,11 @@ struct Interval{T} <: IntervalTrees.AbstractInterval{Int64}
     metadata::T
 end
 
-function Interval(seqname::AbstractString, first::Integer, last::Integer,
-                  strand::Union{Strand,Char}=STRAND_BOTH, metadata=nothing)
+function Interval(seqname::AbstractString, first::Integer, last::Integer, strand::Union{Strand,Char}=STRAND_BOTH, metadata=nothing)
     return Interval{typeof(metadata)}(seqname, first, last, strand, metadata)
 end
 
-function Interval(seqname::AbstractString, range::UnitRange{T},
-                  strand::Union{Strand,Char}=STRAND_BOTH, metadata=nothing) where T<:Integer
+function Interval(seqname::AbstractString, range::UnitRange{T}, strand::Union{Strand,Char}=STRAND_BOTH, metadata=nothing) where T<:Integer
     return Interval{typeof(metadata)}(seqname, first(range), last(range), strand, metadata)
 end
 
@@ -59,8 +57,7 @@ end
 IntervalTrees.first(i::Interval) = i.first
 IntervalTrees.last(i::Interval) = i.last
 
-function Base.isless(a::Interval{T}, b::Interval{T},
-                     seqname_isless::Function=isless) where T
+function Base.isless(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
     if a.seqname != b.seqname
         return seqname_isless(a.seqname, b.seqname)::Bool
     elseif a.first != b.first
@@ -77,11 +74,9 @@ end
 """
 Check if two intervals are well ordered.
 
-Intervals are considered well ordered if a.seqname <= b.seqnamend and
-a.first <= b.first.
+Intervals are considered well ordered if a.seqname <= b.seqnamend and a.first <= b.first.
 """
-function isordered(a::Interval{T}, b::Interval{T},
-                   seqname_isless::Function=isless) where T
+function isordered(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
     if a.seqname != b.seqname
         return seqname_isless(a.seqname, b.seqname)::Bool
     elseif a.first != b.first
@@ -94,10 +89,8 @@ end
 """
 Return true if interval `a` entirely precedes `b`.
 """
-function precedes(a::Interval{T}, b::Interval{T},
-                  seqname_isless::Function=isless) where T
-    return (a.last < b.first && a.seqname == b.seqname) ||
-        seqname_isless(a.seqname, b.seqname)::Bool
+function precedes(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
+    return (a.last < b.first && a.seqname == b.seqname) || seqname_isless(a.seqname, b.seqname)::Bool
 end
 
 function Base.:(==)(a::Interval{T}, b::Interval{T}) where T
@@ -115,8 +108,7 @@ end
 
 function Base.show(io::IO, i::Interval)
     if get(io, :compact, false)
-        print(io, i.seqname, ":", i.first, "-", i.last, "  ", i.strand,
-            "  ", i.metadata === nothing ? "nothing" : i.metadata)
+        print(io, i.seqname, ":", i.first, "-", i.last, "  ", i.strand, "  ", i.metadata === nothing ? "nothing" : i.metadata)
     else
         println(io, summary(i), ':')
         println(io, "  sequence name: ", i.seqname)

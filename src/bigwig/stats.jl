@@ -6,8 +6,8 @@
 
 Compute the coverage of values in `[chromstart, chromend]` of `chrom`.
 
-If `usezoom` is `true`, this function tries to use precomputed statistics (zoom)
-in the file.  This is often faster but not exact in most cases.
+If `usezoom` is `true`, this function tries to use precomputed statistics (zoom) in the file.
+This is often faster but not exact in most cases.
 """
 function coverage(reader::Reader, chrom::AbstractString, chromstart::Integer, chromend::Integer; usezoom=false)::Int
     chromid = reader.chroms[chrom][1]
@@ -34,8 +34,8 @@ end
 
 Compute the mean of values in `[chromstart, chromend]` of `chrom`.
 
-This function returns `NaN32` if there are no data in that range. See `coverage`
-for the `usezoom` keyword argument.
+This function returns `NaN32` if there are no data in that range.
+See `coverage` for the `usezoom` keyword argument.
 """
 function mean(reader::Reader, chrom::AbstractString, chromstart::Integer, chromend::Integer; usezoom=false)::Float32
     chromid = reader.chroms[chrom][1]
@@ -66,8 +66,8 @@ end
 
 Compute the minimum of values in `[chromstart, chromend]` of `chrom`.
 
-This function returns `NaN32` if there are no data in that range. See `coverage`
-for the `usezoom` keyword argument.
+This function returns `NaN32` if there are no data in that range.
+See `coverage` for the `usezoom` keyword argument.
 """
 function minimum(reader::Reader, chrom::AbstractString, chromstart::Integer, chromend::Integer; usezoom=false)::Float32
     chromid = reader.chroms[chrom][1]
@@ -86,8 +86,8 @@ end
 
 Compute the maximum of values in `[chromstart, chromend]` of `chrom`.
 
-This function returns `NaN32` if there are no data in that range. See `coverage`
-for the `usezoom` keyword argument.
+This function returns `NaN32` if there are no data in that range.
+See `coverage` for the `usezoom` keyword argument.
 """
 function maximum(reader::Reader, chrom::AbstractString, chromstart::Integer, chromend::Integer; usezoom=false)::Float32
     chromid = reader.chroms[chrom][1]

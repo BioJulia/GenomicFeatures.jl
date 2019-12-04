@@ -1,8 +1,7 @@
 # BBI - Shared Parts of bigWig and bigBed
 # =======================================
 #
-# Detailed description of bigWig and bigBed file formats are found in the paper
-# and its supplement:
+# Detailed description of bigWig and bigBed file formats are found in the paper and its supplement:
 # https://doi.org/10.1093/bioinformatics/btq351
 # https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2922891/bin/supp_btq351_bbiSuppFINAL.doc
 #

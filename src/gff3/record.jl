@@ -458,7 +458,8 @@ end
 """
     content(record::Record)::String
 
-Get the content of `record`. Leading '#' letters are removed.
+Get the content of `record`.
+Leading '#' letters are removed.
 """
 function content(record::Record)
     checkfilled(record)
