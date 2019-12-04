@@ -39,7 +39,7 @@ The `strand` field can take four kinds of values listed in the next table:
 The default strand and metadata value are `STRAND_BOTH` and `nothing`:
 ```jlcon
 julia> Interval("chr1", 10000, 20000)
-GenomicFeatures.Interval{Void}:
+GenomicFeatures.Interval{Nothing}:
   sequence name: chr1
   leftmost position: 10000
   rightmost position: 20000
@@ -47,7 +47,7 @@ GenomicFeatures.Interval{Void}:
   metadata: nothing
 
 julia> Interval("chr1", 10000, 20000, '+')
-GenomicFeatures.Interval{Void}:
+GenomicFeatures.Interval{Nothing}:
   sequence name: chr1
   leftmost position: 10000
   rightmost position: 20000
@@ -92,8 +92,8 @@ It supports fast intersection operations as well as insertion, deletion, and sor
 Interval collections can be initialized by inserting elements one by one using `push!`.
 
 ```julia
-# The type parameter (Void here) indicates the interval metadata type.
-col = IntervalCollection{Void}()
+# The type parameter (Nothing here) indicates the interval metadata type.
+col = IntervalCollection{Nothing}()
 
 for i in 1:100:10000
     push!(col, Interval("chr1", i, i + 99))
