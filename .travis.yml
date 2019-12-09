@@ -1,17 +1,25 @@
 ## Documentation: http://docs.travis-ci.com/user/languages/julia/
 language: julia
+
 os:
   - linux
   - osx
+
 julia:
   - 0.7
   - 1.0
+  - 1.1
+  - 1.2
+  - 1.3
   - nightly
-matrix:
-  allow_failures:
-    - julia: nightly
+
 notifications:
   email: false
+
+matrix:
+ allow_failures:
+ - julia: nightly
+
 after_success:
   - julia -e 'cd(Pkg.dir("GenomicFeatures")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
   - julia -e 'cd(joinpath(Pkg.dir("GenomicFeatures"), "docs/src")); mkdir("assets"); cd("assets"); run(pipeline(`curl https://codeload.github.com/BioJulia/assets/tar.gz/master`, `tar -xz --strip=2 assets-master/doc_assets`))'
