@@ -1,7 +1,7 @@
 name = "GenomicFeatures"
 uuid = "99b347e8-cb6a-11e8-1597-6bac6e11ce47"
 authors = ["Kenta Sato <bicycle1885@gmail.com>", "Ben J. Ward <benjward@protonmail.com>", "Ciarán O’Mara <CiaranOMara@utas.edu.au>"]
-version = "1.0.0"
+version = "1.0.1"
 
 [deps]
 Automa = "67c07d97-cdcb-5c2c-af73-a7f9c32a568b"
