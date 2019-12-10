@@ -13,7 +13,7 @@ makedocs(
     sitename = "GenomicFeatures.jl",
     pages = [
         "Home" => "index.md",
-        "Intervals" => "intervals.md",
+        "Intervals" => "man/intervals.md",
         "I/O" => [
             "BED" => "io/bed.md",
             "GFF3" => "io/gff3.md",
