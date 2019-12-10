@@ -106,7 +106,7 @@ Incrementally building an interval collection like this works, but `IntervalColl
 col = IntervalCollection([Interval("chr1", i, i + 99) for i in 1:100:10000])
 ```
 
-Bulding `IntervalCollections` in one shot like this should be preferred when it's convenient or speed in an issue.
+Building `IntervalCollections` in one shot like this should be preferred when it's convenient or speed in an issue.
 
 `IntervalCollection`s can also be build directly from a genome annotation file, here in GFF3 format:
 
