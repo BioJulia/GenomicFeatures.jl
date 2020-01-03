@@ -1,72 +1,102 @@
-# <img src="sticker.svg" width="30%" align="right" /> GenomicFeatures
+# <img src="docs/src/assets/logo.svg" width="30%" align="right" /> GenomicFeatures
 
 [![latest release][release-img]][release-url]
 [![MIT license][license-img]][license-url]
 [![stable documentation][docs-stable-img]][docs-stable-url]
-[![latest documentation][docs-latest-img]][docs-latest-url]
+[![latest documentation][docs-dev-img]][docs-dev-url]
 ![lifecycle][lifecycle-maturing]
-[![Chat on Discord][discord-img]][discord-url]
+[![Chat on Gitter][gitter-img]][gitter-url]
 
 ## Description
 
-GenomicFeatures provides utilities for working with interval based genomic
-annotations. It builds on [IntervalTrees]() to provide a data-structures,
-algorithms and IO tools for various formats such as BED, GFF3, bigWig and
-bigBed.  
+GenomicFeatures provides utilities for working with interval based genomic annotations.
+It builds on [IntervalTrees](https://github.com/biojulia/intervaltrees.jl) to provide a data-structures, algorithms and IO tools for various formats such as BED, GFF3, bigWig and bigBed.  
 
 ## Installation
 
-Install GenomicFeatures from the Julia REPL:
+You can install GenomicFeatures from the [Julia REPL](https://docs.julialang.org/en/v1/manual/getting-started/).
+Press `]` to enter [pkg mode](https://docs.julialang.org/en/v1/stdlib/Pkg/), then enter the following:
 
 ```julia
-using Pkg
-add("GenomicFeatures")
-#Pkg.add("GenomicFeatures") for julia prior to v 0.7
+add GenomicFeatures
 ```
 
-If you are interested in the cutting edge of the development, please check out
-the master branch to try new features before release.
+If you are interested in the cutting edge of the development, please check out the [develop branch](https://github.com/BioJulia/GenomicFeatures.jl/tree/develop) to try new features before release.
 
 ## Testing
 
-GenomicFeatures is tested against julia `0.6` and current `0.7-dev` on Linux,
-OS X, and Windows.
+GenomicFeatures is tested against Julia `1.X` on Linux, OS X, and Windows.
 
-| **Latest release** | **Latest build status** |
-|:------------------:|:-----------------------:|
-| [![julia06][juliapkg06-img]][juliapkg-url] [![julia07][juliapkg07-img]][juliapkg-url] | [![travis][travis-img]][travis-url] [![appveyor][appveyor-img]][appveyor-url] [![coverage][codecov-img]][codecov-url] |
+**Latest build status:**
 
-## Contributing and Questions
+[![travis][travis-img]][travis-url]
+[![appveyor][appveyor-img]][appveyor-url]
+[![coverage][codecov-img]][codecov-url]
 
-We appreciate contributions from users including reporting bugs, fixing issues,
-improving performance and adding new features.
 
-Take a look at the [CONTRIBUTING](CONTRIBUTING.md) file provided with this
-package for detailed contributor and maintainer guidelines.
+## Contributing
 
-If you have a question about contributing or using this package, come on over
-and chat to us on [Discord][discord-url], or you can try the
+We appreciate contributions from users including reporting bugs, fixing issues, improving performance and adding new features.
+
+Take a look at the [contributing files](https://github.com/BioJulia/Contributing) detailed contributor and maintainer guidelines, and code of conduct.
+
+
+### Financial contributions
+
+We also welcome financial contributions in full transparency on our [open collective](https://opencollective.com/biojulia).
+Anyone can file an expense. If the expense makes sense for the development of the community, it will be "merged" in the ledger of our open collective by the core contributors and the person who filed the expense will be reimbursed.
+
+
+## Backers & Sponsors
+
+Thank you to all our backers and sponsors!
+
+Love our work and community? [Become a backer](https://opencollective.com/biojulia#backer).
+
+[![backers](https://opencollective.com/biojulia/backers.svg?width=890)](https://opencollective.com/biojulia#backers)
+
+Does your company use BioJulia?
+Help keep BioJulia feature rich and healthy by [sponsoring the project](https://opencollective.com/biojulia#sponsor).
+Your logo will show up here with a link to your website.
+
+[![](https://opencollective.com/biojulia/sponsor/0/avatar.svg)](https://opencollective.com/biojulia/sponsor/0/website)
+[![](https://opencollective.com/biojulia/sponsor/1/avatar.svg)](https://opencollective.com/biojulia/sponsor/1/website)
+[![](https://opencollective.com/biojulia/sponsor/2/avatar.svg)](https://opencollective.com/biojulia/sponsor/2/website)
+[![](https://opencollective.com/biojulia/sponsor/3/avatar.svg)](https://opencollective.com/biojulia/sponsor/3/website)
+[![](https://opencollective.com/biojulia/sponsor/4/avatar.svg)](https://opencollective.com/biojulia/sponsor/4/website)
+[![](https://opencollective.com/biojulia/sponsor/5/avatar.svg)](https://opencollective.com/biojulia/sponsor/5/website)
+[![](https://opencollective.com/biojulia/sponsor/6/avatar.svg)](https://opencollective.com/biojulia/sponsor/6/website)
+[![](https://opencollective.com/biojulia/sponsor/7/avatar.svg)](https://opencollective.com/biojulia/sponsor/7/website)
+[![](https://opencollective.com/biojulia/sponsor/8/avatar.svg)](https://opencollective.com/biojulia/sponsor/8/website)
+[![](https://opencollective.com/biojulia/sponsor/9/avatar.svg)](https://opencollective.com/biojulia/sponsor/9/website)
+
+
+## Questions?
+
+If you have a question about contributing or using BioJulia software, come
+on over and chat to us on [Gitter](https://gitter.im/BioJulia/General), or you can try the
 [Bio category of the Julia discourse site](https://discourse.julialang.org/c/domain/bio).
 
-[release-img]:            https://img.shields.io/github/release/BioJulia/GenomicFeatures.jl.svg?style=flat-square
+
+[release-img]:            https://img.shields.io/github/release/BioJulia/GenomicFeatures.jl.svg
 [release-url]:            https://github.com/BioJulia/GenomicFeatures.jl/releases/latest
-[license-img]:            https://img.shields.io/badge/license-MIT-green.svg?style=flat-square
+[license-img]:            https://img.shields.io/badge/license-MIT-green.svg
 [license-url]:            https://github.com/BioJulia/GenomicFeatures.jl/blob/master/LICENSE
-[docs-stable-img]:        https://img.shields.io/badge/docs-stable-blue.svg?style=flat-square
+[docs-stable-img]:        https://img.shields.io/badge/docs-stable-blue.svg
 [docs-stable-url]:        https://biojulia.github.io/GenomicFeatures.jl/stable
-[docs-latest-img]:        https://img.shields.io/badge/docs-latest-blue.svg?style=flat-square
-[docs-latest-url]:        https://biojulia.github.io/GenomicFeatures.jl/latest/
-[lifecycle-experimental]: https://img.shields.io/badge/lifecycle-experimental-orange.svg?style=flat-square
-[lifecycle-maturing]:     https://img.shields.io/badge/lifecycle-maturing-blue.svg?style=flat-square
-[lifecycle-stable]:       https://img.shields.io/badge/lifecycle-stable-brightgreen.svg?style=flat-square
-[lifecycle-retired]:      https://img.shields.io/badge/lifecycle-retired-orange.svg?style=flat-square
-[lifecycle-archived]:     https://img.shields.io/badge/lifecycle-archived-red.svg?style=flat-square
-[lifecycle-dormant]:      https://img.shields.io/badge/lifecycle-dormant-blue.svg?style=flat-square
-[lifecycle-questioning]:  https://img.shields.io/badge/lifecycle-questioning-blue.svg?style=flat-square
-[discord-img]:            https://img.shields.io/badge/discord-chat-blue.svg?style=flat-square&logo=discord&colorB=%237289DA
-[discord-url]:            https://discord.gg/z73YNFz
-[juliapkg06-img]:         http://pkg.julialang.org/badges/GenomicFeatures_0.6.svg?style=flat-square
-[juliapkg07-img]:         http://pkg.julialang.org/badges/GenomicFeatures_0.7.svg?style=flat-square
+[docs-dev-img]:           https://img.shields.io/badge/docs-dev-blue.svg
+[docs-dev-url]:           https://biojulia.github.io/GenomicFeatures.jl/dev/
+[lifecycle-experimental]: https://img.shields.io/badge/lifecycle-experimental-orange.svg
+[lifecycle-maturing]:     https://img.shields.io/badge/lifecycle-maturing-blue.svg
+[lifecycle-stable]:       https://img.shields.io/badge/lifecycle-stable-brightgreen.svg
+[lifecycle-retired]:      https://img.shields.io/badge/lifecycle-retired-orange.svg
+[lifecycle-archived]:     https://img.shields.io/badge/lifecycle-archived-red.svg
+[lifecycle-dormant]:      https://img.shields.io/badge/lifecycle-dormant-blue.svg
+[lifecycle-questioning]:  https://img.shields.io/badge/lifecycle-questioning-blue.svg
+[gitter-img]:             https://img.shields.io/gitter/room/BioJulia/GenomicFeatures.svg
+[gitter-url]:             https://gitter.im/BioJulia/GenomicFeatures.jl
+[juliapkg06-img]:         http://pkg.julialang.org/badges/GenomicFeatures_0.6.svg
+[juliapkg07-img]:         http://pkg.julialang.org/badges/GenomicFeatures_0.7.svg
 [juliapkg-url]:           http://pkg.julialang.org/?pkg=GenomicFeatures
 [travis-img]:             https://img.shields.io/travis/BioJulia/GenomicFeatures.jl/master.svg?label=Linux+/+macOS
 [travis-url]:             https://travis-ci.org/BioJulia/GenomicFeatures.jl

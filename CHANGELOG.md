@@ -6,32 +6,26 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [1.0.0] - 2018-09-10
+## [1.0.1]
+- General housekeeping.
+
+## [1.0.0]
+- Version 1.0 updates ([#15](https://github.com/BioJulia/GenomicFeatures.jl/pull/15))
+
+## [0.2.1]
 ### Added
-- Issue and PR templates.
-- Code of Conduct and Contributing files.
-- A changelog file.
-- Support for julia v0.7 and v1.0.
+- Read and write methods for Strand ([#4](https://github.com/BioJulia/GenomicFeatures.jl/pull/4)).
 
-### Removed
-- :exclamation: Support for julia prior to v0.7.
-
-## [0.2.1] - 2017-06-27
+## [0.2.0]
 ### Added
-- Read and write methods for Strand type.
+- Optional filter functions to `eachoverlap`, and a `findfirst` function ([#3](https://github.com/BioJulia/GenomicFeatures.jl/pull/3)).
 
-## [0.2.0] - 2017-06-25
-### Added
-- Optional filter functions to eachoverlap.
-- findfirst function.
+## [0.1.0]
+- Move code from Bio.jl.
+- Add support for GFF3 and BigWig.
 
-## [0.1.0] - 2017-06-17
-### Added
-- Code from Bio.jl.
-- Support for GFF3 and BigWig.
-
-
-[Unreleased]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v0.2.1...v1.0.0
 [0.2.1]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v0.1.0...v0.2.0

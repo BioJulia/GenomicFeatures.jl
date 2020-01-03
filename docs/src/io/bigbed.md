@@ -1,10 +1,10 @@
-bigBed
-======
+# bigBed
 
-Description -----------
+## Description
 
 bigBed is a binary file format for representing genomic annotations and often
-created from BED files. bigBed files are indexed to quickly fetch specific
+created from BED files.
+bigBed files are indexed to quickly fetch specific
 regions.
 
 I/O tools for bigBed are provided from the `GenomicFeatures.BigBed` module,
@@ -14,8 +14,7 @@ which exports following three types:
 * Element type: `BigBed.Record`
 
 
-Examples
---------
+## Examples
 
 A common workflow is to open a file, iterate over records, and close the file:
 ```julia
@@ -47,10 +46,9 @@ end
 close(reader)
 ```
 
-Creating a bigBed file can be done as follows. The `write` call takes a tuple of
-3-12 elements (i.e. chromosome name, start position, end position, name, score,
-strand, thickstart, thickend, RGB color, blockcount, blocksizes and
-blockstarts). The first three are mandatory fields but others are optional.
+Creating a bigBed file can be done as follows.
+The `write` call takes a tuple of 3-12 elements (i.e. chromosome name, start position, end position, name, score, strand, thickstart, thickend, RGB color, blockcount, blocksizes and blockstarts).
+The first three are mandatory fields but others are optional.
 ```julia
 # Import RGB type.
 using ColorTypes
@@ -61,8 +59,7 @@ close(writer)
 ```
 
 
-API
----
+## API
 
 ```@docs
 GenomicFeatures.BigBed.Reader

@@ -1,12 +1,9 @@
-BED
-===
+# BED
 
-Description
------------
+## Description
 
-BED is a text-based file format for representing genomic annotations like genes,
-transcripts, and so on. A BED file has tab-delimited and variable-length fields;
-the first three fields denoting a genomic interval are mandatory.
+BED is a text-based file format for representing genomic annotations like genes, transcripts, and so on.
+A BED file has tab-delimited and variable-length fields; the first three fields denoting a genomic interval are mandatory.
 
 This is an example of RNA transcripts:
 ```
@@ -21,8 +18,7 @@ which exports following three types:
 * Element type: `BED.Record`
 
 
-Examples
---------
+## Examples
 
 Here is a common workflow to iterate over all records in a BED file:
 ```julia
@@ -43,8 +39,7 @@ end
 close(reader)
 ```
 
-If you repeatedly access records within specific ranges, it would be more
-efficient to construct an `IntervalCollection` object from a BED reader:
+If you repeatedly access records within specific ranges, it would be more efficient to construct an `IntervalCollection` object from a BED reader:
 ```julia
 # Create an interval collection in memory.
 icol = open(BED.Reader, "data.bed") do reader
@@ -60,8 +55,7 @@ end
 ```
 
 
-API
----
+## API
 
 ```@docs
 GenomicFeatures.BED.Reader
