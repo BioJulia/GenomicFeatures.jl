@@ -1,7 +1,7 @@
 name = "GenomicFeatures"
-uuid = "99b347e8-cb6a-11e8-1597-6bac6e11ce47"
+uuid = "899a7d2d-5c61-547b-bef9-6698a8d05446"
 authors = ["Kenta Sato <bicycle1885@gmail.com>", "Ben J. Ward <benjward@protonmail.com>", "Ciarán O’Mara <CiaranOMara@utas.edu.au>"]
-version = "1.0.0"
+version = "1.0.1"
 
 [deps]
 Automa = "67c07d97-cdcb-5c2c-af73-a7f9c32a568b"
@@ -17,14 +17,14 @@ Libz = "2ec943e9-cfe8-584d-b93d-64dcb6d567b7"
 URIParser = "30578b45-9adc-5946-b283-645ec420af67"
 
 [compat]
-Automa = "0.7"
+Automa = "0.7, 0.8"
 BGZFStreams = "0.3"
 BioCore = "2.0.2"
 BioSequences = "1.0"
 BufferedStreams = "1.0.0"
-ColorTypes = "0.7.4"
-DataStructures = "0.11.0"
-FixedPointNumbers = "0.5.2"
+ColorTypes = "0.7.4, 0.8"
+DataStructures = "0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17"
+FixedPointNumbers = "0.5.2, 0.6"
 IntervalTrees = "1.0"
 Libz = "1.0"
 URIParser = "0.4"

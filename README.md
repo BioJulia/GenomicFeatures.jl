@@ -3,7 +3,7 @@
 [![latest release][release-img]][release-url]
 [![MIT license][license-img]][license-url]
 [![stable documentation][docs-stable-img]][docs-stable-url]
-[![latest documentation][docs-latest-img]][docs-latest-url]
+[![latest documentation][docs-dev-img]][docs-dev-url]
 ![lifecycle][lifecycle-maturing]
 [![Chat on Gitter][gitter-img]][gitter-url]
 
@@ -84,8 +84,8 @@ on over and chat to us on [Gitter](https://gitter.im/BioJulia/General), or you c
 [license-url]:            https://github.com/BioJulia/GenomicFeatures.jl/blob/master/LICENSE
 [docs-stable-img]:        https://img.shields.io/badge/docs-stable-blue.svg
 [docs-stable-url]:        https://biojulia.github.io/GenomicFeatures.jl/stable
-[docs-latest-img]:        https://img.shields.io/badge/docs-latest-blue.svg
-[docs-latest-url]:        https://biojulia.github.io/GenomicFeatures.jl/latest/
+[docs-dev-img]:           https://img.shields.io/badge/docs-dev-blue.svg
+[docs-dev-url]:           https://biojulia.github.io/GenomicFeatures.jl/dev/
 [lifecycle-experimental]: https://img.shields.io/badge/lifecycle-experimental-orange.svg
 [lifecycle-maturing]:     https://img.shields.io/badge/lifecycle-maturing-blue.svg
 [lifecycle-stable]:       https://img.shields.io/badge/lifecycle-stable-brightgreen.svg
