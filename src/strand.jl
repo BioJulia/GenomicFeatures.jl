@@ -9,7 +9,7 @@
 primitive type Strand 8 end
 
 Base.convert(::Type{Strand}, strand::UInt8) = reinterpret(Strand, strand)
-Strand(strand::UInt8) = convert(Strand, strans) 
+Strand(strand::UInt8) = convert(Strand, strand)
 Base.convert(::Type{UInt8}, strand::Strand) = reinterpret(UInt8, strand)
 
 Base.isless(a::Strand, b::Strand) = convert(UInt8, a) < convert(UInt8, b)

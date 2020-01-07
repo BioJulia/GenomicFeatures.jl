@@ -124,6 +124,11 @@ end
 
 @testset "Strand" begin
     @testset "Constructor" begin
+        @test Strand(0b000) === STRAND_NA
+        @test Strand(0b001) === STRAND_POS
+        @test Strand(0b010) === STRAND_NEG
+        @test Strand(0b011) === STRAND_BOTH
+        
         @test Strand('?') === STRAND_NA
         @test Strand('+') === STRAND_POS
         @test Strand('-') === STRAND_NEG
