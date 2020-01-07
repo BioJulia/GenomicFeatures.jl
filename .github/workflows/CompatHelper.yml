@@ -18,7 +18,7 @@ jobs:
           version: ${{ matrix.julia-version }}
       - name: Pkg.add("CompatHelper")
         run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
-      - name: CompatHelper.main(; master_branch = "master")
+      - name: CompatHelper.main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: julia -e 'using CompatHelper; CompatHelper.main()'
+        run: julia -e 'using CompatHelper; CompatHelper.main(; master_branch = "master")'
