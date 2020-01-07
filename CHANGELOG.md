@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [1.0.3]
+## [1.0.3] - 2020-01-07
 ### Changed
 - Add ColorTypes "0.9" to compat.
 - Add FixedPointNumbers "0.7" to compat.
@@ -14,11 +14,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - CompatHelper configuration.
 
-## [1.0.2]
+## [1.0.2] - 2020-01-07
 ### Fixed
 - Corrected typo in Strand constructor.
 
-## [1.0.1] - 2019-01-04 (yanked)
+## [1.0.1] - 2020-01-04 (yanked)
 - General housekeeping.
 
 ## [1.0.0] - 2018-09-10
