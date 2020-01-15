@@ -75,8 +75,7 @@ end
 
 Return chunks possibly overlapping with the range specified by `interval`.
 
-Note that records within the returned chunks are not guaranteed to actually
-overlap the query interval.
+Note that records within the returned chunks are not guaranteed to actually overlap the query interval.
 """
 function overlapchunks(tabix::Tabix, interval::Interval)
     seqid = findfirst(isequal(interval.seqname), tabix.names)

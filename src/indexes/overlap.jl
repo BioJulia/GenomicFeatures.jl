@@ -47,10 +47,8 @@ function done(iter::TabixOverlapIterator, state)
     end
     while state.chunkid ≤ lastindex(state.chunks)
         chunk = state.chunks[state.chunkid]
-        # The `virtualoffset(source)` is not synchronized with the current
-        # reading position because data are buffered in `buffer` for parsing
-        # text. So we need to check not only `virtualoffset` but also
-        # `nb_available`, which returns the current buffered data size.
+        # The `virtualoffset(source)` is not synchronized with the current reading position because data are buffered in `buffer` for parsing text.
+        # So we need to check not only `virtualoffset` but also `nb_available`, which returns the current buffered data size.
         while bytesavailable(buffer) > 0 || BGZFStreams.virtualoffset(source) < chunk.stop
             read!(iter.reader, state.record)
             c = icmp(state.record, iter.interval)

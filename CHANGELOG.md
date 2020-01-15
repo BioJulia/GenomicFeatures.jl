@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [1.0.3]
+## [1.0.4] - 2020-01-15
+### Changed
+- General housekeeping (code).
+
+## [1.0.3] - 2020-01-07
 ### Changed
 - Add ColorTypes "0.9" to compat.
 - Add FixedPointNumbers "0.7" to compat.
@@ -14,29 +18,38 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - CompatHelper configuration.
 
-## [1.0.2]
+## [1.0.2] - 2020-01-07
 ### Fixed
 - Corrected typo in Strand constructor.
 
-## [1.0.1]
+## [1.0.1] - 2020-01-04 (yanked)
+### Changed
 - General housekeeping.
 
-## [1.0.0]
-- Version 1.0 updates ([#15](https://github.com/BioJulia/GenomicFeatures.jl/pull/15))
-
-## [0.2.1]
+## [1.0.0] - 2018-09-10
 ### Added
-- Read and write methods for Strand ([#4](https://github.com/BioJulia/GenomicFeatures.jl/pull/4)).
+- Issue and PR templates.
+- Code of Conduct and Contributing files.
+- Support for julia v0.7 and v1.0.
 
-## [0.2.0]
+### Removed
+- :exclamation: Support for julia prior to v0.7.
+
+## [0.2.1] - 2017-06-27
+### Added
+- Read and write methods for Strand type ([#4](https://github.com/BioJulia/GenomicFeatures.jl/pull/4)).
+
+## [0.2.0] - 2017-06-25
 ### Added
 - Optional filter functions to `eachoverlap`, and a `findfirst` function ([#3](https://github.com/BioJulia/GenomicFeatures.jl/pull/3)).
 
-## [0.1.0]
-- Move code from Bio.jl.
-- Add support for GFF3 and BigWig.
+## [0.1.0] - 2017-06-17
+### Added
+- Code from Bio.jl.
+- Support for GFF3 and BigWig.
 
-[Unreleased]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.0...v1.0.1

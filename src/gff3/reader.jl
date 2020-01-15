@@ -49,10 +49,9 @@ end
 
 Create a reader for data in GFF3 format.
 
-The first argument specifies the data source. When it is a filepath that ends
-with *.bgz*, it is considered to be block compression file format (BGZF) and the
-function will try to find a tabix index file (<filename>.tbi) and read it if
-any. See <http://www.htslib.org/doc/tabix.html> for bgzip and tabix tools.
+The first argument specifies the data source.
+When it is a filepath that ends with *.bgz*, it is considered to be block compression file format (BGZF) and the function will try to find a tabix index file (<filename>.tbi) and read it if any.
+See <http://www.htslib.org/doc/tabix.html> for bgzip and tabix tools.
 
 Arguments
 ---------
@@ -129,11 +128,9 @@ end
 
 
 """
-Return all directives that preceded the last GFF entry parsed as an array of
-strings.
+Return all directives that preceded the last GFF entry parsed as an array of strings.
 
-Directives at the end of the file can be accessed by calling `close(reader)`
-and then `directives(reader)`.
+Directives at the end of the file can be accessed by calling `close(reader)` and then `directives(reader)`.
 """
 function directives(reader::Reader)
     ret = String[]
@@ -157,8 +154,7 @@ end
 """
 Return a BioSequences.FASTA.Reader initialized to parse trailing FASTA data.
 
-Throws an exception if there is no trailing FASTA, which can be checked using
-`hasfasta`.
+Throws an exception if there is no trailing FASTA, which can be checked using `hasfasta`.
 """
 function getfasta(reader::Reader)
     if !hasfasta(reader)

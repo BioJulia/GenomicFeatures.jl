@@ -66,9 +66,9 @@ end
 function Base.iterate(queue::Queue, i)
     if !(queue.first <= i <= queue.last)
         return nothing
-    else
-        queue.data[dataindex(queue, i)], i + 1
     end
+
+    return queue.data[dataindex(queue, i)], i + 1
 end
 
 function dataindex(queue::Queue, i::Integer)
@@ -90,5 +90,3 @@ function Base.getindex(queue::Queue, i::Integer)
 
     return queue.data[dataindex(queue, i)]
 end
-
-

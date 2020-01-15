@@ -29,30 +29,42 @@ const STRAND_BOTH = convert(Strand, 0b011)
 function Base.convert(::Type{Strand}, strand::Char)
     if strand == '+'
         return STRAND_POS
-    elseif strand == '-'
-        return STRAND_NEG
-    elseif strand == '.'
-        return STRAND_BOTH
-    elseif strand == '?'
-        return STRAND_NA
-    else
-        error("'$(strand)' is not a valid strand")
     end
+
+    if strand == '-'
+        return STRAND_NEG
+    end
+
+    if strand == '.'
+        return STRAND_BOTH
+    end
+
+    if strand == '?'
+        return STRAND_NA
+    end
+
+    error("'$(strand)' is not a valid strand")
 end
 Strand(strand::Char) = convert(Strand, strand)
 
 function Base.convert(::Type{Char}, strand::Strand)
     if strand == STRAND_NA
         return '?'
-    elseif strand == STRAND_POS
-        return '+'
-    elseif strand == STRAND_NEG
-        return '-'
-    elseif strand == STRAND_BOTH
-        return '.'
-    else
-        error("'$(strand)' is not a valid strand")
     end
+
+    if strand == STRAND_POS
+        return '+'
+    end
+
+    if strand == STRAND_NEG
+        return '-'
+    end
+
+    if strand == STRAND_BOTH
+        return '.'
+    end
+
+    error("'$(strand)' is not a valid strand")
 end
 
 function Base.show(io::IO, strand::Strand)

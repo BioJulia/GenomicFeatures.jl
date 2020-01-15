@@ -86,8 +86,7 @@ function chromlist(tree::BTree)
 end
 
 function write_btree(stream::IO, chromlist::Vector{Tuple{String,UInt32,UInt32}})
-    # This function stores all chromosomes in the root node as a leaf because it
-    # is simple to implement.
+    # This function stores all chromosomes in the root node as a leaf because it is simple to implement.
     blksize = length(chromlist)
     keysize = Base.maximum(sizeof(name) for (name, _) in chromlist)
     valsize = 8

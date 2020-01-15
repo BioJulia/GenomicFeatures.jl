@@ -3,8 +3,7 @@
 #
 # An index type for BGZFStream.
 #
-# The details of the internal is specified in
-# https://samtools.github.io/hts-specs/SAMv1.pdf.
+# The details of the internal is specified in https://samtools.github.io/hts-specs/SAMv1.pdf.
 #
 # This file is a part of BioJulia.
 # License is MIT: https://github.com/BioJulia/Bio.jl/blob/master/LICENSE.md
