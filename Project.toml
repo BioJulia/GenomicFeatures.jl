@@ -4,12 +4,12 @@ authors = ["Kenta Sato <bicycle1885@gmail.com>", "Ben J. Ward <benjward@protonma
 version = "1.0.4"
 
 [deps]
-BioCore = "37cfa864-2cd6-5c12-ad9e-b6597d696c81"
+BioGenerics = "47718e42-2ac5-11e9-14af-e5595289c2ea"
 DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 IntervalTrees = "524e6230-43b7-53ae-be76-1e9e4d08d11b"
 
 [compat]
-BioCore = "2.0.2"
+BioGenerics = "0.1"
 DataStructures = "0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17"
 IntervalTrees = "1.0"
 julia = "1.1"
