@@ -5,6 +5,21 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- BioJulia registry.
+
+### Changed
+- Migrated from BioCore to [BioGenerics](https://github.com/BioJulia/BioGenerics.jl/tree/v0.1.0).
+- Updated CI.
+
+### Removed
+- :exclamation: Moved BED submodule to [BED.jl](https://github.com/BioJulia/BED.jl).
+- :exclamation: Moved BigBed submodule to [BigBed.jl](https://github.com/BioJulia/BigBed.jl).
+- :exclamation: Moved BigWig submodule to [BigWig.jl](https://github.com/BioJulia/BigWig.jl).
+- :exclamation: Moved GFF3 submodule to [GFF3.jl](https://github.com/BioJulia/GFF3.jl).
+- :exclamation: Moved Indexes submodule to [Indexes.jl](https://github.com/BioJulia/Indexes.jl).
+- :exclamation: Moved BBI submodule to [BBI.jl](https://github.com/BioJulia/BBI.jl).
+- :exclamation: Support for julia v0.7 and v1.0 was dropped.
 
 ## [1.0.4] - 2020-01-15
 ### Changed
