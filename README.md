@@ -8,15 +8,20 @@
 [![Chat on Gitter][gitter-img]][gitter-url]
 
 ## Description
-
 GenomicFeatures provides utilities for working with interval based genomic annotations.
-It builds on [IntervalTrees](https://github.com/biojulia/intervaltrees.jl) to provide a data-structures, algorithms and IO tools for various formats such as BED, GFF3, bigWig and bigBed.  
+It builds on [IntervalTrees](https://github.com/biojulia/intervaltrees.jl) to provide a data-structures and algorithms for various formats such as [BED](https://github.com/biojulia/bed.jl), [GFF3](https://github.com/biojulia/gff3.jl), [bigWig](https://github.com/biojulia/bigwig.jl) and [bigBed](https://github.com/biojulia/bigbed.jl).  
 
 ## Installation
+Releases of GenomicFeatures version 2.0.0 and above are registered and made available to install through BioJulia's package registry.
+By default, Julia's package manager only uses the "General" package registry.
+Your Julia configuration needs to include the BioJulia registry to be able to install the latest version of GenomicFeatures.
 
-You can install GenomicFeatures from the [Julia REPL](https://docs.julialang.org/en/v1/manual/getting-started/).
-Press `]` to enter [pkg mode](https://docs.julialang.org/en/v1/stdlib/Pkg/), then enter the following:
+To add the BioJulia registry from the [Julia REPL](https://docs.julialang.org/en/v1/manual/getting-started/), press `]` to enter [pkg mode](https://docs.julialang.org/en/v1/stdlib/Pkg/), then enter the following command:
+```julia
+registry add https://github.com/BioJulia/BioJuliaRegistry.git
+```
 
+After adding the registry to your configuration, you can install GenomicFeatures while in [pkg mode](https://docs.julialang.org/en/v1/stdlib/Pkg/) with the following:
 ```julia
 add GenomicFeatures
 ```
@@ -36,7 +41,7 @@ GenomicFeatures is tested against Julia `1.X` on Linux, OS X, and Windows.
 
 ## Contributing
 
-We appreciate contributions from users including reporting bugs, fixing issues, improving performance and adding new features.
+We appreciate [contributions](https://github.com/BioJulia/GenomicFeatures.jl/graphs/contributors) from users including reporting bugs, fixing issues, improving performance and adding new features.
 
 Take a look at the [contributing files](https://github.com/BioJulia/Contributing) detailed contributor and maintainer guidelines, and code of conduct.
 

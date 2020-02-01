@@ -1,15 +1,12 @@
 # Genomic Interval Manipulation
 
-The `GenomicFeatures` module consists of tools for working efficiently with
-genomic intervals.
-
+The `GenomicFeatures` module consists of tools for working efficiently with genomic intervals.
 
 ## Interval Type
 
-Intervals in GenomicFeatures.jl are consistent with ranges in Julia: *1-based and end-inclusive*.
+Intervals in `GenomicFeatures` are consistent with ranges in Julia: *1-based and end-inclusive*.
 When data is read from formats with different representations (i.e. 0-based and/or end-exclusive) they are always converted automatically.
-Similarly when writing data.
-You should not have to reason about off-by-one errors due to format differences while using functionality provided in GenomicFeatures.jl.
+Similarly when writing data, you should not have to reason about off-by-one errors due to format differences while using functionality provided in `GenomicFeatures`.
 
 The `Interval` type is defined as
 ```julia
@@ -22,7 +19,8 @@ struct Interval{T} <: AbstractInterval{Int64}
 end
 ```
 
-The first three fields (`seqname`, `first`, and `last`) are mandatory arguments when constructing an `Interval` object. `seqname` is the sequence name associated with the interval.
+The first three fields (`seqname`, `first`, and `last`) are mandatory arguments when constructing the `Interval` object.
+The `seqname` field holds the sequence name associated with the interval.
 The `first` and `last` fields are the leftmost and rightmost positions of the interval, which can be accessed with `leftposition` and `rightposition` functions, respectively.
 
 The `strand` field can take four kinds of values listed in the next table:
@@ -106,20 +104,15 @@ Incrementally building an interval collection like this works, but `IntervalColl
 col = IntervalCollection([Interval("chr1", i, i + 99) for i in 1:100:10000])
 ```
 
-Building `IntervalCollections` in one shot like this should be preferred when it's convenient or speed in an issue.
-
-`IntervalCollection`s can also be build directly from a genome annotation file, here in GFF3 format:
-
-```julia
-reader = open(GFF3.Reader, "some_genome.gff3")
-features = IntervalCollection(reader)
-```
+Building `IntervalCollections` in one shot like this should be preferred when it's convenient or speed is an issue.
 
 
 ## Overlap Query
 
-There are number of `eachoverlap` function in the `GenomicFeatures` module.
-They follow two patterns: interval versus collection queries which return an iterator over intervals in the collection that overlap the query, and collection versus collection queries which iterate over all pairs of overlapping intervals.
+There are number of `eachoverlap` functions in the `GenomicFeatures` module.
+They follow two patterns:
+- interval versus collection queries which return an iterator over intervals in the collection that overlap the query, and
+- collection versus collection queries which iterate over all pairs of overlapping intervals.
 
 ```@docs
 eachoverlap
@@ -135,30 +128,7 @@ end
 ```
 
 
-## Interval Streams
-
-Intervals need not necessarily stored in an indexed data structure for efficient intersection to be practical.
-Two collections of intervals need only be both sorted to compute all overlapping pairs.
-This is particularly useful in genomics where datasets are sometimes so large that loading them entirely into memory is not practical.
-
-The `GenomicFeatures` module is able to intersect any two iterators that yield intervals in sorted order, which we refer to as "interval streams".
-An `IntervalCollection` is also an interval stream, but so is a sorted array of
-intervals, and parsers over interval file formats.
-This allows for a very general notion of intersection.
-
-```julia
-features_x = open(BED.Reader, "features_x.bed")
-features_y = open(BED.Reader, "features_y.bed")
-for (x, y) in eachoverlap(features_x, features_y)
-    println("intersection found between ", x, " and ", y)
-end
-close(features_x)
-close(features_y)
-```
-
-An exception will be thrown if an interval in encountered out of order while processing an interval stream.
-Ordering of intervals has one complication: there is not necessarily a standardized way to order sequence names.
-By default in GenomicFeatures.jl intervals are sorted using a `Base.isless` comparison function that is a default order in most command-line tools.
+## Coverage
 
 A special sort of intersection can also be performed on an interval stream against itself to produce "coverage intervals".
 
