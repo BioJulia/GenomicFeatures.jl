@@ -108,13 +108,6 @@ col = IntervalCollection([Interval("chr1", i, i + 99) for i in 1:100:10000])
 
 Building `IntervalCollections` in one shot like this should be preferred when it's convenient or speed in an issue.
 
-`IntervalCollection`s can also be build directly from a genome annotation file, here in GFF3 format:
-
-```julia
-reader = open(GFF3.Reader, "some_genome.gff3")
-features = IntervalCollection(reader)
-```
-
 
 ## Overlap Query
 
