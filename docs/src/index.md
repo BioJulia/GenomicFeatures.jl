@@ -1,5 +1,10 @@
 # GenomicFeatures.jl
 
+[![latest release](https://img.shields.io/github/release/BioJulia/GenomicFeatures.jl.svg)](https://github.com/BioJulia/GenomicFeatures.jl/releases/latest)
+[![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/GenomicFeatures.jl/blob/master/LICENSE)
+![lifecycle](https://img.shields.io/badge/lifecycle-maturing-blue.svg)
+[![Chat on Gitter](https://img.shields.io/gitter/room/BioJulia/GenomicFeatures.svg)](https://gitter.im/BioJulia/GenomicFeatures.jl)
+
 ## Description
 GenomicFeatures provides utilities for working with interval based genomic annotations.
 It builds on [IntervalTrees](https://github.com/biojulia/intervaltrees.jl) to provide a data-structures and algorithms for various formats such as [BED](https://github.com/biojulia/bed.jl), [GFF3](https://github.com/biojulia/gff3.jl), [bigWig](https://github.com/biojulia/bigwig.jl) and [bigBed](https://github.com/biojulia/bigbed.jl).
