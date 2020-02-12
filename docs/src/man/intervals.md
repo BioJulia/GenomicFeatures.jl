@@ -1,15 +1,12 @@
 # Genomic Interval Manipulation
 
-The `GenomicFeatures` module consists of tools for working efficiently with
-genomic intervals.
-
+The `GenomicFeatures` module consists of tools for working efficiently with genomic intervals.
 
 ## Interval Type
 
-Intervals in GenomicFeatures.jl are consistent with ranges in Julia: *1-based and end-inclusive*.
+Intervals in `GenomicFeatures` are consistent with ranges in Julia: *1-based and end-inclusive*.
 When data is read from formats with different representations (i.e. 0-based and/or end-exclusive) they are always converted automatically.
-Similarly when writing data.
-You should not have to reason about off-by-one errors due to format differences while using functionality provided in GenomicFeatures.jl.
+Similarly when writing data, you should not have to reason about off-by-one errors due to format differences while using functionality provided in `GenomicFeatures`.
 
 The `Interval` type is defined as
 ```julia
@@ -22,7 +19,8 @@ struct Interval{T} <: AbstractInterval{Int64}
 end
 ```
 
-The first three fields (`seqname`, `first`, and `last`) are mandatory arguments when constructing an `Interval` object. `seqname` is the sequence name associated with the interval.
+The first three fields (`seqname`, `first`, and `last`) are mandatory arguments when constructing the `Interval` object.
+The `seqname` field holds the sequence name associated with the interval.
 The `first` and `last` fields are the leftmost and rightmost positions of the interval, which can be accessed with `leftposition` and `rightposition` functions, respectively.
 
 The `strand` field can take four kinds of values listed in the next table:
@@ -106,13 +104,15 @@ Incrementally building an interval collection like this works, but `IntervalColl
 col = IntervalCollection([Interval("chr1", i, i + 99) for i in 1:100:10000])
 ```
 
-Building `IntervalCollections` in one shot like this should be preferred when it's convenient or speed in an issue.
+Building `IntervalCollections` in one shot like this should be preferred when it's convenient or speed is an issue.
 
 
 ## Overlap Query
 
-There are number of `eachoverlap` function in the `GenomicFeatures` module.
-They follow two patterns: interval versus collection queries which return an iterator over intervals in the collection that overlap the query, and collection versus collection queries which iterate over all pairs of overlapping intervals.
+There are number of `eachoverlap` functions in the `GenomicFeatures` module.
+They follow two patterns:
+- interval versus collection queries which return an iterator over intervals in the collection that overlap the query, and
+- collection versus collection queries which iterate over all pairs of overlapping intervals.
 
 ```@docs
 eachoverlap
