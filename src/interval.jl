@@ -24,6 +24,17 @@ function Interval(seqname::AbstractString, range::UnitRange{T}, strand::Union{St
     return Interval{typeof(metadata)}(seqname, first(range), last(range), strand, metadata)
 end
 
+
+"""
+    Interval{T}(data)
+
+The returned data is converted to Interval{T} if there is an implemented [`Base.convert`](https://docs.julialang.org/en/v1/base/base/#Base.convert) function for the type of data.
+This method provides a useful hook for converting custom types to Interval{T}.
+"""
+function Interval{T}(data) :: Interval{T} where T
+    return data #Note: the returned data is converted to Interval{T}.
+end
+
 function BioGenerics.seqname(i::Interval)
     return i.seqname
 end
