@@ -43,7 +43,7 @@ mutable struct IntervalCollection{T}
     # Sequence name mapped to IntervalTree, which in turn maps intervals to a list of metadata.
     trees::Dict{String,ICTree{T}}
 
-    # Keep track of the number of stored intervals
+    # Keep track of the number of stored intervals.
     length::Int
 
     # A vector of values(trees) sorted on sequence name.
@@ -55,7 +55,7 @@ mutable struct IntervalCollection{T}
         return new{T}(Dict{String,ICTree{T}}(), 0, ICTree{T}[], false)
     end
 
-    # bulk insertion
+    # Bulk insertion.
     function IntervalCollection{T}(intervals::AbstractVector{Interval{T}}, sort::Bool=false) where T
         if sort
             sort!(intervals)
@@ -80,12 +80,19 @@ mutable struct IntervalCollection{T}
     end
 end
 
+# Shorthand constructor.
 function IntervalCollection(intervals::AbstractVector{Interval{T}}, sort::Bool=false) where T
     return IntervalCollection{T}(intervals, sort)
 end
 
-function IntervalCollection(intervals)
-    return IntervalCollection(collect(Interval{metadatatype(intervals)}, intervals), true)
+# Constructor that offers conversion through collection.
+function IntervalCollection{T}(data, sort::Bool=false) where T
+    return IntervalCollection(collect(Interval{T}, data), sort)
+end
+
+# Constructor that guesses metadatatype, and offers conversion through collection.
+function IntervalCollection(data, sort::Bool=false)
+    return IntervalCollection(collect(Interval{metadatatype(data)}, data), sort)
 end
 
 function update_ordered_trees!(ic::IntervalCollection{T}) where T
