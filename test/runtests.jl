@@ -255,6 +255,21 @@ end
     end
 end
 
+@testset "Constructor Conversions" begin
+
+    i = Interval("chr1", 1, 2, '?', 3)
+    nt = (chrom="chr1", left=1, right=2, value=3)
+
+    function Base.convert(::Type{Interval{Int}}, nt::NamedTuple)
+        return Interval{Int}(nt.chrom, nt[2], nt[3], '?', nt[4])
+    end
+
+    @test i == Interval{Int}(nt)
+
+    @test IntervalCollection([i]) == IntervalCollection{Int}([nt])
+
+end #testset Constructor Conversions
+
 @testset "IntervalStream" begin
     @testset "Intersection" begin
         n = 1000
