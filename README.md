@@ -1,9 +1,9 @@
 # <img src="./sticker.svg" width="30%" align="right" /> GenomicFeatures
 
 [![latest release](https://img.shields.io/github/release/BioJulia/GenomicFeatures.jl.svg)](https://github.com/BioJulia/GenomicFeatures.jl/releases/latest)
-[![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/GenomicFeatures.jl/blob/master/LICENSE) 
+[![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/GenomicFeatures.jl/blob/master/LICENSE)
 [![Stable documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://biojulia.github.io/GenomicFeatures.jl/stable)
-[![Latest documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://biojulia.github.io/GenomicFeatures.jl/latest/)
+[![Latest documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://biojulia.github.io/GenomicFeatures.jl/dev/)
 [![lifecycle](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Chat](https://img.shields.io/gitter/room/BioJulia/GenomicFeatures.svg)](https://gitter.im/BioJulia/GenomicFeatures.jl)
 
