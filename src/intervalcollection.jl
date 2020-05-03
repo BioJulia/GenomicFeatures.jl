@@ -289,12 +289,13 @@ end
 # Overlaps
 # --------
 
-function eachoverlap(a::IntervalCollection{T}, b::Interval; filter::F = true_cmp) where {F,T}
-    if haskey(a.trees, b.seqname)
-        return intersect(a.trees[b.seqname], b)
+function eachoverlap(a::IntervalCollection{T}, query::Interval; filter::F = true_cmp) where {F,T}
+    if haskey(a.trees, query.seqname)
+        return ICTreeIntervalIntersectionIterator{F,T}(filter, ICTreeIntersection{T}(), a.trees[query.seqname], query)
     end
 
-    return ICTreeIntervalIntersectionIterator{F,T}()
+    return ICTreeIntervalIntersectionIterator{F,T}(filter, ICTreeIntersection{T}(), ICTree{T}(), query)
+
 end
 
 function eachoverlap(a::IntervalCollection, b::IntervalCollection; filter = true_cmp)
