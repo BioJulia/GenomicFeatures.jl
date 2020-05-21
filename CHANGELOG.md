@@ -5,10 +5,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [2.0.1] - 2020-05-21
+
+### Changed
+- Documentation.
+- Updated CI.
+
+## [2.0.0] - 2020-02-16
 ### Added
 - BioJulia registry.
-
-## [2.0.0] - 2020-01-
 
 ### Changed
 - Migrated from BioCore to [BioGenerics](https://github.com/BioJulia/BioGenerics.jl/tree/v0.1.0).
@@ -65,8 +71,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Code from Bio.jl.
 - Support for GFF3 and BigWig.
 
-[Unreleased]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v2.0.0...HEAD
-[1.0.4]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.4...v2.0.0
+[Unreleased]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v2.0.0...v2.0.1
+[2.0.0]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.4...v2.0.0
 [1.0.4]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.1...v1.0.2
