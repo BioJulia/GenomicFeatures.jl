@@ -414,6 +414,9 @@ end #testset Constructor Conversions
         iter3 = eachoverlap(ic_a, intervals_b)
         iter4 = eachoverlap(ic_a, ic_b)
         @test collect(iter1) == collect(iter2) == collect(iter3) == collect(iter4)
+
+        # non-overlapping query
+        @test length(collect(eachoverlap(ic_a, Interval("X", 0, 0)))) == 0
     end
 end
 end #testset GenomicFeatures
