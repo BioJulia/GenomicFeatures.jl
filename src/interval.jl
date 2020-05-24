@@ -24,11 +24,22 @@ function Interval(seqname::AbstractString, range::UnitRange{T}, strand::Union{St
     return Interval{typeof(metadata)}(seqname, first(range), last(range), strand, metadata)
 end
 
-function BioCore.seqname(i::Interval)
+
+"""
+    Interval{T}(data)
+
+The returned data is converted to Interval{T} if there is an implemented [`Base.convert`](https://docs.julialang.org/en/v1/base/base/#Base.convert) function for the type of data.
+This method provides a useful hook for converting custom types to Interval{T}.
+"""
+function Interval{T}(data) :: Interval{T} where T
+    return data #Note: the returned data is converted to Interval{T}.
+end
+
+function BioGenerics.seqname(i::Interval)
     return i.seqname
 end
 
-function BioCore.metadata(i::Interval)
+function BioGenerics.metadata(i::Interval)
     return i.metadata
 end
 
@@ -41,7 +52,7 @@ end
 
 Return the leftmost position of `i`.
 """
-function BioCore.leftposition(i::Interval)
+function BioGenerics.leftposition(i::Interval)
     return i.first
 end
 
@@ -50,7 +61,7 @@ end
 
 Return the rightmost position of `i`.
 """
-function BioCore.rightposition(i::Interval)
+function BioGenerics.rightposition(i::Interval)
     return i.last
 end
 
@@ -110,7 +121,7 @@ function Base.:(==)(a::Interval{T}, b::Interval{T}) where T
 end
 
 "Return true if interval `a` overlaps interval `b`, with no consideration to strand"
-function BioCore.isoverlapping(a::Interval{S}, b::Interval{T}) where {S, T}
+function BioGenerics.isoverlapping(a::Interval{S}, b::Interval{T}) where {S, T}
     return a.first <= b.last && b.first <= a.last && a.seqname == b.seqname
 end
 
