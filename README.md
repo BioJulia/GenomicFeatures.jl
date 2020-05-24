@@ -1,11 +1,11 @@
-# <img src="docs/src/assets/logo.svg" width="30%" align="right" /> GenomicFeatures
+# <img src="./sticker.svg" width="30%" align="right" /> GenomicFeatures
 
-[![latest release][release-img]][release-url]
-[![MIT license][license-img]][license-url]
-[![stable documentation][docs-stable-img]][docs-stable-url]
-[![latest documentation][docs-dev-img]][docs-dev-url]
-![lifecycle][lifecycle-maturing]
-[![Chat on Gitter][gitter-img]][gitter-url]
+[![latest release](https://img.shields.io/github/release/BioJulia/GenomicFeatures.jl.svg)](https://github.com/BioJulia/GenomicFeatures.jl/releases/latest)
+[![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/GenomicFeatures.jl/blob/master/LICENSE) 
+[![Stable documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://biojulia.github.io/GenomicFeatures.jl/stable)
+[![Latest documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://biojulia.github.io/GenomicFeatures.jl/latest/)
+[![lifecycle](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+[![Chat](https://img.shields.io/gitter/room/BioJulia/GenomicFeatures.svg)](https://gitter.im/BioJulia/GenomicFeatures.jl)
 
 ## Description
 GenomicFeatures provides utilities for working with interval based genomic annotations.
@@ -34,14 +34,14 @@ GenomicFeatures is tested against Julia `1.X` on Linux, OS X, and Windows.
 
 **Latest build status:**
 
-[![travis][travis-img]][travis-url]
-[![appveyor][appveyor-img]][appveyor-url]
-[![coverage][codecov-img]][codecov-url]
+[![Build Status](https://travis-ci.org/BioJulia/GenomicFeatures.jl.svg?branch=develop)](https://travis-ci.org/BioJulia/GenomicFeatures.jl)
+[![Build status](https://ci.appveyor.com/api/projects/status/dnup6vbbvai92bl8/branch/master?svg=true)](https://ci.appveyor.com/project/BenJWard/genomicfeatures-jl/branch/master)
+[![codecov](https://codecov.io/gh/BioJulia/GenomicFeatures.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/BioJulia/GenomicFeatures.jl)
 
 
 ## Contributing
 
-We appreciate contributions from users including reporting bugs, fixing issues, improving performance and adding new features.
+We appreciate [contributions](https://github.com/BioJulia/GenomicFeatures.jl/graphs/contributors) from users including reporting bugs, fixing issues, improving performance and adding new features.
 
 Take a look at the [contributing files](https://github.com/BioJulia/Contributing) detailed contributor and maintainer guidelines, and code of conduct.
 
@@ -81,31 +81,3 @@ Your logo will show up here with a link to your website.
 If you have a question about contributing or using BioJulia software, come
 on over and chat to us on [Gitter](https://gitter.im/BioJulia/General), or you can try the
 [Bio category of the Julia discourse site](https://discourse.julialang.org/c/domain/bio).
-
-
-[release-img]:            https://img.shields.io/github/release/BioJulia/GenomicFeatures.jl.svg
-[release-url]:            https://github.com/BioJulia/GenomicFeatures.jl/releases/latest
-[license-img]:            https://img.shields.io/badge/license-MIT-green.svg
-[license-url]:            https://github.com/BioJulia/GenomicFeatures.jl/blob/master/LICENSE
-[docs-stable-img]:        https://img.shields.io/badge/docs-stable-blue.svg
-[docs-stable-url]:        https://biojulia.github.io/GenomicFeatures.jl/stable
-[docs-dev-img]:           https://img.shields.io/badge/docs-dev-blue.svg
-[docs-dev-url]:           https://biojulia.github.io/GenomicFeatures.jl/dev/
-[lifecycle-experimental]: https://img.shields.io/badge/lifecycle-experimental-orange.svg
-[lifecycle-maturing]:     https://img.shields.io/badge/lifecycle-maturing-blue.svg
-[lifecycle-stable]:       https://img.shields.io/badge/lifecycle-stable-brightgreen.svg
-[lifecycle-retired]:      https://img.shields.io/badge/lifecycle-retired-orange.svg
-[lifecycle-archived]:     https://img.shields.io/badge/lifecycle-archived-red.svg
-[lifecycle-dormant]:      https://img.shields.io/badge/lifecycle-dormant-blue.svg
-[lifecycle-questioning]:  https://img.shields.io/badge/lifecycle-questioning-blue.svg
-[gitter-img]:             https://img.shields.io/gitter/room/BioJulia/GenomicFeatures.svg
-[gitter-url]:             https://gitter.im/BioJulia/GenomicFeatures.jl
-[juliapkg06-img]:         http://pkg.julialang.org/badges/GenomicFeatures_0.6.svg
-[juliapkg07-img]:         http://pkg.julialang.org/badges/GenomicFeatures_0.7.svg
-[juliapkg-url]:           http://pkg.julialang.org/?pkg=GenomicFeatures
-[travis-img]:             https://img.shields.io/travis/BioJulia/GenomicFeatures.jl/master.svg?label=Linux+/+macOS
-[travis-url]:             https://travis-ci.org/BioJulia/GenomicFeatures.jl
-[appveyor-img]:           https://ci.appveyor.com/api/projects/status/dnup6vbbvai92bl8/branch/master?svg=true
-[appveyor-url]:           https://ci.appveyor.com/project/BenJWard/genomicfeatures-jl/branch/master
-[codecov-img]:            http://codecov.io/github/BioJulia/GenomicFeatures.jl/coverage.svg?branch=master
-[codecov-url]:            http://codecov.io/github/BioJulia/GenomicFeatures.jl?branch=master

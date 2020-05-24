@@ -109,13 +109,15 @@ end
 
 
 
+@testset "GenomicFeatures" begin
+
 @testset "Strand" begin
     @testset "Constructor" begin
         @test Strand(0b000) === STRAND_NA
         @test Strand(0b001) === STRAND_POS
         @test Strand(0b010) === STRAND_NEG
         @test Strand(0b011) === STRAND_BOTH
-        
+
         @test Strand('?') === STRAND_NA
         @test Strand('+') === STRAND_POS
         @test Strand('-') === STRAND_NEG
@@ -254,6 +256,21 @@ end
         show(devnull, STRAND_BOTH)
     end
 end
+
+@testset "Constructor Conversions" begin
+
+    i = Interval("chr1", 1, 2, '?', 3)
+    nt = (chrom="chr1", left=1, right=2, value=3)
+
+    function Base.convert(::Type{Interval{Int}}, nt::NamedTuple)
+        return Interval{Int}(nt.chrom, nt[2], nt[3], '?', nt[4])
+    end
+
+    @test i == Interval{Int}(nt)
+
+    @test IntervalCollection([i]) == IntervalCollection{Int}([nt])
+
+end #testset Constructor Conversions
 
 @testset "IntervalStream" begin
     @testset "Intersection" begin
@@ -399,3 +416,4 @@ end
         @test collect(iter1) == collect(iter2) == collect(iter3) == collect(iter4)
     end
 end
+end #testset GenomicFeatures
