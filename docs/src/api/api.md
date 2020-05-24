@@ -6,7 +6,7 @@ Modules = [GenomicFeatures]
 Private = false
 ```
 
-## Private
+## Internal
 ```@autodocs
 Modules = [GenomicFeatures]
 Public = false

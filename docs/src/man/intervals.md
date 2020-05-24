@@ -10,7 +10,7 @@ Similarly when writing data, you should not have to reason about off-by-one erro
 
 The `Interval` type is defined as
 ```julia
-struct Interval{T} <: AbstractInterval{Int64}
+struct Interval{T} <: IntervalTrees.AbstractInterval{Int64}
     seqname::String
     first::Int64
     last::Int64

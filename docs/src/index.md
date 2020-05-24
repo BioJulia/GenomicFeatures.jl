@@ -1,20 +1,19 @@
 # GenomicFeatures
 
 [![latest release](https://img.shields.io/github/release/BioJulia/GenomicFeatures.jl.svg)](https://github.com/BioJulia/GenomicFeatures.jl/releases/latest)
-[![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/GenomicFeatures.jl/blob/master/LICENSE) 
+[![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/GenomicFeatures.jl/blob/master/LICENSE)
 [![Stable documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://biojulia.github.io/GenomicFeatures.jl/stable)
-[![Latest documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://biojulia.github.io/GenomicFeatures.jl/latest/)
-[![lifecycle](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wi)
+[![Latest documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://biojulia.github.io/GenomicFeatures.jl/dev/)
+[![lifecycle](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 [![Chat](https://img.shields.io/gitter/room/BioJulia/GenomicFeatures.svg)](https://gitter.im/BioJulia/GenomicFeatures.jl)
 
 ## Description
-GenomicFeatures provides utilities for working with interval based genomic annotations.
+The GenomicFeatures package provides utilities for working with interval based genomic annotations.
 It builds on [IntervalTrees](https://github.com/biojulia/intervaltrees.jl) to provide a data-structures and algorithms for various formats such as [BED](https://github.com/biojulia/bed.jl), [GFF3](https://github.com/biojulia/gff3.jl), [bigWig](https://github.com/biojulia/bigwig.jl) and [bigBed](https://github.com/biojulia/bigbed.jl).  
 
 ## Installation
 Releases of GenomicFeatures version 2.0.0 and above are registered and made available to install through BioJulia's package registry.
 By default, Julia's package manager only uses the "General" package registry.
-Your Julia configuration needs to include the BioJulia registry to be able to install the latest version of GenomicFeatures.
 
 To add the BioJulia registry from the [Julia REPL](https://docs.julialang.org/en/v1/manual/getting-started/), press `]` to enter [pkg mode](https://docs.julialang.org/en/v1/stdlib/Pkg/), then enter the following command:
 ```julia
@@ -34,8 +33,8 @@ GenomicFeatures is tested against Julia `1.X` on Linux, OS X, and Windows.
 
 **Latest build status:**
 
-[![Build Status](https://travis-ci.org/BioJulia/GenomicFeatures.jl.svg?branch=develop)](https://travis-ci.org/BioJulia/GenomicFeatures.jl)
-[![Build status](https://ci.appveyor.com/api/projects/status/dnup6vbbvai92bl8/branch/master?svg=true)](https://ci.appveyor.com/project/BenJWard/genomicfeatures-jl/branch/master)
+[![Unit tests](https://github.com/BioJulia/GenomicFeatures.jl/workflows/Unit%20tests/badge.svg?branch=master)](https://github.com/BioJulia/GenomicFeatures.jl/actions?query=workflow%3A%22Unit+tests%22+branch%3Amaster)
+[![Documentation](https://github.com/BioJulia/GenomicFeatures.jl/workflows/Documentation/badge.svg?branch=master)](https://github.com/BioJulia/GenomicFeatures.jl/actions?query=workflow%3ADocumentation+branch%3Amaster)
 [![codecov](https://codecov.io/gh/BioJulia/GenomicFeatures.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/BioJulia/GenomicFeatures.jl)
 
 
