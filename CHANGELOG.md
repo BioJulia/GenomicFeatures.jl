@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.1] - 2020-05-21
+
+### Changed
+- Documentation.
+- Updated CI.
+
 ## [2.0.0] - 2020-02-16
 ### Added
 - BioJulia registry.
@@ -65,7 +71,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Code from Bio.jl.
 - Support for GFF3 and BigWig.
 
-[Unreleased]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v2.0.1...HEAD
+[2.0.1]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v2.0.0...v2.0.1
 [2.0.0]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.4...v2.0.0
 [1.0.4]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v1.0.2...v1.0.3
