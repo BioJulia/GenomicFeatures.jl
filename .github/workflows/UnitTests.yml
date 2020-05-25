@@ -15,11 +15,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: julia-actions/setup-julia@v1
+      - name: Setup
+        uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
-      - name: Install dependencies
-        run: julia ci_prep.jl
       - name: Run tests
         uses: julia-actions/julia-runtest@latest
       - name: Create CodeCov

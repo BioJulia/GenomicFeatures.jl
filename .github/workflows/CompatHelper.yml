@@ -9,22 +9,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Add CompatHelper
-        run: julia -e 'using Pkg; Pkg.add("CompatHelper")'
+        run: julia --color=yes -e 'using Pkg; Pkg.add("CompatHelper")'
       - name: Run CompatHelper
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: julia -e '
-                using CompatHelper, Pkg;
-                my_registries = [
-                    Pkg.RegistrySpec(
-                        name = "BioJuliaRegistry",
-                        uuid = "ccbd2cc2-2954-11e9-1ccf-f3e7900901ca",
-                        url = "https://github.com/BioJulia/BioJuliaRegistry.git"
-                    ),
-                    Pkg.RegistrySpec(
-                        name = "General",
-                        uuid = "23338594-aafe-5451-b93e-139f81909106",
-                        url = "https://github.com/JuliaRegistries/General.git"
-                    )
-                ];
-                CompatHelper.main(; registries = my_registries, master_branch = "master");'
+          COMPATHELPER_PRIV: ${{ secrets.COMPATHELPER_PRIV }}
+        run: julia --color=yes -e 'using CompatHelper; CompatHelper.main(master_branch = "master")'
