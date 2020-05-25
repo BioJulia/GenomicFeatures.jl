@@ -69,20 +69,32 @@ IntervalTrees.first(i::Interval) = leftposition(i)
 IntervalTrees.last(i::Interval) = rightposition(i)
 
 function Base.isless(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
-    if seqname(a) != seqname(b)
-        return seqname_isless(seqname(a), seqname(b))::Bool
+    a_seqname = seqname(a)
+    b_seqname = seqname(b)
+
+    if a_seqname != b_seqname
+        return seqname_isless(a_seqname, b_seqname)
     end
 
-    if leftposition(a) != leftposition(b)
-        return leftposition(a) < leftposition(b)
+    a_leftposition = leftposition(a)
+    b_leftposition = leftposition(b)
+
+    if a_leftposition != b_leftposition
+        return a_leftposition < b_leftposition
     end
 
-    if rightposition(a) != rightposition(b)
-        return rightposition(a) < rightposition(b)
+    a_rightposition = rightposition(a)
+    b_rightposition = rightposition(b)
+
+    if a_rightposition != b_rightposition
+        return a_rightposition < b_rightposition
     end
 
-    if strand(a) != strand(b)
-        return strand(a) < strand(b)
+    a_strand = strand(a)
+    b_strand = strand(b)
+
+    if a_strand != b_strand
+        return a_strand < b_strand
     end
 
     return false
