@@ -150,16 +150,16 @@ function compare_overlap(i1::Interval, i2::Interval, isless::Function)
         return -1
     end
 
-    if isless(i2.seqname, i1.seqname)
+    if isless(seqname(i2), seqname(i1))
         return +1
     end
 
-    # i1.seqname == i2.seqname
-    if i1.last < i2.first
+    # seqname(i1) == seqname(i2)
+    if rightposition(i1) < leftposition(i2)
         return -1
     end
 
-    if i1.first > i2.last
+    if leftposition(i1) > rightposition(i2)
         return +1
     end
 
@@ -174,11 +174,11 @@ function compare_overlap(i1::Interval, i2::Interval, ::typeof(Base.isless))
         return c
     end
 
-    if i1.last < i2.first
+    if rightposition(i1) < leftposition(i2)
         return -1
     end
 
-    if i1.first > i2.last
+    if leftposition(i1) > rightposition(i2)
         return +1
     end
 
