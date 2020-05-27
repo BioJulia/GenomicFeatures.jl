@@ -201,6 +201,13 @@ end
 
 @testset "GenomicIntervalCollection" begin
 
+    @testset "Constructor" begin
+        @test GenomicIntervalCollection{Int}() == GenomicIntervalCollection{GenomicInterval{Int}}()
+
+        intervals = [GenomicInterval("test", 1, 2)]
+        @test GenomicIntervalCollection{Nothing}(intervals) == GenomicIntervalCollection{GenomicInterval{Nothing}}(intervals)
+    end
+
     @testset "Insertion/Iteration" begin
         n = 100000
         intervals = random_intervals(["one", "two", "three"], 1000000, n)
