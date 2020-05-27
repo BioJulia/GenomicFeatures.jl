@@ -125,6 +125,13 @@ function precedes(a::AbstractGenomicInterval, b::AbstractGenomicInterval, seqnam
     return (rightposition(a) < leftposition(b) && seqname(a) == seqname(b)) || seqname_isless(seqname(a), seqname(b))::Bool
 end
 
+function Base.:(==)(a::AbstractGenomicInterval, b::AbstractGenomicInterval)
+    return seqname(a)       == seqname(b) &&
+           leftposition(a)  == leftposition(b) &&
+           rightposition(a) == rightposition(b) &&
+           metadata(a)      == metadata(b)
+end
+
 function Base.:(==)(a::GenomicInterval, b::GenomicInterval)
     return seqname(a)       == seqname(b) &&
            leftposition(a)  == leftposition(b) &&
