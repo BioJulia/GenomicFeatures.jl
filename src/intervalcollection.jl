@@ -72,10 +72,10 @@ mutable struct IntervalCollection{T}
         i = 1
         while i <= n
             j = i
-            while j <= n && intervals[i].seqname == intervals[j].seqname
+            while j <= n && seqname(intervals[i]) == seqname(intervals[j])
                 j += 1
             end
-            trees[intervals[i].seqname] = ICTree{T}(view(intervals, i:j-1))
+            trees[seqname(intervals[i])] = ICTree{T}(view(intervals, i:j-1))
             i = j
         end
         return new{T}(trees, n, ICTree{T}[], true)
@@ -116,12 +116,12 @@ function update_ordered_trees!(ic::IntervalCollection{T}) where T
 end
 
 function Base.push!(ic::IntervalCollection{T}, i::Interval{T}) where T
-    if !haskey(ic.trees, i.seqname)
+    if !haskey(ic.trees, seqname(i))
         tree = ICTree{T}()
-        ic.trees[i.seqname] = tree
+        ic.trees[seqname(i)] = tree
         ic.ordered_trees_outdated = true
     else
-        tree = ic.trees[i.seqname]
+        tree = ic.trees[seqname(i)]
     end
     push!(tree, i)
     ic.length += 1
@@ -287,13 +287,12 @@ Find a the first interval with matching start and end points.
 
 Returns that interval, or 'nothing' if no interval was found.
 """
-function Base.findfirst(a::IntervalCollection{T}, b::Interval{S};
-                        filter=true_cmp) where {T,S}
-    if !haskey(a.trees, b.seqname)
+function Base.findfirst(a::IntervalCollection{T}, b::Interval{S}; filter=true_cmp) where {T,S}
+    if !haskey(a.trees, seqname(b))
         return nothing
     end
 
-    return findfirst(a.trees[b.seqname], b, filter)
+    return findfirst(a.trees[seqname(b)], b, filter)
 end
 
 
@@ -301,12 +300,11 @@ end
 # --------
 
 function eachoverlap(a::IntervalCollection{T}, query::Interval; filter::F = true_cmp) where {F,T}
-    if haskey(a.trees, query.seqname)
-        return ICTreeIntervalIntersectionIterator{F,T}(filter, ICTreeIntersection{T}(), a.trees[query.seqname], query)
+    if haskey(a.trees, seqname(query))
+        return ICTreeIntervalIntersectionIterator{F,T}(filter, ICTreeIntersection{T}(), a.trees[seqname(query)], query)
     end
 
     return ICTreeIntervalIntersectionIterator{F,T}(filter, ICTreeIntersection{T}(), ICTree{T}(), query)
-
 end
 
 function eachoverlap(a::IntervalCollection, b::IntervalCollection; filter = true_cmp)
@@ -442,8 +440,8 @@ function Base.start(it::IntervalCollectionStreamIterator{F,S,T}) where {F,S,T}
     intersection = ICTreeIntersection{T}()
     while !done(it.stream, stream_state)
         stream_value, stream_state = next(it.stream, stream_state)
-        if haskey(it.collection.trees, stream_value.seqname)
-            tree = it.collection.trees[stream_value.seqname]
+        if haskey(it.collection.trees, seqname(stream_value))
+            tree = it.collection.trees[seqname(stream_value)]
             IntervalTrees.firstintersection!(tree, stream_value, nothing, intersection, it.filter)
             if intersection.index != 0
                 return IntervalCollectionStreamIteratorState{F,T,metadatatype(it.stream),typeof(stream_state)}(intersection, stream_value, stream_state)
@@ -460,8 +458,8 @@ function Base.next(it::IntervalCollectionStreamIterator{F,S,T}, state) where {F,
     IntervalTrees.nextintersection!(intersection.node, intersection.index, state.stream_value, intersection, it.filter)
     while intersection.index == 0 && !done(it.stream, state.stream_state)
         state.stream_value, state.stream_state = next(it.stream, state.stream_state)
-        if haskey(it.b.trees, state.stream_value.seqname)
-            tree = it.b.trees[state.stream_value.seqname]
+        if haskey(it.b.trees, seqname(state.stream_value))
+            tree = it.b.trees[seqname(state.stream_value)]
             IntervalTrees.firstintersection!(tree, state.stream_value, nothing, intersection, it.filter)
         end
     end
@@ -494,8 +492,8 @@ function Base.iterate(it::IntervalCollectionStreamIterator{F,S,T}, state = ()) w
         stream_it = (state === () ? iterate(it.stream) : iterate(it.stream, state[2]))
         stream_it === nothing && return nothing # You have reached the end of the stream, stop iterating.
         stream_value = stream_it[1]
-        if haskey(it.collection.trees, stream_value.seqname)
-            tree = it.collection.trees[stream_value.seqname]
+        if haskey(it.collection.trees, seqname(stream_value))
+            tree = it.collection.trees[seqname(stream_value)]
             IntervalTrees.firstintersection!(tree, stream_value, nothing, intersection, it.filter)
             iterate_result = iterate(it, (stream_value, stream_it[2], intersection))
             if iterate_result !== nothing

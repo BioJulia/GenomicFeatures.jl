@@ -76,24 +76,24 @@ function BioGenerics.rightposition(i::Interval)
     return i.last
 end
 
-IntervalTrees.first(i::Interval) = i.first
-IntervalTrees.last(i::Interval) = i.last
+IntervalTrees.first(i::Interval) = leftposition(i)
+IntervalTrees.last(i::Interval) = rightposition(i)
 
 function Base.isless(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
-    if a.seqname != b.seqname
-        return seqname_isless(a.seqname, b.seqname)::Bool
+    if seqname(a) != seqname(b)
+        return seqname_isless(seqname(a), seqname(b))::Bool
     end
 
-    if a.first != b.first
-        return a.first < b.first
+    if leftposition(a) != leftposition(b)
+        return leftposition(a) < leftposition(b)
     end
 
-    if a.last != b.last
-        return a.last < b.last
+    if rightposition(a) != rightposition(b)
+        return rightposition(a) < rightposition(b)
     end
 
-    if a.strand != b.strand
-        return a.strand < b.strand
+    if strand(a) != strand(b)
+        return strand(a) < strand(b)
     end
 
     return false
@@ -102,15 +102,15 @@ end
 """
 Check if two intervals are well ordered.
 
-Intervals are considered well ordered if a.seqname <= b.seqnamend and a.first <= b.first.
+Intervals are considered well ordered if seqname(a) <= seqname(b) and leftposition(a) <= leftposition(b).
 """
 function isordered(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
-    if a.seqname != b.seqname
-        return seqname_isless(a.seqname, b.seqname)::Bool
+    if seqname(a) != seqname(b)
+        return seqname_isless(seqname(a), seqname(b))::Bool
     end
 
-    if a.first != b.first
-        return a.first < b.first
+    if leftposition(a) != leftposition(b)
+        return leftposition(a) < leftposition(b)
     end
 
     return true
@@ -120,33 +120,34 @@ end
 Return true if interval `a` entirely precedes `b`.
 """
 function precedes(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
-    return (a.last < b.first && a.seqname == b.seqname) || seqname_isless(a.seqname, b.seqname)::Bool
+    return (rightposition(a) < leftposition(b) && seqname(a) == seqname(b)) || seqname_isless(seqname(a), seqname(b))::Bool
 end
 
 function Base.:(==)(a::Interval{T}, b::Interval{T}) where T
-    return a.seqname  == b.seqname &&
-           a.first    == b.first &&
-           a.last     == b.last &&
-           a.strand   == b.strand &&
-           a.metadata == b.metadata
+    return seqname(a)       == seqname(b) &&
+           leftposition(a)  == leftposition(b) &&
+           rightposition(a) == rightposition(b) &&
+           strand(a)        == strand(b) &&
+           metadata(a)      == metadata(b)
 end
 
 "Return true if interval `a` overlaps interval `b`, with no consideration to strand"
 function BioGenerics.isoverlapping(a::Interval{S}, b::Interval{T}) where {S, T}
-    return a.first <= b.last && b.first <= a.last && a.seqname == b.seqname
+    return leftposition(a) <= rightposition(b) &&
+           leftposition(b) <= rightposition(a) &&
+           seqname(a)      == seqname(b)
 end
 
 function Base.show(io::IO, i::Interval)
     if get(io, :compact, false)
-        print(io, i.seqname, ":", i.first, "-", i.last, "  ", i.strand, "  ", i.metadata === nothing ? "nothing" : i.metadata)
+        print(io, seqname(i), ":", leftposition(i), "-", rightposition(i), "  ", strand(i), "  ", metadata(i) === nothing ? "nothing" : metadata(i))
     else
         println(io, summary(i), ':')
-        println(io, "  sequence name: ", i.seqname)
-        println(io, "  leftmost position: ", i.first)
-        println(io, "  rightmost position: ", i.last)
-        println(io, "  strand: ", i.strand)
-          print(io, "  metadata: ",
-            i.metadata === nothing ? "nothing" : i.metadata)
+        println(io, "  sequence name: ", seqname(i))
+        println(io, "  leftmost position: ", leftposition(i))
+        println(io, "  rightmost position: ", rightposition(i))
+        println(io, "  strand: ", strand(i))
+          print(io, "  metadata: ", metadata(i) === nothing ? "nothing" : metadata(i))
     end
 end
 
