@@ -473,4 +473,21 @@ end
     @test [GenomicInterval{UInt32}("chr1",1,1,'.',1), GenomicInterval{UInt32}("chr1",2,2,'.',2), GenomicInterval{UInt32}("chr1",3,4,'.',1)] == collect(coverage(GenomicIntervalCollection([i,p1]))) #TODO: relax comparisons.
 end
 
+
+@testset "Custom Concrete Types" begin
+
+    # Check show of AbstractGenomicInterval{Nothing}.
+    struct WithoutMetadatata <: GenomicFeatures.AbstractGenomicInterval{Nothing}
+        seqname::String
+        first::Int64
+        last::Int64
+    end
+
+    buf = IOBuffer()
+
+    show(buf, WithoutMetadatata("chr1", 1, 2))
+    @test String(take!(buf)) == "WithoutMetadatata:\n  sequence name: chr1\n  leftmost position: 1\n  rightmost position: 2\n  metadata: nothing"
+
+end #testset "Custom Concrete Types"
+
 end #testset GenomicFeatures
