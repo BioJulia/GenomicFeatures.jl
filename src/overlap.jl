@@ -1,18 +1,18 @@
 # Overlap Iterator
 # ================
 
-struct OverlapIterator{Sa,Sb,F,G}
+struct OverlapIterator{Sa,Sb,L,F}
     intervals_a::Sa
     intervals_b::Sb
-    isless::F
-    filter::G
+    isless::L
+    filter::F
 end
 
-function Base.eltype(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
+function Base.eltype(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
     return Tuple{Interval{metadatatype(Sa)},Interval{metadatatype(Sb)}}
 end
 
-function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
+function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
     return Base.SizeUnknown()
 end
 
