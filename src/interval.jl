@@ -16,12 +16,12 @@ struct Interval{T} <: IntervalTrees.AbstractInterval{Int64}
     metadata::T
 end
 
-function Interval(seqname::AbstractString, first::Integer, last::Integer, strand::Union{Strand,Char}=STRAND_BOTH, metadata=nothing)
-    return Interval{typeof(metadata)}(seqname, first, last, strand, metadata)
+function Interval(seqname::AbstractString, first::Integer, last::Integer, strand::Union{Strand,Char}=STRAND_BOTH, metadata::T=nothing) where T
+    return Interval{T}(seqname, first, last, strand, metadata)
 end
 
-function Interval(seqname::AbstractString, range::UnitRange{T}, strand::Union{Strand,Char}=STRAND_BOTH, metadata=nothing) where T<:Integer
-    return Interval{typeof(metadata)}(seqname, first(range), last(range), strand, metadata)
+function Interval(seqname::AbstractString, range::UnitRange{R}, strand::Union{Strand,Char}=STRAND_BOTH, metadata::T=nothing) where {T,R<:Integer}
+    return Interval{T}(seqname, first(range), last(range), strand, metadata)
 end
 
 
