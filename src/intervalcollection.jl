@@ -105,13 +105,12 @@ function update_ordered_trees!(ic::IntervalCollection{T}) where T
 end
 
 function Base.push!(ic::IntervalCollection{T}, i::Interval{T}) where T
-    if !haskey(ic.trees, seqname(i))
-        tree = ICTree{T}()
-        ic.trees[seqname(i)] = tree
+    tree = get!(ic.trees, seqname(i)) do
+        # Setup empty tree for new seqname key.
         ic.ordered_trees_outdated = true
-    else
-        tree = ic.trees[seqname(i)]
+        return ICTree{T}()
     end
+
     push!(tree, i)
     ic.length += 1
     return ic
