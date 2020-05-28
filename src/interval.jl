@@ -163,6 +163,18 @@ function BioGenerics.isoverlapping(a::AbstractGenomicInterval, b::AbstractGenomi
            seqname(a)      == seqname(b)
 end
 
+function Base.show(io::IO, i::AbstractGenomicInterval)
+    if get(io, :compact, false)
+        print(io, seqname(i), ":", leftposition(i), "-", rightposition(i), "  ", metadata(i) === nothing ? "nothing" : metadata(i))
+    else
+        println(io, summary(i), ':')
+        println(io, "  sequence name: ", seqname(i))
+        println(io, "  leftmost position: ", leftposition(i))
+        println(io, "  rightmost position: ", rightposition(i))
+          print(io, "  metadata: ", metadata(i) === nothing ? "nothing" : metadata(i))
+    end
+end
+
 function Base.show(io::IO, i::GenomicInterval)
     if get(io, :compact, false)
         print(io, seqname(i), ":", leftposition(i), "-", rightposition(i), "  ", strand(i), "  ", metadata(i) === nothing ? "nothing" : metadata(i))
