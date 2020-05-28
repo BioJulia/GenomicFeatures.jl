@@ -22,7 +22,7 @@ end
 Create an iterator of overlapping intervals between `intervals_a` and `intervals_b`.
 
 This function assumes elements of `intervals_a` and `intervals_b` are sorted by its sequence name and left position.
-If the element type is not a subtype of `GenomicFeatures.GenomicInterval`, elements are converted to `GenomicInterval` objects.
+If the element type is not a subtype of `GenomicFeatures.AbstractGenomicInterval`, elements are converted to `GenomicInterval` objects.
 
 The third optional argument is a function that defines the order of sequence names.
 The default function is `Base.isless`, which is the lexicographical order.
@@ -146,7 +146,7 @@ end
 #   -1 when `i1` precedes `i2`,
 #   0 when `i1` overlaps with `i2`, and
 #   +1 when `i1` follows `i2`.
-function compare_overlap(i1::GenomicInterval, i2::GenomicInterval, isless::Function)
+function compare_overlap(i1::AbstractGenomicInterval, i2::AbstractGenomicInterval, isless::Function)
     if isless(seqname(i1), seqname(i2))
         return -1
     end
@@ -168,7 +168,7 @@ function compare_overlap(i1::GenomicInterval, i2::GenomicInterval, isless::Funct
 end
 
 # Faster comparison for `Base.isless`.  Note that `Base.isless` must be consistent wtih `Base.cmp` to work correctly.
-function compare_overlap(i1::GenomicInterval, i2::GenomicInterval, ::typeof(Base.isless))
+function compare_overlap(i1::AbstractGenomicInterval, i2::AbstractGenomicInterval, ::typeof(Base.isless))
     c = cmp(seqname(i1), seqname(i2))
 
     if c != 0
