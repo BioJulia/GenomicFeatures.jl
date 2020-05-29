@@ -20,6 +20,7 @@ export
     IntervalCollection,
     eachoverlap,
     coverage,
+    filter,
 
     isfilled,
     hasseqname,
@@ -37,5 +38,6 @@ include("intervalcollection.jl")
 include("queue.jl")
 include("overlap.jl")
 include("coverage.jl")
+include("filter.jl")
 
 end # module

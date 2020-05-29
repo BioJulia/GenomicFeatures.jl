@@ -135,3 +135,9 @@ A special sort of intersection can also be performed on an interval stream again
 ```@docs
 coverage
 ```
+
+## Filter
+
+```@docs
+filter
+```

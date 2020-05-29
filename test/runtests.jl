@@ -417,4 +417,37 @@ end #testset Constructor Conversions
         @test length(collect(eachoverlap(ic_a, Interval("X", 0, 0)))) == 0
     end
 end
+
+@testset "filter" begin
+    ic = IntervalCollection{Nothing}()
+    push!(ic, Interval("chr1", 1, 9))
+    push!(ic, Interval("chr1", 4, 7))
+    cov = coverage(ic)
+    @testset "coverage==0" begin
+        cov0 = filter(i -> i.metadata == 0, cov)
+        @test length(cov0) == 0
+    end
+    @testset "coverage==2" begin
+        cov2 = filter(i -> i.metadata == 2, cov)
+        @test length(cov2) == 1
+        for c in cov2
+            @test leftposition(c) == 4
+            @test rightposition(c) == 7
+        end
+    end
+    @testset "coverage==1" begin
+        cov1 = filter(i -> i.metadata == 1, cov)
+        @test length(cov1) == 2
+        for (i, c) in enumerate(cov1)
+            if i == 1
+                @test leftposition(c) == 1
+                @test rightposition(c) == 3
+            else
+                @test leftposition(c) == 8
+                @test rightposition(c) == 9
+            end
+        end
+    end
+end
+
 end #testset GenomicFeatures
