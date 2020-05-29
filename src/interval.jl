@@ -16,12 +16,12 @@ struct Interval{T} <: IntervalTrees.AbstractInterval{Int64}
     metadata::T
 end
 
-function Interval(seqname::AbstractString, first::Integer, last::Integer, strand::Union{Strand,Char}=STRAND_BOTH, metadata=nothing)
-    return Interval{typeof(metadata)}(seqname, first, last, strand, metadata)
+function Interval(seqname::AbstractString, first::Integer, last::Integer, strand::Union{Strand,Char}=STRAND_BOTH, metadata::T=nothing) where T
+    return Interval{T}(seqname, first, last, strand, metadata)
 end
 
-function Interval(seqname::AbstractString, range::UnitRange{T}, strand::Union{Strand,Char}=STRAND_BOTH, metadata=nothing) where T<:Integer
-    return Interval{typeof(metadata)}(seqname, first(range), last(range), strand, metadata)
+function Interval(seqname::AbstractString, range::UnitRange{R}, strand::Union{Strand,Char}=STRAND_BOTH, metadata::T=nothing) where {T,R<:Integer}
+    return Interval{T}(seqname, first(range), last(range), strand, metadata)
 end
 
 
@@ -68,7 +68,7 @@ end
 IntervalTrees.first(i::Interval) = leftposition(i)
 IntervalTrees.last(i::Interval) = rightposition(i)
 
-function Base.isless(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
+function Base.isless(a::Interval, b::Interval, seqname_isless::Function=isless)
     a_seqname = seqname(a)
     b_seqname = seqname(b)
 
@@ -105,7 +105,7 @@ Check if two intervals are well ordered.
 
 Intervals are considered well ordered if seqname(a) <= seqname(b) and leftposition(a) <= leftposition(b).
 """
-function isordered(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
+function isordered(a::Interval, b::Interval, seqname_isless::Function=isless)
 
     a_seqname = seqname(a)
     b_seqname = seqname(b)
@@ -127,11 +127,11 @@ end
 """
 Return true if interval `a` entirely precedes `b`.
 """
-function precedes(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
+function precedes(a::Interval, b::Interval, seqname_isless::Function=isless)
     return (rightposition(a) < leftposition(b) && seqname(a) == seqname(b)) || seqname_isless(seqname(a), seqname(b))::Bool
 end
 
-function Base.:(==)(a::Interval{T}, b::Interval{T}) where T
+function Base.:(==)(a::Interval, b::Interval)
     return seqname(a)       == seqname(b) &&
            leftposition(a)  == leftposition(b) &&
            rightposition(a) == rightposition(b) &&
@@ -140,7 +140,7 @@ function Base.:(==)(a::Interval{T}, b::Interval{T}) where T
 end
 
 "Return true if interval `a` overlaps interval `b`, with no consideration to strand"
-function BioGenerics.isoverlapping(a::Interval{S}, b::Interval{T}) where {S, T}
+function BioGenerics.isoverlapping(a::Interval, b::Interval)
     return leftposition(a) <= rightposition(b) &&
            leftposition(b) <= rightposition(a) &&
            seqname(a)      == seqname(b)
@@ -159,18 +159,22 @@ function Base.show(io::IO, i::Interval)
     end
 end
 
-function metadatatype(::Type{T}) where T
-    return _metadatatype(eltype(T))
+function intervaltype(::Type{I}) where {I<:Interval}
+    return I
 end
 
-function metadatatype(x::Any)
-    return metadatatype(typeof(x))
+function intervaltype(::Base.HasShape{0}, ::Type{T}) where T
+    return Interval{T}
 end
 
-function _metadatatype(::Type{Interval{T}}) where T
-    return T
+function intervaltype(::Union{<:Base.HasShape, Base.HasLength, Base.SizeUnknown}, el)
+    return intervaltype(eltype(el))
 end
 
-function _metadatatype(::Type{T}) where T
-    return T
+function intervaltype(::Type{T}) where T
+    return intervaltype(Base.IteratorSize(T), T)
+end
+
+function intervaltype(el)
+    return intervaltype(typeof(el))
 end

@@ -106,7 +106,7 @@ end
 
 # Helper function for coverage. Process remaining interval end points after
 # all intervals have been read.
-function coverage_process_lasts_heap!(cov::IntervalCollection{UInt32}, current_coverage, coverage_seqname, coverage_first, lasts)
+function coverage_process_lasts_heap!(cov::IntervalCollection{Interval{UInt32}}, current_coverage, coverage_seqname, coverage_first, lasts)
     while !isempty(lasts)
         pos = DataStructures.heappop!(lasts)
         if pos == coverage_first - 1

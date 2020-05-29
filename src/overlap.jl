@@ -1,18 +1,18 @@
 # Overlap Iterator
 # ================
 
-struct OverlapIterator{Sa,Sb,F,G}
-    intervals_a::Sa
-    intervals_b::Sb
-    isless::F
-    filter::G
+struct OverlapIterator{Sa,Sb,L,F}
+    interval_stream_a::Sa
+    interval_stream_b::Sb
+    isless::L
+    filter::F
 end
 
-function Base.eltype(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
-    return Tuple{Interval{metadatatype(Sa)},Interval{metadatatype(Sb)}}
+function Base.eltype(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
+    return Tuple{intervaltype(Sa),intervaltype(Sb)}
 end
 
-function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
+function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
     return Base.SizeUnknown()
 end
 
@@ -31,30 +31,31 @@ function eachoverlap(intervals_a, intervals_b, seqname_isless=Base.isless; filte
     return OverlapIterator(intervals_a, intervals_b, seqname_isless, filter)
 end
 
-struct OverlapIteratorState{Sa,Sb,Ta,Tb}
-    next_a::Sa
-    next_b::Sb
-    queue::Queue{Interval{Tb}}
+struct OverlapIteratorState{Na,Nb,Ia,Ib}
+    next_a::Na # Note: of the form (value, state)
+    next_b::Nb
+    queue::Queue{Ib}
     queue_index::Int
 end
 
-function OverlapIteratorState( Ta::Type, Tb::Type, next_a::Sa, next_b::Sb, queue::Queue, queue_index::Int) where {Sa, Sb}
-    return OverlapIteratorState{Sa,Sb,Ta,Tb}(next_a, next_b, queue, queue_index)
+function OverlapIteratorState(Ia::Type, Ib::Type, next_a::Na, next_b::Nb, queue::Queue, queue_index::Int) where {Na, Nb}
+    return OverlapIteratorState{Na,Nb,Ia,Ib}(next_a, next_b, queue, queue_index)
 end
 
-function OverlapIteratorState(Ta::Type, Tb::Type, next_a::Sa, next_b::Sb) where {Sa, Sb}
-    queue = Queue{Interval{Tb}}()
-    return OverlapIteratorState{Sa,Sb,Ta,Tb}(next_a, next_b, queue, 1)
+function OverlapIteratorState(Ia::Type, Ib::Type, next_a::Na, next_b::Nb) where {Na, Nb}
+    queue = Queue{Ib}()
+    return OverlapIteratorState{Na,Nb,Ia,Ib}(next_a, next_b, queue, 1)
 end
 
 
 function Base.iterate(iter::OverlapIterator)
-    next_a = iterate(iter.intervals_a)
-    next_b = iterate(iter.intervals_b)
+    next_a = iterate(iter.interval_stream_a)
+    next_b = iterate(iter.interval_stream_b)
 
-    Ta = metadatatype(iter.intervals_a)
-    Tb = metadatatype(iter.intervals_b)
-    state = OverlapIteratorState(Ta, Tb, next_a, next_b)
+    Ia = intervaltype(iter.interval_stream_a)
+    Ib = intervaltype(iter.interval_stream_b)
+
+    state = OverlapIteratorState(Ia, Ib, next_a, next_b)
 
     return iterate(iter, state)
 end
@@ -69,7 +70,7 @@ function check_ordered(i1, i2, compare_func)
 end
 
 
-function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,Ta,Tb}) where {Sa,Sb,Ta,Tb}
+function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Na,Nb,Ia,Ib}) where {Na,Nb,Ia,Ib}
     next_a      = state.next_a
     next_b      = state.next_b
     queue       = state.queue
@@ -80,53 +81,53 @@ function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,T
     end
 
     entry_a, state_a = next_a
-    interval_a = convert(Interval{Ta}, entry_a)
+    interval_a = convert(Ia, entry_a)
 
     while true
         if queue_index > lastindex(state.queue)
             # end of queue: add more to queue, or advance a
             if next_b === nothing
-                next_a = iterate(iter.intervals_a, state_a)
+                next_a = iterate(iter.interval_stream_a, state_a)
                 if next_a === nothing
                     return break
                 end
 
                 entry_a, state_a = next_a
-                next_interval_a = convert(Interval{Ta}, entry_a)
+                next_interval_a = convert(Ia, entry_a)
                 check_ordered(interval_a, next_interval_a, iter.isless)
                 interval_a = next_interval_a
                 queue_index = firstindex(state.queue)
             else
                 entry_b, state_b = next_b
-                interval_b = convert(Interval{Tb}, entry_b)
+                interval_b = convert(Ib, entry_b)
                 if !isempty(queue)
                     check_ordered(queue[end], interval_b, iter.isless)
                 end
                 push!(queue, interval_b)
-                next_b = iterate(iter.intervals_b, state_b)
+                next_b = iterate(iter.interval_stream_b, state_b)
             end
         else
             entry_a, state_a = next_a
-            interval_a = convert(Interval{Ta}, entry_a)
+            interval_a = convert(Ia, entry_a)
             interval_b = queue[queue_index]
             c = compare_overlap(interval_a, interval_b, iter.isless)
             queue_index += 1
 
             if c < 0
                 # No more possible intersections with interval_a, advance
-                next_a = iterate(iter.intervals_a, state_a)
+                next_a = iterate(iter.interval_stream_a, state_a)
                 if next_a === nothing
                     break
                 end
                 entry_a, state_a = next_a
-                next_interval_a = convert(Interval{Ta}, entry_a)
+                next_interval_a = convert(Ia, entry_a)
 
                 check_ordered(interval_a, next_interval_a, iter.isless)
                 interval_a = next_interval_a
                 queue_index = firstindex(state.queue)
             elseif c == 0
                 if iter.filter(interval_a, interval_b)
-                    return ((interval_a, interval_b), OverlapIteratorState(Ta, Tb, next_a, next_b, queue, queue_index))
+                    return ((interval_a, interval_b), OverlapIteratorState(Ia, Ib, next_a, next_b, queue, queue_index))
                 end
             else
                 if queue_index == firstindex(queue) + 1
@@ -146,7 +147,7 @@ end
 #   0 when `i1` overlaps with `i2`, and
 #   +1 when `i1` follows `i2`.
 function compare_overlap(i1::Interval, i2::Interval, isless::Function)
-    if isless(i1.seqname, i2.seqname)
+    if isless(seqname(i1), seqname(i2))
         return -1
     end
 
@@ -168,7 +169,7 @@ end
 
 # Faster comparison for `Base.isless`.  Note that `Base.isless` must be consistent wtih `Base.cmp` to work correctly.
 function compare_overlap(i1::Interval, i2::Interval, ::typeof(Base.isless))
-    c = cmp(i1.seqname, i2.seqname)
+    c = cmp(seqname(i1), seqname(i2))
 
     if c != 0
         return c
