@@ -12,7 +12,7 @@
 Return a copy of `coll`, removing elements (Intervals) for which `f` is false. 
 The function `f` is passed one argument (Interval).
 
-This is an eager implimentation of filtering for IntervalCollection, 
+This is an eager implementation of filtering IntervalCollection, 
 which is equivalent to the following code:
 
 ```julia
@@ -24,7 +24,6 @@ result
 ```
 
 # Examples
-# --------
 
 This function can be used with `coverage` function
 to select intervals with specified number of coverage.
@@ -46,7 +45,6 @@ end
 #  chr1:8-9  .  1
 ```
 """
-
 function Base.filter(f::Function, coll::IntervalCollection{T}) where T
     result=IntervalCollection{T}()
     for c in coll
