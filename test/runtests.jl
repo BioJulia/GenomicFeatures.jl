@@ -201,6 +201,7 @@ end
 end
 
 @testset "IntervalCollection" begin
+
     @testset "Insertion/Iteration" begin
         n = 100000
         intervals = random_intervals(["one", "two", "three"], 1000000, n)
@@ -213,6 +214,14 @@ end
             push!(ic, interval)
         end
         @test is_all_ordered(collect(Interval{Int}, ic))
+    end
+
+    @testset "Bulk Insertion" begin
+        i = Interval("chr1", 10, 20, '+', 1)
+
+        # Test equivalency of shorthand and longhand types.
+        @test IntervalCollection([i]) == IntervalCollection{Int}([i]) == IntervalCollection{Interval{Int}}([i])
+
     end
 
     @testset "Intersection" begin
