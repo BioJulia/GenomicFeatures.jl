@@ -87,7 +87,7 @@ julia> metadata(i)
 Collections of intervals are represented using the `IntervalCollection` type, which is a general purpose indexed container for intervals.
 It supports fast intersection operations as well as insertion, deletion, and sorted iteration.
 
-Interval collections can be initialized by inserting elements one by one using `push!`.
+Empty interval collections can be initialized, and intervals elements can be added to the collection one-by-one using `push!`.
 
 ```julia
 # The type parameter (Nothing here) indicates the interval metadata type.
@@ -98,7 +98,7 @@ for i in 1:100:10000
 end
 ```
 
-Incrementally building an interval collection like this works, but `IntervalCollection` also has a bulk insertion constructor that is able to build the indexed data structure extremely efficiently from an array of intervals.
+Incrementally building an interval collection like this works, but `IntervalCollection` also has a bulk insertion constructor that is able to build the indexed data structure extremely efficiently from a sorted vector of intervals.
 
 ```julia
 col = IntervalCollection([Interval("chr1", i, i + 99) for i in 1:100:10000])
