@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.3] - 2020-06-13
+
+### Added
+- Julia LTS Support
+- Benchmarks
+
+### Changed
+- Documentation.
+- Updated CI for General Repository.
+
 ## [2.0.2] - 2020-05-21
 
 ### Fixed

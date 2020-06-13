@@ -39,6 +39,7 @@ const ICTreeIntersection{T}                   = IntervalTrees.Intersection{Int64
 const ICTreeIntersectionIterator{F,S,T}       = IntervalTrees.IntersectionIterator{F,Int64,Interval{S},64,Interval{T},64}
 const ICTreeIntervalIntersectionIterator{F,T} = IntervalTrees.IntervalIntersectionIterator{F, Int64,Interval{T},64}
 
+"An IntervalCollection is an efficiently stored and indexed set of annotated genomic intervals."
 mutable struct IntervalCollection{T}
     # Sequence name mapped to IntervalTree, which in turn maps intervals to a list of metadata.
     trees::Dict{String,ICTree{T}}
@@ -51,11 +52,12 @@ mutable struct IntervalCollection{T}
     ordered_trees::Vector{ICTree{T}}
     ordered_trees_outdated::Bool
 
+    "Empty initaialzation."
     function IntervalCollection{T}() where T
         return new{T}(Dict{String,ICTree{T}}(), 0, ICTree{T}[], false)
     end
 
-    # Bulk insertion.
+    "Bulk insertion."
     function IntervalCollection{T}(intervals::AbstractVector{Interval{T}}, sort::Bool=false) where T
         if sort
             sort!(intervals)
@@ -80,17 +82,26 @@ mutable struct IntervalCollection{T}
     end
 end
 
-# Shorthand constructor.
+"""
+    IntervalCollection(intervals::AbstractVector{Interval{T}}, sort::Bool=false) where T
+Shorthand constructor.
+"""
 function IntervalCollection(intervals::AbstractVector{Interval{T}}, sort::Bool=false) where T
     return IntervalCollection{T}(intervals, sort)
 end
 
-# Constructor that offers conversion through collection.
+"""
+    IntervalCollection{T}(data, sort::Bool=false) where T
+Constructor that offers conversion through collection.
+"""
 function IntervalCollection{T}(data, sort::Bool=false) where T
     return IntervalCollection(collect(Interval{T}, data), sort)
 end
 
-# Constructor that guesses metadatatype, and offers conversion through collection.
+"""
+    IntervalCollection(data, sort::Bool=false)
+Constructor that guesses metadatatype, and offers conversion through collection.
+"""
 function IntervalCollection(data, sort::Bool=false)
     return IntervalCollection(collect(Interval{metadatatype(data)}, data), sort)
 end

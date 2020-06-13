@@ -6,9 +6,27 @@
 # This file is a part of BioJulia.
 # License is MIT: https://github.com/BioJulia/Bio.jl/blob/master/LICENSE.md
 
+"""
+# Outer constructors
+* [`Strand(strand::Char)`](@ref)
+* [`Strand(strand::UInt8)`](@ref)
+
+[`Strand`](@ref) can take four kinds of values listed in the next table:
+
+| Symbol | Constant              | Meaning                           |
+| :----- | :-------------------- | :-------------------------------- |
+| `'?'`  | [`STRAND_NA`](@ref)   | strand is unknown or inapplicable |
+| `'+'`  | [`STRAND_POS`](@ref)  | positive strand                   |
+| `'-'`  | [`STRAND_NEG`](@ref)  | negative strand                   |
+| `'.'`  | [`STRAND_BOTH`](@ref) | non-strand-specific feature       |
+"""
 primitive type Strand 8 end
 
 Base.convert(::Type{Strand}, strand::UInt8) = reinterpret(Strand, strand)
+
+"""
+    Strand(strand::UInt8)
+"""
 Strand(strand::UInt8) = convert(Strand, strand)
 Base.convert(::Type{UInt8}, strand::Strand) = reinterpret(UInt8, strand)
 
@@ -45,6 +63,10 @@ function Base.convert(::Type{Strand}, strand::Char)
 
     error("'$(strand)' is not a valid strand")
 end
+
+"""
+    Strand(strand::Char)
+"""
 Strand(strand::Char) = convert(Strand, strand)
 
 function Base.convert(::Type{Char}, strand::Strand)

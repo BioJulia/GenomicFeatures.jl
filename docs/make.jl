@@ -5,6 +5,8 @@ Pkg.instantiate()
 
 using Documenter, GenomicFeatures
 
+DocMeta.setdocmeta!(GenomicFeatures, :DocTestSetup, :(using GenomicFeatures); recursive=true)
+
 makedocs(
     format = Documenter.HTML(
         edit_link = :commit
