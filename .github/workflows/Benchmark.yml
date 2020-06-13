@@ -1,0 +1,27 @@
+name: Run Benchmarks
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  Benchmark:
+    runs-on: ubuntu-latest
+    env:
+      JULIA_DEBUG: BenchmarkCI
+    steps:
+      - uses: actions/checkout@v2
+      - uses: julia-actions/setup-julia@latest
+        with:
+          version: 1
+      - name: Install Dependencies
+        run: julia -e 'using Pkg; pkg"add PkgBenchmark BenchmarkCI@0.1"'
+      - name: Run Benchmarks
+        run: julia -e "using BenchmarkCI; BenchmarkCI.judge()"
+      - name: Post Results
+        if: ${{ github.event_name == 'pull_request'}}
+        run: julia -e "using BenchmarkCI; BenchmarkCI.postjudge()"
+      - name: Print Judgement
+        run: julia -e 'using BenchmarkCI; BenchmarkCI.displayjudgement()'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

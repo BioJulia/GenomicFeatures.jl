@@ -24,3 +24,7 @@ docs/site/
 Manifest.toml
 
 .DS_Store
+
+.benchmarkci
+benchmark/*.json
+benchmark/results
