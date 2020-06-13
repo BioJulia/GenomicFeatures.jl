@@ -7,7 +7,18 @@
 # License is MIT: https://github.com/BioJulia/Bio.jl/blob/master/LICENSE.md
 
 # Note, just to be clear: this shadows IntervalTrees.Interval
-"A genomic interval specifies interval with some associated metadata"
+"""
+    struct Interval{T} <: IntervalTrees.AbstractInterval{Int64}
+
+The first three fields (`seqname`, `first`, and `last`) are mandatory arguments when constructing the [`Interval`](@ref Interval) object.
+
+# Fields
+- `seqname::String`: the sequence name associated with the interval.
+- `first::Int64`: the leftmost position.
+- `last::Int64`: the rightmost position.
+- `strand::Strand`: the [`strand`](@ref Strand).
+- `metadata::T`
+"""
 struct Interval{T} <: IntervalTrees.AbstractInterval{Int64}
     seqname::String
     first::Int64

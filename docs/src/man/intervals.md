@@ -8,7 +8,7 @@ Intervals in `GenomicFeatures` are consistent with ranges in Julia: *1-based and
 When data is read from formats with different representations (i.e. 0-based and/or end-exclusive) they are always converted automatically.
 Similarly when writing data, you should not have to reason about off-by-one errors due to format differences while using functionality provided in `GenomicFeatures`.
 
-The `Interval` type is defined as
+The [`Interval`](@ref Interval) type is defined as
 ```julia
 struct Interval{T} <: IntervalTrees.AbstractInterval{Int64}
     seqname::String
@@ -19,9 +19,9 @@ struct Interval{T} <: IntervalTrees.AbstractInterval{Int64}
 end
 ```
 
-The first three fields (`seqname`, `first`, and `last`) are mandatory arguments when constructing the `Interval` object.
+The first three fields (`seqname`, `first`, and `last`) are mandatory arguments when constructing the [`Interval`](@ref Interval) object.
 The `seqname` field holds the sequence name associated with the interval.
-The `first` and `last` fields are the leftmost and rightmost positions of the interval, which can be accessed with `leftposition` and `rightposition` functions, respectively.
+The `first` and `last` fields are the leftmost and rightmost positions of the interval, which can be accessed with [`leftposition`](@ref leftposition) and [`rightposition`](@ref rightposition) functions, respectively.
 
 The `strand` field can take four kinds of values listed in the next table:
 
@@ -32,12 +32,12 @@ The `strand` field can take four kinds of values listed in the next table:
 | `'-'`  | `STRAND_NEG`  | negative strand                   |
 | `'.'`  | `STRAND_BOTH` | non-strand-specific feature       |
 
-`Interval` is parameterized on metadata type, which lets it efficiently and precisely be specialized to represent intervals from a variety of formats.
+[`Interval`](@ref Interval) is parameterized on metadata type, which lets it efficiently and precisely be specialized to represent intervals from a variety of formats.
 
 The default strand and metadata value are `STRAND_BOTH` and `nothing`:
-```jlcon
+```jldoctest; setup = :(using GenomicFeatures)
 julia> Interval("chr1", 10000, 20000)
-GenomicFeatures.Interval{Nothing}:
+Interval{Nothing}:
   sequence name: chr1
   leftmost position: 10000
   rightmost position: 20000
@@ -45,19 +45,18 @@ GenomicFeatures.Interval{Nothing}:
   metadata: nothing
 
 julia> Interval("chr1", 10000, 20000, '+')
-GenomicFeatures.Interval{Nothing}:
+Interval{Nothing}:
   sequence name: chr1
   leftmost position: 10000
   rightmost position: 20000
   strand: +
   metadata: nothing
-
 ```
 
 The following example shows all accessor functions for the five fields:
-```jlcon
+```jldoctest; setup = :(using GenomicFeatures)
 julia> i = Interval("chr1", 10000, 20000, '+', "some annotation")
-GenomicFeatures.Interval{String}:
+Interval{String}:
   sequence name: chr1
   leftmost position: 10000
   rightmost position: 20000
@@ -78,18 +77,18 @@ STRAND_POS
 
 julia> metadata(i)
 "some annotation"
-
 ```
 
 
 ## Collections of Intervals
 
-Collections of intervals are represented using the `IntervalCollection` type, which is a general purpose indexed container for intervals.
+Collections of intervals are represented using the [`IntervalCollection`](@ref IntervalCollection) type, which is a general purpose indexed container for intervals.
 It supports fast intersection operations as well as insertion, deletion, and sorted iteration.
 
 Empty interval collections can be initialized, and intervals elements can be added to the collection one-by-one using `push!`.
 
-```julia
+```@example
+using GenomicFeatures # hide
 # The type parameter (Nothing here) indicates the interval metadata type.
 col = IntervalCollection{Nothing}()
 
@@ -98,18 +97,32 @@ for i in 1:100:10000
 end
 ```
 
-Incrementally building an interval collection like this works, but `IntervalCollection` also has a bulk insertion constructor that is able to build the indexed data structure extremely efficiently from a sorted vector of intervals.
+Incrementally building an interval collection like this works, but [`IntervalCollection`](@ref IntervalCollection) also has a bulk insertion constructor that is able to build the indexed data structure extremely efficiently from a sorted vector of intervals.
 
-```julia
+```jldoctest; setup = :(using GenomicFeatures), output = false
 col = IntervalCollection([Interval("chr1", i, i + 99) for i in 1:100:10000])
+
+# output
+
+IntervalCollection{Nothing} with 100 intervals:
+  chr1:1-100  .  nothing
+  chr1:101-200  .  nothing
+  chr1:201-300  .  nothing
+  chr1:301-400  .  nothing
+  chr1:401-500  .  nothing
+  chr1:501-600  .  nothing
+  chr1:601-700  .  nothing
+  chr1:701-800  .  nothing
+  ⋮
+
 ```
 
-Building `IntervalCollections` in one shot like this should be preferred when it's convenient or speed is an issue.
+Building [`IntervalCollection`](@ref IntervalCollection)s in one shot like this should be preferred when it's convenient or speed is an issue.
 
 
 ## Overlap Query
 
-There are number of `eachoverlap` functions in the `GenomicFeatures` module.
+There are number of [`eachoverlap`](@ref eachoverlap) functions in the `GenomicFeatures` module.
 They follow two patterns:
 - interval versus collection queries which return an iterator over intervals in the collection that overlap the query, and
 - collection versus collection queries which iterate over all pairs of overlapping intervals.
@@ -118,7 +131,7 @@ They follow two patterns:
 eachoverlap
 ```
 
-The order of interval pairs is the same as the following nested loop but `eachoverlap` is often much faster:
+The order of interval pairs is the same as the following nested loop but [`eachoverlap`](@ref eachoverlap) is often much faster:
 ```julia
 for a in intervals_a, b in intervals_b
     if isoverlapping(a, b)
