@@ -6,8 +6,10 @@
 # This file is a part of BioJulia.
 # License is MIT: https://github.com/BioJulia/Bio.jl/blob/master/LICENSE.md
 
+abstract type AbstractGenomicInterval{T} <: IntervalTrees.AbstractInterval{Int64} end
+
 """
-    GenomicInterval{T} <: IntervalTrees.AbstractInterval{Int64}
+    GenomicInterval{T} <: AbstractGenomicInterval{T}
 
 A genomic interval specifies interval with some associated metadata.
 The first three fields (`seqname`, `first`, and `last`) are mandatory arguments when constructing the [`Interval`](@ref Interval) object.
@@ -19,7 +21,7 @@ The first three fields (`seqname`, `first`, and `last`) are mandatory arguments 
 - `strand::Strand`: the [`strand`](@ref Strand).
 - `metadata::T`
 """
-struct GenomicInterval{T} <: IntervalTrees.AbstractInterval{Int64}
+struct GenomicInterval{T} <: AbstractGenomicInterval{T}
     seqname::String
     first::Int64
     last::Int64
