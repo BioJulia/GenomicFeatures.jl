@@ -151,18 +151,22 @@ function Base.show(io::IO, i::Interval)
     end
 end
 
-function metadatatype(::Type{T}) where T
-    return _metadatatype(eltype(T))
+function intervaltype(::Type{I}) where {I<:Interval}
+    return I
 end
 
-function metadatatype(x::Any)
-    return metadatatype(typeof(x))
+function intervaltype(::Base.HasShape{0}, ::Type{T}) where T
+    return Interval{T}
 end
 
-function _metadatatype(::Type{Interval{T}}) where T
-    return T
+function intervaltype(::Union{<:Base.HasShape, Base.HasLength, Base.SizeUnknown}, el)
+    return intervaltype(eltype(el))
 end
 
-function _metadatatype(::Type{T}) where T
-    return T
+function intervaltype(::Type{T}) where T
+    return intervaltype(Base.IteratorSize(T), T)
+end
+
+function intervaltype(el)
+    return intervaltype(typeof(el))
 end
