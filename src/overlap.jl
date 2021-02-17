@@ -2,8 +2,8 @@
 # ================
 
 struct OverlapIterator{Sa,Sb,L,F}
-    intervals_a::Sa
-    intervals_b::Sb
+    interval_stream_a::Sa
+    interval_stream_b::Sb
     isless::L
     filter::F
 end
@@ -49,11 +49,12 @@ end
 
 
 function Base.iterate(iter::OverlapIterator)
-    next_a = iterate(iter.intervals_a)
-    next_b = iterate(iter.intervals_b)
+    next_a = iterate(iter.interval_stream_a)
+    next_b = iterate(iter.interval_stream_b)
 
-    Ta = metadatatype(iter.intervals_a)
-    Tb = metadatatype(iter.intervals_b)
+    Ta = metadatatype(iter.interval_stream_a)
+    Tb = metadatatype(iter.interval_stream_b)
+
     state = OverlapIteratorState(Ta, Tb, next_a, next_b)
 
     return iterate(iter, state)
@@ -86,7 +87,7 @@ function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,T
         if queue_index > lastindex(state.queue)
             # end of queue: add more to queue, or advance a
             if next_b === nothing
-                next_a = iterate(iter.intervals_a, state_a)
+                next_a = iterate(iter.interval_stream_a, state_a)
                 if next_a === nothing
                     return break
                 end
@@ -103,7 +104,7 @@ function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,T
                     check_ordered(queue[end], interval_b, iter.isless)
                 end
                 push!(queue, interval_b)
-                next_b = iterate(iter.intervals_b, state_b)
+                next_b = iterate(iter.interval_stream_b, state_b)
             end
         else
             entry_a, state_a = next_a
@@ -114,7 +115,7 @@ function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,T
 
             if c < 0
                 # No more possible intersections with interval_a, advance
-                next_a = iterate(iter.intervals_a, state_a)
+                next_a = iterate(iter.interval_stream_a, state_a)
                 if next_a === nothing
                     break
                 end
