@@ -1,7 +1,7 @@
 name = "GenomicFeatures"
 uuid = "899a7d2d-5c61-547b-bef9-6698a8d05446"
 authors = ["Kenta Sato <bicycle1885@gmail.com>", "Ben J. Ward <benjward@protonmail.com>", "Ciarán O’Mara <CiaranOMara@utas.edu.au>"]
-version = "2.0.3"
+version = "2.0.4"
 
 [deps]
 BioGenerics = "47718e42-2ac5-11e9-14af-e5595289c2ea"
@@ -10,7 +10,7 @@ IntervalTrees = "524e6230-43b7-53ae-be76-1e9e4d08d11b"
 
 [compat]
 BioGenerics = "0.1"
-DataStructures = "0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17"
+DataStructures = "0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18"
 IntervalTrees = "1.0"
 julia = "1"
 
