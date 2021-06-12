@@ -156,12 +156,11 @@ function Base.:(==)(a::IntervalCollection{T}, b::IntervalCollection{T}) where T
     if length(a) != length(b)
         return false
     end
-    for (i, j) in zip(a, b)
-        if i != j
-            return false
-        end
+
+    # Return false if any of the intervals are not equivalent.
+    return all(zip(a,b)) do (ia,ib)
+        ia == ib
     end
-    return true
 end
 
 
