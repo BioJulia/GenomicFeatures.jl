@@ -119,6 +119,28 @@ IntervalCollection{Nothing} with 100 intervals:
 
 Building [`IntervalCollection`](@ref IntervalCollection)s in one shot like this should be preferred when it's convenient or speed is an issue.
 
+## Filtering
+
+Below are some examples of filtering intervals.
+The examples take advantage of bulk insertion.
+```jldoctest; setup = :(using GenomicFeatures), output = true
+intervals = [
+  Interval("chr1", 1, 8),
+  Interval("chr1", 4, 20),
+  Interval("chr1", 14, 27)]
+
+col = IntervalCollection(intervals)
+
+predicate(i) = isodd(leftposition(i))
+
+selected = IntervalCollection(Base.Iterators.filter(predicate, col))
+selected = IntervalCollection([x for x in col if predicate(x)])
+
+# output
+
+IntervalCollection{Nothing} with 1 intervals:
+  chr1:1-8  .  nothing
+```
 
 ## Overlap Query
 
