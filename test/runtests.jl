@@ -86,7 +86,12 @@ function simple_coverage(intervals)
     return covintervals
 end
 
-
+# Used to check show of AbstractGenomicInterval{Nothing}.
+struct WithoutMetadatata <: GenomicFeatures.AbstractGenomicInterval{Nothing}
+    groupname::String
+    first::Int64
+    last::Int64
+end
 
 @testset "GenomicFeatures" begin
 
@@ -462,8 +467,8 @@ end #testset Constructor Conversions
 end
 
 @testset "Mixed types" begin
-    i = GenomicInterval("chr1", 1,4)
 
+    i = GenomicInterval("chr1", 1,4)
     p1 = GenomicPosition("chr1", 2)
     p2 = GenomicPosition("chr1", 5)
     p3 = GenomicPosition("chr2", 5)
@@ -510,6 +515,18 @@ end
     # Check coverage.
     @test [GenomicInterval{UInt32}("chr1",1,1,'.',1), GenomicInterval{UInt32}("chr1",2,2,'.',2), GenomicInterval{UInt32}("chr1",3,4,'.',1)] == collect(coverage(GenomicIntervalCollection([i,p1]))) #TODO: relax comparisons.
 end
+
+
+@testset "Custom Concrete Types" begin
+
+
+
+    buf = IOBuffer()
+
+    show(buf, WithoutMetadatata("chr1", 1, 2))
+    @test String(take!(buf)) == "WithoutMetadatata:\n  sequence name: chr1\n  leftmost position: 1\n  rightmost position: 2\n  metadata: nothing"
+
+end #testset "Custom Concrete Types"
 
 # Include doctests.
 DocMeta.setdocmeta!(GenomicFeatures, :DocTestSetup, :(using GenomicFeatures); recursive=true)

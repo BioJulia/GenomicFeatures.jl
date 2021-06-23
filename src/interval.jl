@@ -56,6 +56,10 @@ function BioGenerics.metadata(i::AbstractGenomicInterval)
     return i.metadata
 end
 
+function BioGenerics.metadata(i::AbstractGenomicInterval{Nothing})
+    return nothing
+end
+
 function strand(i::AbstractGenomicInterval)
     return i.strand
 end
