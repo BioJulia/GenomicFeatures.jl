@@ -171,6 +171,20 @@ end
     end
 end
 
+@testset "GenomicPosition" begin
+    @testset "Constructor" begin
+
+        p = GenomicPosition("chr1", 1)
+        @test seqname(p) == "chr1"
+        @test leftposition(p) == 1
+        @test rightposition(p) == 1
+        @test position(p) == 1
+
+        @test GenomicPosition("chr1", 1) == GenomicPosition("chr1", 1:1)
+
+    end
+end
+
 @testset "GenomicIntervalCollection" begin
 
     @testset "Constructor" begin
@@ -408,6 +422,56 @@ end #testset Constructor Conversions
         # non-overlapping query
         @test length(collect(eachoverlap(ic_a, GenomicInterval("X", 0, 0)))) == 0
     end
+end
+
+@testset "Mixed types" begin
+    i = GenomicInterval("chr1", 1,4)
+
+    p1 = GenomicPosition("chr1", 2)
+    p2 = GenomicPosition("chr1", 5)
+    p3 = GenomicPosition("chr2", 5)
+
+    # Sorting.
+    @test [i, p1, p2, p3] == sort([p2, p1, p3, i])
+
+    # Push out of order mixed types.
+    col = GenomicIntervalCollection{GenomicFeatures.AbstractGenomicInterval{Nothing}}()
+    push!(col, p2)
+    push!(col, p1)
+    push!(col, p3)
+    push!(col, i)
+
+    @test collect(col) == [i, p1, p2, p3]
+
+    # Bulk insertion of mixed types.
+    col = GenomicIntervalCollection([i, p1, p2, p3])
+
+    @test 4 == length(col)
+
+    # Check overlap.
+    interval_p1_equiv = GenomicInterval("chr1", 2,2)
+    @test true == isoverlapping(i,interval_p1_equiv)
+    @test interval_p1_equiv == p1
+
+    @test true == isoverlapping(i, p1)
+    @test false == isoverlapping(i, p2) == isoverlapping(i, p3)
+
+    # Check eachoverlap.
+    # @test [(i, p1)] == collect(eachoverlap(i, [p1,p2,p3])) #Note: attempts to broadcast i.
+    @test [(i, p1)] == collect(eachoverlap([i], [p1,p2,p3]))
+    @test [(i, p1)] == collect(eachoverlap(GenomicIntervalCollection([i]), GenomicIntervalCollection([p1,p2,p3])))
+    # @test [(p1, i)] == collect(eachoverlap([p1,p2,p3], i)) #Note: attempts to broadcast i.
+    @test [(p1, i)] == collect(eachoverlap([p1,p2,p3], [i]))
+    @test [(p1, i)] == collect(eachoverlap(GenomicIntervalCollection([p1,p2,p3]), GenomicIntervalCollection([i])))
+
+    # Pushing mixed types to Queue.
+    @test [(i, p1), (p1,p1)] == collect(eachoverlap([i, p1], [p1,p2,p3]))
+    @test [(i, p1), (p1,p1)] == collect(eachoverlap(GenomicIntervalCollection([i,p1]), GenomicIntervalCollection([p1,p2,p3])))
+    @test [(p1, i), (p1,p1)] == collect(eachoverlap([p1,p2,p3], [i, p1]))
+    @test [(p1, i), (p1,p1)] == collect(eachoverlap(GenomicIntervalCollection([p1,p2,p3]), GenomicIntervalCollection([i,p1])))
+
+    # Check coverage.
+    @test [GenomicInterval{UInt32}("chr1",1,1,'.',1), GenomicInterval{UInt32}("chr1",2,2,'.',2), GenomicInterval{UInt32}("chr1",3,4,'.',1)] == collect(coverage(GenomicIntervalCollection([i,p1]))) #TODO: relax comparisons.
 end
 
 # Include doctests.

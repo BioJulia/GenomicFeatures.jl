@@ -128,7 +128,7 @@ function update_ordered_trees!(ic::GenomicIntervalCollection{I}) where I
     end
 end
 
-function Base.push!(ic::GenomicIntervalCollection{I}, i::I) where {I<:AbstractGenomicInterval}
+function Base.push!(ic::GenomicIntervalCollection{I}, i::AbstractGenomicInterval) where {I<:AbstractGenomicInterval}
     tree = get!(ic.trees, seqname(i)) do
         # Setup empty tree for new seqname key.
         ic.ordered_trees_outdated = true
