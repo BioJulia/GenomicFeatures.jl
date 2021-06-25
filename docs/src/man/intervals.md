@@ -104,7 +104,7 @@ col = IntervalCollection([Interval("chr1", i, i + 99) for i in 1:100:10000])
 
 # output
 
-IntervalCollection{Nothing} with 100 intervals:
+IntervalCollection{Interval{Nothing}} with 100 intervals:
   chr1:1-100  .  nothing
   chr1:101-200  .  nothing
   chr1:201-300  .  nothing
