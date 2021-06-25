@@ -27,7 +27,7 @@ The `strand` field can take four kinds of values listed in the next table:
 
 | Symbol | Constant      | Meaning                           |
 | :----- | :------------ | :-------------------------------- |
-| `'?'`  | `STRAND_NA`   | strand is unknown or inapplicable |
+| `'?'`  | `STRAND_NA`   | strandedness is relevant, but unknown |
 | `'+'`  | `STRAND_POS`  | positive strand                   |
 | `'-'`  | `STRAND_NEG`  | negative strand                   |
 | `'.'`  | `STRAND_BOTH` | non-strand-specific feature       |
