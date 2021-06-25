@@ -1,25 +1,27 @@
 using Pkg
 
-Pkg.develop(PackageSpec(path=pwd()))
-Pkg.instantiate()
-
 using Documenter, GenomicFeatures
 
 DocMeta.setdocmeta!(GenomicFeatures, :DocTestSetup, :(using GenomicFeatures); recursive=true)
 
+format = Documenter.HTML(
+    edit_link = "develop"
+)
+
 makedocs(
-    format = Documenter.HTML(
-        edit_link = :commit
-    ),
     modules = [GenomicFeatures],
+    checkdocs = :all,
+    linkcheck = true,
+    format = format,
     sitename = "GenomicFeatures.jl",
+    authors = replace(join(Pkg.TOML.parsefile("Project.toml")["authors"], ", "), r" <.*?>" => "" ) * ", The BioJulia Organisation, and other contributors.",
     pages = [
         "Home" => "index.md",
         "Intervals" => "man/intervals.md",
         "API Reference" => "api/api.md"
     ],
-    authors = replace(join(Pkg.TOML.parsefile("Project.toml")["authors"], ", "), r" <.*?>" => "" ) * ", The BioJulia Organisation, and other contributors."
 )
+
 deploydocs(
     repo = "github.com/BioJulia/GenomicFeatures.jl.git",
     devbranch = "develop",

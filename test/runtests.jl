@@ -1,5 +1,6 @@
 using GenomicFeatures
 using Test
+using Documenter
 
 import Random
 
@@ -400,4 +401,9 @@ end #testset Constructor Conversions
         @test length(collect(eachoverlap(ic_a, Interval("X", 0, 0)))) == 0
     end
 end
+
+# Include doctests.
+DocMeta.setdocmeta!(GenomicFeatures, :DocTestSetup, :(using GenomicFeatures); recursive=true)
+doctest(GenomicFeatures; manual = false)
+
 end #testset GenomicFeatures
