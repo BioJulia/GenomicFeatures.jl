@@ -29,7 +29,7 @@ julia> intervals = [
            Interval("chr1", 14, 27)];
 
 julia> coverage(intervals)
-IntervalCollection{UInt32} with 5 intervals:
+IntervalCollection{Interval{UInt32}} with 5 intervals:
   chr1:1-3  .  1
   chr1:4-8  .  2
   chr1:9-13  .  1
@@ -123,7 +123,7 @@ end
 
 # Helper function for coverage. Process remaining interval end points after
 # all intervals have been read.
-function coverage_process_lasts_heap!(cov::IntervalCollection{UInt32}, current_coverage, coverage_seqname, coverage_first, lasts)
+function coverage_process_lasts_heap!(cov::IntervalCollection{Interval{UInt32}}, current_coverage, coverage_seqname, coverage_first, lasts)
     while !isempty(lasts)
         pos = DataStructures.heappop!(lasts)
         if pos == coverage_first - 1

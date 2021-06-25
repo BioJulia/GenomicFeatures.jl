@@ -33,32 +33,37 @@
 #
 
 # Aliases for types of IntervalTrees.jl (IC: Interval Collection).
-const ICTree{T}                               = IntervalTrees.IntervalBTree{Int64,Interval{T},64}
-const ICTreeIteratorState{T}                  = IntervalTrees.IntervalBTreeIteratorState{Int64,Interval{T},64}
-const ICTreeIntersection{T}                   = IntervalTrees.Intersection{Int64,Interval{T},64}
-const ICTreeIntersectionIterator{F,S,T}       = IntervalTrees.IntersectionIterator{F,Int64,Interval{S},64,Interval{T},64}
-const ICTreeIntervalIntersectionIterator{F,T} = IntervalTrees.IntervalIntersectionIterator{F, Int64,Interval{T},64}
+const ICTree{I}                               = IntervalTrees.IntervalBTree{Int64,I,64}
+const ICTreeIteratorState{I}                  = IntervalTrees.IntervalBTreeIteratorState{Int64,I,64}
+const ICTreeIntersection{I}                   = IntervalTrees.Intersection{Int64,I,64}
+const ICTreeIntersectionIterator{F,Ia,Ib}     = IntervalTrees.IntersectionIterator{F,Int64,Ia,64,Ib,64}
+const ICTreeIntervalIntersectionIterator{F,I} = IntervalTrees.IntervalIntersectionIterator{F,Int64,I,64}
 
 "An IntervalCollection is an efficiently stored and indexed set of annotated genomic intervals."
-mutable struct IntervalCollection{T}
+mutable struct IntervalCollection{I}
     # Sequence name mapped to IntervalTree, which in turn maps intervals to a list of metadata.
-    trees::Dict{String,ICTree{T}}
+    trees::Dict{String,ICTree{I}}
 
     # Keep track of the number of stored intervals.
     length::Int
 
     # A vector of values(trees) sorted on sequence name.
     # This is used to iterate intervals as efficiently as possible, but is only updated as needed, indicated by the ordered_trees_outdated flag.
-    ordered_trees::Vector{ICTree{T}}
+    ordered_trees::Vector{ICTree{I}}
     ordered_trees_outdated::Bool
 
-    "Empty initaialzation."
+    "Empty initialization."
     function IntervalCollection{T}() where T
-        return new{T}(Dict{String,ICTree{T}}(), 0, ICTree{T}[], false)
+        return IntervalCollection{Interval{T}}()
+    end
+
+    # Longhand constructor.
+    function IntervalCollection{I}() where {I<:Interval}
+        return new{I}(Dict{String,ICTree{I}}(), 0, ICTree{I}[], false)
     end
 
     "Bulk insertion."
-    function IntervalCollection{T}(intervals::AbstractVector{Interval{T}}, sort::Bool=false) where T
+    function IntervalCollection{I}(intervals::AbstractVector{I}, sort::Bool=false) where {I<:Interval}
         if sort
             sort!(intervals)
         else
@@ -68,34 +73,42 @@ mutable struct IntervalCollection{T}
         end
 
         n = length(intervals)
-        trees = Dict{String,ICTree{T}}()
+        trees = Dict{String,ICTree{I}}()
         i = 1
         while i <= n
             j = i
             while j <= n && seqname(intervals[i]) == seqname(intervals[j])
                 j += 1
             end
-            trees[seqname(intervals[i])] = ICTree{T}(view(intervals, i:j-1))
+            trees[seqname(intervals[i])] = ICTree{I}(view(intervals, i:j-1))
             i = j
         end
-        return new{T}(trees, n, ICTree{T}[], true)
+        return new{I}(trees, n, ICTree{I}[], true)
     end
 end
 
 """
-    IntervalCollection(intervals::AbstractVector{Interval{T}}, sort::Bool=false) where T
+    IntervalCollection(intervals::AbstractVector{I}, sort::Bool=false) where {I<:Interval}
 Shorthand constructor.
 """
-function IntervalCollection(intervals::AbstractVector{Interval{T}}, sort::Bool=false) where T
-    return IntervalCollection{T}(intervals, sort)
+function IntervalCollection(intervals::AbstractVector{I}, sort::Bool=false) where {I<:Interval}
+    return IntervalCollection{I}(intervals, sort)
 end
 
 """
-    IntervalCollection{T}(data, sort::Bool=false) where T
+    IntervalCollection{T}(data, sort::Bool=true) where {T}
+Shorthand for metadata type bulk insertion.
+"""
+function IntervalCollection{T}(data, sort::Bool=true) where {T}
+    return IntervalCollection{Interval{T}}(collect(Interval{T}, data), sort)
+end
+
+"""
+    IntervalCollection{I}(data, sort::Bool=false) where {I<:Interval}
 Constructor that offers conversion through collection.
 """
-function IntervalCollection{T}(data, sort::Bool=false) where T
-    return IntervalCollection(collect(Interval{T}, data), sort)
+function IntervalCollection{I}(data, sort::Bool=false) where {I<:Interval}
+    return IntervalCollection(collect(I, data), sort)
 end
 
 """
@@ -106,29 +119,29 @@ function IntervalCollection(data, sort::Bool=false)
     return IntervalCollection(collect(Interval{metadatatype(data)}, data), sort)
 end
 
-function update_ordered_trees!(ic::IntervalCollection{T}) where T
+function update_ordered_trees!(ic::IntervalCollection{I}) where I
     if ic.ordered_trees_outdated
-        ic.ordered_trees = collect(ICTree{T}, values(ic.trees))
+        ic.ordered_trees = collect(ICTree{I}, values(ic.trees))
         p = sortperm(collect(AbstractString, keys(ic.trees)), lt = isless)
         ic.ordered_trees = ic.ordered_trees[p]
         ic.ordered_trees_outdated = false
     end
 end
 
-function Base.push!(ic::IntervalCollection{T}, i::Interval{T}) where T
+function Base.push!(ic::IntervalCollection{I}, i::I) where {I<:Interval}
     tree = get!(ic.trees, seqname(i)) do
         # Setup empty tree for new seqname key.
         ic.ordered_trees_outdated = true
-        return ICTree{T}()
+        return ICTree{I}()
     end
     push!(tree, i)
     ic.length += 1
     return ic
 end
 
-function Base.show(io::IO, ic::IntervalCollection{T}) where T
+function Base.show(io::IO, ic::IntervalCollection{I}) where I
     n_entries = length(ic)
-    println(io, "IntervalCollection{$(T)} with $(n_entries) intervals:")
+    println(io, "IntervalCollection{$(I)} with $(n_entries) intervals:")
     if n_entries > 0
         for (k, i) in enumerate(ic)
             if k > 8
@@ -146,11 +159,11 @@ function Base.length(ic::IntervalCollection)
     return ic.length
 end
 
-function Base.eltype(::Type{IntervalCollection{T}}) where T
-    return Interval{T}
+function Base.eltype(::Type{IntervalCollection{I}}) where I
+    return I
 end
 
-function Base.:(==)(a::IntervalCollection{T}, b::IntervalCollection{T}) where T
+function Base.:(==)(a::IntervalCollection, b::IntervalCollection)
     if length(a) != length(b)
         return false
     end
@@ -284,7 +297,7 @@ Find a the first interval with matching start and end points.
 
 Returns that interval, or 'nothing' if no interval was found.
 """
-function Base.findfirst(a::IntervalCollection{T}, b::Interval{S}; filter=true_cmp) where {T,S}
+function Base.findfirst(a::IntervalCollection, b::Interval; filter=true_cmp)
     if !haskey(a.trees, seqname(b))
         return nothing
     end
@@ -296,12 +309,12 @@ end
 # Overlaps
 # --------
 
-function eachoverlap(a::IntervalCollection{T}, query::Interval; filter::F = true_cmp) where {F,T}
+function eachoverlap(a::IntervalCollection{I}, query::Interval; filter::F = true_cmp) where {F,I}
     if haskey(a.trees, seqname(query))
-        return ICTreeIntervalIntersectionIterator{F,T}(filter, ICTreeIntersection{T}(), a.trees[seqname(query)], query)
+        return ICTreeIntervalIntersectionIterator{F,I}(filter, ICTreeIntersection{I}(), a.trees[seqname(query)], query)
     end
 
-    return ICTreeIntervalIntersectionIterator{F,T}(filter, ICTreeIntersection{T}(), ICTree{T}(), query)
+    return ICTreeIntervalIntersectionIterator{F,I}(filter, ICTreeIntersection{I}(), ICTree{I}(), query)
 end
 
 function eachoverlap(a::IntervalCollection, b::IntervalCollection; filter = true_cmp)
@@ -312,10 +325,10 @@ function eachoverlap(a::IntervalCollection, b::IntervalCollection; filter = true
     return IntersectIterator(filter, a_trees, b_trees)
 end
 
-struct IntersectIterator{F, S, T}
+struct IntersectIterator{F,Ia,Ib}
     filter::F
-    a_trees::Vector{ICTree{S}}
-    b_trees::Vector{ICTree{T}}
+    a_trees::Vector{ICTree{Ia}}
+    b_trees::Vector{ICTree{Ib}}
 end
 
 #=
@@ -333,11 +346,11 @@ mutable struct IntersectIteratorState{F,S,T}
 end
 =#
 
-function Base.eltype(::Type{IntersectIterator{F,S,T}}) where {F,S,T}
-    return Tuple{Interval{S},Interval{T}}
+function Base.eltype(::Type{IntersectIterator{F,Ia,Ib}}) where {F,Ia,Ib}
+    return Tuple{Ia,Ib}
 end
 
-function Base.IteratorSize(::Type{IntersectIterator{F,S,T}}) where {F,S,T}
+function Base.IteratorSize(::Type{IntersectIterator{F,Ia,Ib}}) where {F,Ia,Ib}
     return Base.SizeUnknown()
 end
 
@@ -358,7 +371,7 @@ end
 
 # State is a tuple:
 # (tree pair iteration state, current intersect iterator, current intersect iterator state)
-function Base.iterate(it::IntersectIterator{F, S, T}, state = ()) where {F,S,T}
+function Base.iterate(it::IntersectIterator{F,Ia,Ib}, state = ()) where {F,Ia,Ib}
     if state !== ()
         # Iterate over each intersection between two trees.
         isect = iterate(Base.tail(state)...)
@@ -401,17 +414,17 @@ function eachoverlap(a, b::IntervalCollection; filter=true_cmp)
     return IntervalCollectionStreamIterator(filter, a, b)
 end
 
-struct IntervalCollectionStreamIterator{F,S,T}
+struct IntervalCollectionStreamIterator{F,S,Ib}
     filter::F
     stream::S
-    collection::IntervalCollection{T}
+    collection::IntervalCollection{Ib}
 end
 
-function Base.eltype(::Type{IntervalCollectionStreamIterator{F,S,T}}) where {F,S,T}
-    return Tuple{Interval{metadatatype(S)},Interval{T}}
+function Base.eltype(::Type{IntervalCollectionStreamIterator{F,S,Ib}}) where {F,S,Ib}
+    return Tuple{Interval{metadatatype(S)},Ib}
 end
 
-function Base.IteratorSize(::Type{IntervalCollectionStreamIterator{F,S,T}}) where {F,S,T}
+function Base.IteratorSize(::Type{IntervalCollectionStreamIterator{F,S,Ib}}) where {F,S,Ib}
     return Base.SizeUnknown()
 end
 
@@ -471,9 +484,9 @@ end
 # New julia 0.7 / 1.0 iteration protocol for collection stream iterator.
 # State is a tuple:
 # (current_query, stream_state, intersection_object)
-function Base.iterate(it::IntervalCollectionStreamIterator{F,S,T}, state = ()) where {F,S,T}
+function Base.iterate(it::IntervalCollectionStreamIterator{F,S,Ib}, state = ()) where {F,S,Ib}
     # If first iteration, make empty intersection, otherwise get it from the state.
-    intersection = (state !== () ? state[3] : ICTreeIntersection{T}())
+    intersection = (state !== () ? state[3] : ICTreeIntersection{Ib}())
 
     # If this is not the first iteration, and there is an available intersection for the current query, return it and search for the next intersection.
     if state !== () && intersection.index != 0
