@@ -6,7 +6,7 @@ using Random
 
 # Generate an array of n random GenomicInterval{Int} object. With sequence names
 # samples from seqnames, and intervals drawn to lie in [1, maxpos].
-function random_intervals(seqnames::Vector{String}, maxpos::Int, n::Int)
+function random_intervals(seqnames::Vector{Symbol}, maxpos::Int, n::Int)
     seq_dist = Categorical(length(seqnames))
     strand_dist = Categorical(2)
     length_dist = Normal(1000, 1000)
@@ -24,7 +24,7 @@ function random_intervals(seqnames::Vector{String}, maxpos::Int, n::Int)
     return intervals
 end
 
-function random_intervals(seqnames::Vector{String}, maxpos::Int, n::Int, seed::Int)
+function random_intervals(seqnames::Vector{Symbol}, maxpos::Int, n::Int, seed::Int)
     Random.seed!(seed)
     return random_intervals(seqnames, maxpos, n)
 end

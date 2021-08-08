@@ -24,9 +24,9 @@ This function would return a new set of disjoint intervals with annotated covera
 
 ```jldoctest
 julia> intervals = [
-           GenomicInterval("chr1", 1, 8),
-           GenomicInterval("chr1", 4, 20),
-           GenomicInterval("chr1", 14, 27)];
+           GenomicInterval(:chr1, 1, 8),
+           GenomicInterval(:chr1, 4, 20),
+           GenomicInterval(:chr1, 14, 27)];
 
 julia> coverage(intervals)
 GenomicIntervalCollection{GenomicInterval{UInt32}} with 5 intervals:
@@ -47,7 +47,7 @@ function coverage(stream, seqname_isless::Function=isless)
     end
 
     current_coverage = 0
-    coverage_seqname = ""
+    coverage_seqname = Symbol()
     coverage_first = 0
     last_interval_first = 0
     interval, stream_state = stream_next
@@ -56,7 +56,7 @@ function coverage(stream, seqname_isless::Function=isless)
     while true
         if seqname(interval) != coverage_seqname
             coverage_process_lasts_heap!(cov, current_coverage, coverage_seqname, coverage_first, lasts)
-            if !(isempty(coverage_seqname) || seqname_isless(coverage_seqname, seqname(interval)))
+            if !(coverage_seqname === Symbol() || seqname_isless(coverage_seqname, seqname(interval)))
                 error("GenomicIntervals must be sorted to compute coverage.")
             end
 

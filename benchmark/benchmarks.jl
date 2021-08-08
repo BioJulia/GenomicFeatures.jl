@@ -9,7 +9,7 @@ import ..Utilities: random_intervals
 
 N = 1000
 SEED = 1234
-SEQNAMES = "chr" .* string.(1:3)
+SEQNAMES = Symbol.("chr", 1:3)
 
 intervals = random_intervals(SEQNAMES, 1000, N, SEED)
 intervals_sorted = sort(intervals)

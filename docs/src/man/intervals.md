@@ -11,7 +11,7 @@ Similarly when writing data, you should not have to reason about off-by-one erro
 The [`GenomicInterval`](@ref GenomicInterval) type is defined as
 ```julia
 struct GenomicInterval{T} <: IntervalTrees.AbstractInterval{Int64}
-    seqname::String
+    seqname::Symbol
     first::Int64
     last::Int64
     strand::Strand

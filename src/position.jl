@@ -3,21 +3,21 @@ abstract type AbstractGenomicPosition{T} <: GenomicFeatures.AbstractGenomicInter
 "A genomic position is distinguished from an interval and only specifies a position with some associated metadata."
 mutable struct GenomicPosition{T} <: AbstractGenomicPosition{T}
 
-    seqname::String
+    seqname::Symbol
     pos::Int64
     metadata::T
 
-    function GenomicPosition{T}(seqname::String, pos::Int64, metadata::T) where T
-        new{T}(seqname, pos, metadata)
+    function GenomicPosition{T}(seqname, pos, metadata = nothing) where T
+        new{T}(Symbol(seqname), pos, metadata)
     end
 
 end
 
-function GenomicPosition(seqname::String, pos::Integer, metadata::T = nothing) where T
+function GenomicPosition(seqname, pos::Integer, metadata::T = nothing) where T
     return GenomicPosition{T}(seqname, pos, metadata)
 end
 
-function GenomicPosition(seqname::String, range::UnitRange{<:Integer}, metadata::T = nothing) where T
+function GenomicPosition(seqname, range::UnitRange{<:Integer}, metadata::T = nothing) where T
     length(range) == 1 || error("Position must have a length of 1.")
     return GenomicPosition(seqname, first(range), metadata)
 end

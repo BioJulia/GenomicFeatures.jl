@@ -42,7 +42,7 @@ const ICTreeIntervalIntersectionIterator{F,I} = IntervalTrees.IntervalIntersecti
 "An IntervalCollection is an efficiently stored and indexed set of annotated genomic intervals."
 mutable struct GenomicIntervalCollection{I}
     # Sequence name mapped to IntervalTree, which in turn maps intervals to a list of metadata.
-    trees::Dict{String,ICTree{I}}
+    trees::Dict{Symbol,ICTree{I}}
 
     # Keep track of the number of stored intervals.
     length::Int
@@ -59,7 +59,7 @@ mutable struct GenomicIntervalCollection{I}
 
     # Longhand constructor.
     function GenomicIntervalCollection{I}() where {I<:AbstractGenomicInterval}
-        return new{I}(Dict{String,ICTree{I}}(), 0, ICTree{I}[], false)
+        return new{I}(Dict{Symbol,ICTree{I}}(), 0, ICTree{I}[], false)
     end
 
     "Bulk insertion."
@@ -73,7 +73,7 @@ mutable struct GenomicIntervalCollection{I}
         end
 
         n = length(intervals)
-        trees = Dict{String,ICTree{I}}()
+        trees = Dict{Symbol,ICTree{I}}()
         i = 1
         while i <= n
             j = i
@@ -122,7 +122,8 @@ end
 function update_ordered_trees!(ic::GenomicIntervalCollection{I}) where I
     if ic.ordered_trees_outdated
         ic.ordered_trees = collect(ICTree{I}, values(ic.trees))
-        p = sortperm(collect(AbstractString, keys(ic.trees)), lt = isless)
+        # p = sortperm(collect(Symbol, keys(ic.trees)), lt = isless)
+        p = sortperm(collect(keys(ic.trees)), lt = isless)
         ic.ordered_trees = ic.ordered_trees[p]
         ic.ordered_trees_outdated = false
     end
@@ -319,7 +320,8 @@ function eachoverlap(a::GenomicIntervalCollection{I}, query::AbstractGenomicInte
 end
 
 function eachoverlap(a::GenomicIntervalCollection, b::GenomicIntervalCollection; filter = true_cmp)
-    seqnames = collect(AbstractString, keys(a.trees) ∩ keys(b.trees))
+    # seqnames = collect(AbstractString, keys(a.trees) ∩ keys(b.trees))
+    seqnames = collect(keys(a.trees) ∩ keys(b.trees))
     sort!(seqnames, lt = isless)
     a_trees = [a.trees[seqname] for seqname in seqnames]
     b_trees = [b.trees[seqname] for seqname in seqnames]

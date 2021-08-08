@@ -15,25 +15,30 @@ A genomic interval specifies interval with some associated metadata.
 The first three fields (`seqname`, `first`, and `last`) are mandatory arguments when constructing the [`Interval`](@ref Interval) object.
 
 # Fields
-- `seqname::String`: the sequence name associated with the interval.
+- `seqname::Symbol`: the sequence name associated with the interval.
 - `first::Int64`: the leftmost position.
 - `last::Int64`: the rightmost position.
 - `strand::Strand`: the [`strand`](@ref Strand).
 - `metadata::T`
 """
 struct GenomicInterval{T} <: AbstractGenomicInterval{T}
-    seqname::String
+    seqname::Symbol
     first::Int64
     last::Int64
     strand::Strand
     metadata::T
+
+    function GenomicInterval{T}(seqname, first, last, strand, metadata = nothing) where T
+        return new{T}(Symbol(seqname), first, last, strand, metadata)
+    end
+
 end
 
-function GenomicInterval(seqname::AbstractString, first::Integer, last::Integer, strand::Union{Strand,Char}=STRAND_BOTH, metadata::T=nothing) where T
+function GenomicInterval(seqname, first::Integer, last::Integer, strand::Union{Strand,Char}=STRAND_BOTH, metadata::T=nothing) where T
     return GenomicInterval{T}(seqname, first, last, strand, metadata)
 end
 
-function GenomicInterval(seqname::AbstractString, range::UnitRange{R}, strand::Union{Strand,Char}=STRAND_BOTH, metadata::T=nothing) where {T,R<:Integer}
+function GenomicInterval(seqname, range::UnitRange{R}, strand::Union{Strand,Char}=STRAND_BOTH, metadata::T=nothing) where {T,R<:Integer}
     return GenomicInterval{T}(seqname, first(range), last(range), strand, metadata)
 end
 
