@@ -116,7 +116,7 @@ end
 Constructor that guesses metadatatype, and offers conversion through collection.
 """
 function GenomicIntervalCollection(data, sort::Bool=false)
-    return GenomicIntervalCollection(collect(intervaltype(data), data), sort)
+    return GenomicIntervalCollection(collect(intervaleltype(data), data), sort)
 end
 
 function update_ordered_trees!(ic::GenomicIntervalCollection{I}) where I
@@ -422,7 +422,7 @@ struct GenomicIntervalCollectionStreamIterator{F,S,Ib}
 end
 
 function Base.eltype(::Type{GenomicIntervalCollectionStreamIterator{F,S,Ib}}) where {F,S,Ib}
-    return Tuple{intervaltype(S),Ib}
+    return Tuple{intervaleltype(S),Ib}
 end
 
 function Base.IteratorSize(::Type{GenomicIntervalCollectionStreamIterator{F,S,Ib}}) where {F,S,Ib}

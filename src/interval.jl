@@ -192,22 +192,15 @@ function Base.show(io::IO, i::GenomicInterval)
     end
 end
 
-function intervaltype(::Type{I}) where {I<:AbstractGenomicInterval}
+"Overwrite to suggest stream element conversions during iteration."
+function intervaltype(::Type{I}) where I<:AbstractGenomicInterval
     return I
 end
 
-function intervaltype(::Base.HasShape{0}, ::Type{T}) where T
+function intervaltype(::Type{T}) where T
     return GenomicInterval{T}
 end
 
-function intervaltype(::Union{<:Base.HasShape, Base.HasLength, Base.SizeUnknown}, el)
+function intervaleltype(el)
     return intervaltype(eltype(el))
-end
-
-function intervaltype(::Type{T}) where T
-    return intervaltype(Base.IteratorSize(T), T)
-end
-
-function intervaltype(el)
-    return intervaltype(typeof(el))
 end

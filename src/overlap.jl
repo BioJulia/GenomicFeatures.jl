@@ -9,7 +9,7 @@ struct OverlapIterator{Sa,Sb,L,F}
 end
 
 function Base.eltype(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
-    return Tuple{intervaltype(Sa),intervaltype(Sb)}
+    return Tuple{intervaleltype(Sa),intervaleltype(Sb)} #Note: The iterator will attempt to convert to these eltypes.
 end
 
 function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
@@ -52,8 +52,8 @@ function Base.iterate(iter::OverlapIterator)
     next_a = iterate(iter.interval_stream_a)
     next_b = iterate(iter.interval_stream_b)
 
-    Ia = intervaltype(iter.interval_stream_a)
-    Ib = intervaltype(iter.interval_stream_b)
+    Ia = intervaleltype(iter.interval_stream_a)
+    Ib = intervaleltype(iter.interval_stream_b)
 
     state = OverlapIteratorState(Ia, Ib, next_a, next_b)
 
