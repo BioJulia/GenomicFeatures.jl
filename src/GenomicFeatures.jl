@@ -17,6 +17,8 @@ export
     metadata,
     isoverlapping,
 
+    GenomicPosition,
+
     GenomicIntervalCollection,
     eachoverlap,
     coverage,
@@ -36,6 +38,7 @@ import Base.@propagate_inbounds
 
 include("strand.jl")
 include("interval.jl")
+include("position.jl")
 include("intervalcollection.jl")
 include("queue.jl")
 include("overlap.jl")
