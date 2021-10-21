@@ -27,6 +27,7 @@ jobs:
           - {user: BioJulia, repo: Indexes.jl, group: GenomicFeatures}
           - {user: BioJulia, repo: XAM.jl, group: GenomicFeatures}
           - {user: phaverty, repo: GenomicVectors.jl, group: GenomicFeatures}
+          - {user: CiaranOMara, repo: DownstreamFail.jl, group: GenomicFeatures}
     steps:
       - uses: actions/checkout@v2
       - uses: julia-actions/setup-julia@v1
