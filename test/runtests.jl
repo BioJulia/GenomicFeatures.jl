@@ -404,4 +404,5 @@ end
 DocMeta.setdocmeta!(GenomicFeatures, :DocTestSetup, :(using GenomicFeatures); recursive=true)
 doctest(GenomicFeatures; manual = false)
 
+@test true == false # Deliberate fail to test workflow_run event.
 end #testset GenomicFeatures
