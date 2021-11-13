@@ -26,8 +26,8 @@ GenomicFeatures is tested against Julia `1.X` on Linux, OS X, and Windows.
 
 **Latest build status:**
 
-[![Unit tests](https://github.com/BioJulia/GenomicFeatures.jl/workflows/Unit%20tests/badge.svg?branch=master)](https://github.com/BioJulia/GenomicFeatures.jl/actions?query=workflow%3A%22Unit+tests%22+branch%3Amaster)
-[![Documentation](https://github.com/BioJulia/GenomicFeatures.jl/workflows/Documentation/badge.svg?branch=master)](https://github.com/BioJulia/GenomicFeatures.jl/actions?query=workflow%3ADocumentation+branch%3Amaster)
+[![Unit Tests](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/UnitTests.yml/badge.svg?branch=master)](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/UnitTests.yml?query=branch%3Amaster)
+[![Documentation](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Documentation.yml/badge.svg?branch=master)](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Documentation.yml?query=branch%3Amaster)
 [![codecov](https://codecov.io/gh/BioJulia/GenomicFeatures.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/BioJulia/GenomicFeatures.jl)
 
 
