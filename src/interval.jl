@@ -132,7 +132,7 @@ function Base.:(==)(a::Interval{T}, b::Interval{T}) where T
 end
 
 "Return true if interval `a` overlaps interval `b`, with no consideration to strand"
-function BioGenerics.isoverlapping(a::Interval{S}, b::Interval{T}) where {S, T}
+function BioGenerics.isoverlapping(a::Interval, b::Interval)
     return leftposition(a) <= rightposition(b) &&
            leftposition(b) <= rightposition(a) &&
            seqname(a)      == seqname(b)

@@ -284,7 +284,7 @@ Find a the first interval with matching start and end points.
 
 Returns that interval, or 'nothing' if no interval was found.
 """
-function Base.findfirst(a::IntervalCollection{T}, b::Interval{S}; filter=true_cmp) where {T,S}
+function Base.findfirst(a::IntervalCollection, b::Interval; filter=true_cmp)
     if !haskey(a.trees, seqname(b))
         return nothing
     end
