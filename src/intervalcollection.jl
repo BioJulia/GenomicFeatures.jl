@@ -150,7 +150,7 @@ function Base.eltype(::Type{IntervalCollection{T}}) where T
     return Interval{T}
 end
 
-function Base.:(==)(a::IntervalCollection{T}, b::IntervalCollection{T}) where T
+function Base.:(==)(a::IntervalCollection, b::IntervalCollection)
     if length(a) != length(b)
         return false
     end
