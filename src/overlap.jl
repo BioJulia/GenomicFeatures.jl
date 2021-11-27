@@ -1,18 +1,18 @@
 # Overlap Iterator
 # ================
 
-struct OverlapIterator{Sa,Sb,F,G}
+struct OverlapIterator{Sa,Sb,L,F}
     intervals_a::Sa
     intervals_b::Sb
-    isless::F
-    filter::G
+    isless::L
+    filter::F
 end
 
-function Base.eltype(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
+function Base.eltype(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
     return Tuple{Interval{metadatatype(Sa)},Interval{metadatatype(Sb)}}
 end
 
-function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,F,G}}) where {Sa,Sb,F,G}
+function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
     return Base.SizeUnknown()
 end
 
@@ -146,20 +146,20 @@ end
 #   0 when `i1` overlaps with `i2`, and
 #   +1 when `i1` follows `i2`.
 function compare_overlap(i1::Interval, i2::Interval, isless::Function)
-    if isless(i1.seqname, i2.seqname)
+    if isless(seqname(i1), seqname(i2))
         return -1
     end
 
-    if isless(i2.seqname, i1.seqname)
+    if isless(seqname(i2), seqname(i1))
         return +1
     end
 
-    # i1.seqname == i2.seqname
-    if i1.last < i2.first
+    # seqname(i1) == seqname(i2)
+    if rightposition(i1) < leftposition(i2)
         return -1
     end
 
-    if i1.first > i2.last
+    if leftposition(i1) > rightposition(i2)
         return +1
     end
 
@@ -168,17 +168,17 @@ end
 
 # Faster comparison for `Base.isless`.  Note that `Base.isless` must be consistent wtih `Base.cmp` to work correctly.
 function compare_overlap(i1::Interval, i2::Interval, ::typeof(Base.isless))
-    c = cmp(i1.seqname, i2.seqname)
+    c = cmp(seqname(i1), seqname(i2))
 
     if c != 0
         return c
     end
 
-    if i1.last < i2.first
+    if rightposition(i1) < leftposition(i2)
         return -1
     end
 
-    if i1.first > i2.last
+    if leftposition(i1) > rightposition(i2)
         return +1
     end
 

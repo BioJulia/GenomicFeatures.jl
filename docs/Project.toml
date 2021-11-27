@@ -1,5 +1,6 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+GenomicFeatures = "899a7d2d-5c61-547b-bef9-6698a8d05446"
 
 [compat]
-Documenter = "0.24"
+Documenter = "0.27"
