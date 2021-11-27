@@ -41,8 +41,4 @@ jobs:
       - name: Upload CodeCov
         uses: codecov/codecov-action@v2
         with:
-          file: lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
+          files: lcov.info
