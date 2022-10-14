@@ -117,10 +117,6 @@ function coverage(stream, seqname_isless::Function=isless)
     return cov
 end
 
-function coverage(ic::IntervalCollection)
-    return coverage(ic, isless)
-end
-
 # Helper function for coverage. Process remaining interval end points after
 # all intervals have been read.
 function coverage_process_lasts_heap!(cov::IntervalCollection{UInt32}, current_coverage, coverage_seqname, coverage_first, lasts)
