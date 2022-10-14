@@ -50,6 +50,10 @@ function BioGenerics.seqname(i::AbstractGenomicInterval)
     return i.seqname
 end
 
+function BioGenerics.groupname(i::AbstractGenomicInterval)
+    return seqname(i)
+end
+
 function BioGenerics.metadata(i::AbstractGenomicInterval)
     return i.metadata
 end
