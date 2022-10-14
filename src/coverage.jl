@@ -70,14 +70,14 @@ function coverage(stream, seqname_isless::Function=isless)
             error("Intervals must be sorted to compute coverage.")
         end
 
-        if !isempty(lasts) && lasts[1] < first(interval)
+        if !isempty(lasts) && lasts[1] < leftposition(interval)
             pos = DataStructures.heappop!(lasts)
-            if first(interval) == pos + 1
-                DataStructures.heappush!(lasts, last(interval))
+            if leftposition(interval) == pos + 1
+                DataStructures.heappush!(lasts, rightposition(interval))
                 if stream_next === nothing
                     break
                 end
-                last_interval_first = first(interval)
+                last_interval_first = leftposition(interval)
                 interval, stream_state = stream_next
                 stream_next = iterate(stream, stream_state)
             elseif pos == coverage_first - 1
@@ -90,23 +90,23 @@ function coverage(stream, seqname_isless::Function=isless)
             end
         else
             if coverage_first == 0
-                coverage_first = first(interval)
+                coverage_first = leftposition(interval)
                 current_coverage = 1
-            elseif coverage_first == first(interval)
+            elseif coverage_first == leftposition(interval)
                 current_coverage += 1
             else
                 if current_coverage > 0
-                    push!(cov, Interval{UInt32}(coverage_seqname, coverage_first, first(interval) - 1, STRAND_BOTH, current_coverage))
+                    push!(cov, Interval{UInt32}(coverage_seqname, coverage_first, leftposition(interval) - 1, STRAND_BOTH, current_coverage))
                 end
                 current_coverage += 1
-                coverage_first = first(interval)
+                coverage_first = leftposition(interval)
             end
 
-            DataStructures.heappush!(lasts, last(interval))
+            DataStructures.heappush!(lasts, rightposition(interval))
             if stream_next === nothing
                 break
             end
-            last_interval_first = first(interval)
+            last_interval_first = leftposition(interval)
             interval, stream_state = stream_next
             stream_next = iterate(stream, stream_state)
         end
