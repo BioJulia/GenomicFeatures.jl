@@ -10,6 +10,7 @@ export
     STRAND_BOTH,
 
     GenomicInterval,
+	groupname,
     seqname,
     leftposition,
     rightposition,
@@ -26,12 +27,13 @@ export
 
     isfilled,
     hasseqname,
+    hasgroupname,
     hasleftposition,
     hasrightposition,
 
 	span
 
-import BioGenerics: BioGenerics, seqname, leftposition, rightposition, isoverlapping, isfilled, hasseqname, hasleftposition, hasrightposition, metadata
+import BioGenerics: BioGenerics, groupname, seqname, leftposition, rightposition, isoverlapping, isfilled, hasgroupname, hasseqname, hasleftposition, hasrightposition, metadata
 import DataStructures
 import IntervalTrees
 import Base.@propagate_inbounds
