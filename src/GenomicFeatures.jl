@@ -90,4 +90,20 @@ function intervaltype(interval::T) where T
     return intervaltype(I)
 end
 
+"""
+Get the interval type without metadata.
+This query is useful when converting an intervals metadata.
+"""
+function baseintervaltype(::Type{I}) where {I<:GenomicInterval}
+	return GenomicInterval
+end
+
+function baseintervaltype(::Type{I}) where {I<:GenomicPosition}
+    return GenomicPosition
+end
+
+function baseintervaltype(::I) where {I<:GenomicFeatures.AbstractGenomicInterval} #TODO: consider loosening captured types.
+	return baseintervaltype(I)
+end
+
 end # module
