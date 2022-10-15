@@ -209,6 +209,16 @@ end
         @test GenomicFeatures.baseintervaltype(interval) === GenomicInterval
     end
 
+    @testset "metadatatype" begin
+        interval = GenomicInterval("test", 1, 2)
+        @test typeof(interval) == GenomicInterval{Nothing}
+        @test GenomicFeatures.metadatatype(interval) === Nothing
+
+        interval = GenomicInterval("test", 1, 2, '.', 3.0)
+        @test typeof(interval) == GenomicInterval{Float64}
+        @test GenomicFeatures.metadatatype(interval) === Float64
+    end
+
     @testset "precedes" begin
         interval_a = GenomicInterval("test", 1, 2)
         interval_b = GenomicInterval("test", 2, 3)
