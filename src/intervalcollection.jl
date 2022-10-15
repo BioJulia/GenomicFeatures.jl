@@ -503,3 +503,32 @@ function Base.iterate(it::IntervalCollectionStreamIterator{F,S,T}, state = ()) w
         end
     end
 end
+
+"""
+    hasintersection(interval::Interval, col::IntervalCollection)::Bool
+
+Query whether an `interval` has an intersection with `col`.
+"""
+function hasintersection(interval::Interval, col::IntervalCollection)
+
+	# Return early if chromosome is not in the interval collection.
+	if !haskey(col.trees, seqname(interval))
+		return false
+	end
+
+	# Setup intersection iterator.
+	iter = IntervalTrees.intersect(col.trees[seqname(interval)], (leftposition(interval), rightposition(interval)))
+
+	# Attempt first iteration.
+	if iterate(iter) === nothing
+		return false
+	end
+
+	# Intersection exists.
+	return true
+
+end
+
+function hasintersection(col::IntervalCollection)
+	return interval -> hasintersection(interval, col)
+end

@@ -20,6 +20,7 @@ export
     IntervalCollection,
     eachoverlap,
     coverage,
+	hasintersection,
 
     isfilled,
     hasseqname,
