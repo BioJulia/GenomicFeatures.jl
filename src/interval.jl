@@ -6,8 +6,6 @@
 # This file is a part of BioJulia.
 # License is MIT: https://github.com/BioJulia/Bio.jl/blob/master/LICENSE.md
 
-abstract type AbstractGenomicInterval{T} <: IntervalTrees.AbstractInterval{Int64} end
-
 """
     GenomicInterval{T} <: AbstractGenomicInterval{T}
 

@@ -36,6 +36,10 @@ import DataStructures
 import IntervalTrees
 import Base.@propagate_inbounds
 
+abstract type AbstractGenomicInterval{T} <: IntervalTrees.AbstractInterval{Int64} end
+
+abstract type AbstractGenomicCollection{I} end
+
 include("strand.jl")
 include("interval.jl")
 include("position.jl")

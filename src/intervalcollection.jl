@@ -40,7 +40,7 @@ const ICTreeIntersectionIterator{F,Ia,Ib}     = IntervalTrees.IntersectionIterat
 const ICTreeIntervalIntersectionIterator{F,I} = IntervalTrees.IntervalIntersectionIterator{F,Int64,I,64}
 
 "An IntervalCollection is an efficiently stored and indexed set of annotated genomic intervals."
-mutable struct GenomicIntervalCollection{I}
+mutable struct GenomicIntervalCollection{I} <: AbstractGenomicCollection{I}
     # Sequence name mapped to IntervalTree, which in turn maps intervals to a list of metadata.
     trees::Dict{String,ICTree{I}}
 
