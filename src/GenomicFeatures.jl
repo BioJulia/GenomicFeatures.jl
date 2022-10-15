@@ -43,6 +43,10 @@ abstract type AbstractGenomicCollection{I} end
 const _IterableGenomicCollection{I} = Union{<:AbstractVector{I}, <:AbstractGenomicCollection{I}} where {I}
 const IterableGenomicCollection{I} = Union{<:_IterableGenomicCollection{I}, <:Base.Generator{<:_IterableGenomicCollection{I}, <:Any}} where {I}
 
+function Base.eltype(::Type{C}) where {I, C<:Base.Generator{<:_IterableGenomicCollection{I}, <:Any}}
+    return I
+end
+
 include("strand.jl")
 include("interval.jl")
 include("position.jl")
