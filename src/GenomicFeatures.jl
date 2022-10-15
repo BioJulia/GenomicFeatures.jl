@@ -49,4 +49,13 @@ function span(interval::Interval)
 	return length(leftposition(interval):rightposition(interval))
 end
 
+"""
+    volume(interval::Interval)
+
+Get the product of the `interval`'s span and metadata.
+"""
+function volume(interval::Interval)
+	return span(interval) * GenomicFeatures.metadata(interval)
+end
+
 end # module

@@ -172,7 +172,8 @@ end
     end
 
     @test span(Interval("test", 1, 9)) == length(1:9)
-    
+    @test GenomicFeatures.volume(Interval("test", 1, 9, '?', 2.5)) == length(1:9) * 2.5
+
 end
 
 @testset "IntervalCollection" begin
