@@ -116,7 +116,7 @@ end
 Constructor that guesses metadatatype, and offers conversion through collection.
 """
 function IntervalCollection(data, sort::Bool=false)
-    return IntervalCollection(collect(Interval{metadatatype(data)}, data), sort)
+    return IntervalCollection(collect(intervaltype(eltype(data)), data), sort)
 end
 
 function update_ordered_trees!(ic::IntervalCollection{I}) where I
@@ -425,7 +425,7 @@ struct IntervalCollectionStreamIterator{F,S,Ib}
 end
 
 function Base.eltype(::Type{IntervalCollectionStreamIterator{F,S,Ib}}) where {F,S,Ib}
-    return Tuple{Interval{metadatatype(S)},Ib}
+    return Tuple{intervaltype(eltype(S)),Ib}
 end
 
 function Base.IteratorSize(::Type{IntervalCollectionStreamIterator{F,S,Ib}}) where {F,S,Ib}

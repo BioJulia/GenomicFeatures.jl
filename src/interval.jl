@@ -150,19 +150,3 @@ function Base.show(io::IO, i::Interval)
           print(io, "  metadata: ", metadata(i) === nothing ? "nothing" : metadata(i))
     end
 end
-
-function metadatatype(::Type{T}) where T
-    return _metadatatype(eltype(T))
-end
-
-function metadatatype(x::Any)
-    return metadatatype(typeof(x))
-end
-
-function _metadatatype(::Type{Interval{T}}) where T
-    return T
-end
-
-function _metadatatype(::Type{T}) where T
-    return T
-end

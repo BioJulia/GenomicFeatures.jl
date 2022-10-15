@@ -59,4 +59,20 @@ function volume(interval::Interval)
 	return span(interval) * GenomicFeatures.metadata(interval)
 end
 
+function intervaltype(::Type{I}) where {I<:Interval}
+    return I
+end
+
+"""
+Get the interval type.
+Overwrite to suggest stream element conversions during iteration.
+"""
+function intervaltype(::Type{T}) where T
+    return Interval{T}
+end
+
+function intervaltype(interval::T) where T
+    return intervaltype(I)
+end
+
 end # module
