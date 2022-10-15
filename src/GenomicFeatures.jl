@@ -24,7 +24,9 @@ export
     isfilled,
     hasseqname,
     hasleftposition,
-    hasrightposition
+    hasrightposition,
+
+	span
 
 import BioGenerics: BioGenerics, seqname, leftposition, rightposition, isoverlapping, isfilled, hasseqname, hasleftposition, hasrightposition, metadata
 import DataStructures
@@ -37,5 +39,14 @@ include("intervalcollection.jl")
 include("queue.jl")
 include("overlap.jl")
 include("coverage.jl")
+
+"""
+    span(interval::Interval)::Int
+
+Get the span of `interval`.
+"""
+function span(interval::Interval)
+	return length(leftposition(interval):rightposition(interval))
+end
 
 end # module

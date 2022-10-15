@@ -170,6 +170,9 @@ end
         @test i1 == i2
         @test i1 == Interval("chr2", 5692667:5701385, '+', "SOX11")
     end
+
+    @test span(Interval("test", 1, 9)) == length(1:9)
+    
 end
 
 @testset "IntervalCollection" begin
