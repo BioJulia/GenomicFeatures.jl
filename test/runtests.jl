@@ -199,6 +199,16 @@ end
 
     end
 
+    @testset "baseintervaltype" begin
+        interval = GenomicInterval("test", 1, 2)
+        @test typeof(interval) == GenomicInterval{Nothing}
+        @test GenomicFeatures.baseintervaltype(interval) === GenomicInterval
+
+        interval = GenomicInterval("test", 1, 2, '.', 3.0)
+        @test typeof(interval) == GenomicInterval{Float64}
+        @test GenomicFeatures.baseintervaltype(interval) === GenomicInterval
+    end
+
     @testset "precedes" begin
         interval_a = GenomicInterval("test", 1, 2)
         interval_b = GenomicInterval("test", 2, 3)
