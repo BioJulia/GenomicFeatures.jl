@@ -106,4 +106,15 @@ function baseintervaltype(::I) where {I<:GenomicFeatures.AbstractGenomicInterval
 	return baseintervaltype(I)
 end
 
+"""
+Get the interval's metadata type.
+"""
+function intervalmetadatatype(interval::Type{I}) where {T, I<:GenomicFeatures.AbstractGenomicInterval{T}}
+    return T
+end
+
+function intervalmetadatatype(::I) where {T, I<:GenomicFeatures.AbstractGenomicInterval{T}} #TODO: consider loosening captured types.
+    return intervalmetadatatype(I)
+end
+
 end # module
