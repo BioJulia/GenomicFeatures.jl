@@ -42,24 +42,24 @@ include("overlap.jl")
 include("coverage.jl")
 
 """
-    span(interval::GenomicInterval)::Int
+    span(interval::AbstractGenomicInterval)::Int
 
 Get the span of `interval`.
 """
-function span(interval::GenomicInterval)
+function span(interval::AbstractGenomicInterval)
 	return length(leftposition(interval):rightposition(interval))
 end
 
 """
-    volume(interval::GenomicInterval)
+    volume(interval::AbstractGenomicInterval)
 
 Get the product of the `interval`'s span and metadata.
 """
-function volume(interval::GenomicInterval)
+function volume(interval::AbstractGenomicInterval)
 	return span(interval) * GenomicFeatures.metadata(interval)
 end
 
-function intervaltype(::Type{I}) where {I<:GenomicInterval}
+function intervaltype(::Type{I}) where {I<:AbstractGenomicInterval}
     return I
 end
 
