@@ -9,7 +9,7 @@ export
     STRAND_NEG,
     STRAND_BOTH,
 
-    Interval,
+    GenomicInterval,
     seqname,
     leftposition,
     rightposition,
@@ -17,7 +17,7 @@ export
     metadata,
     isoverlapping,
 
-    IntervalCollection,
+    GenomicIntervalCollection,
     eachoverlap,
     coverage,
 	hasintersection,
@@ -42,24 +42,24 @@ include("overlap.jl")
 include("coverage.jl")
 
 """
-    span(interval::Interval)::Int
+    span(interval::GenomicInterval)::Int
 
 Get the span of `interval`.
 """
-function span(interval::Interval)
+function span(interval::GenomicInterval)
 	return length(leftposition(interval):rightposition(interval))
 end
 
 """
-    volume(interval::Interval)
+    volume(interval::GenomicInterval)
 
 Get the product of the `interval`'s span and metadata.
 """
-function volume(interval::Interval)
+function volume(interval::GenomicInterval)
 	return span(interval) * GenomicFeatures.metadata(interval)
 end
 
-function intervaltype(::Type{I}) where {I<:Interval}
+function intervaltype(::Type{I}) where {I<:GenomicInterval}
     return I
 end
 
@@ -68,7 +68,7 @@ Get the interval type.
 Overwrite to suggest stream element conversions during iteration.
 """
 function intervaltype(::Type{T}) where T
-    return Interval{T}
+    return GenomicInterval{T}
 end
 
 function intervaltype(interval::T) where T

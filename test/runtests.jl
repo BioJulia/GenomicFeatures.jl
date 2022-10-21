@@ -9,7 +9,7 @@ import .Utilities: random_intervals
 
 
 # Test that an array of intervals is well ordered
-function is_all_ordered(intervals::Vector{I}) where I <: Interval
+function is_all_ordered(intervals::Vector{I}) where I <: GenomicInterval
     for i = 2:length(intervals)
         if !GenomicFeatures.isordered(intervals[i-1], intervals[i])
             return false
@@ -66,7 +66,7 @@ function simple_coverage(intervals)
         end
     end
 
-    covintervals = Interval{UInt32}[]
+    covintervals = GenomicInterval{UInt32}[]
     for (seqname, arr) in covarrays
         i = j = 1
         while i <= length(arr)
@@ -75,8 +75,7 @@ function simple_coverage(intervals)
                 while j <= length(arr) && arr[j] == arr[i]
                     j += 1
                 end
-                push!(covintervals,
-                      Interval{UInt32}(seqname, i, j - 1, STRAND_BOTH, arr[i]))
+                push!(covintervals, GenomicInterval{UInt32}(seqname, i, j - 1, STRAND_BOTH, arr[i]))
                 i = j
             else
                 i += 1
@@ -151,52 +150,52 @@ end
     end
 end
 
-@testset "Interval" begin
+@testset "GenomicInterval" begin
     @testset "Constructor" begin
-        i = Interval("chr1", 10, 20)
+        i = GenomicInterval("chr1", 10, 20)
         @test seqname(i) == "chr1"
         @test leftposition(i) == 10
         @test rightposition(i) == 20
         @test strand(i) == STRAND_BOTH
-        @test i == Interval("chr1", 10:20)
+        @test i == GenomicInterval("chr1", 10:20)
 
-        i1 = Interval("chr1", 10, 20, '+')
-        i2 = Interval("chr1", 10, 20, STRAND_POS)
+        i1 = GenomicInterval("chr1", 10, 20, '+')
+        i2 = GenomicInterval("chr1", 10, 20, STRAND_POS)
         @test i1 == i2
-        @test i1 == Interval("chr1", 10:20, '+')
+        @test i1 == GenomicInterval("chr1", 10:20, '+')
 
-        i1 = Interval("chr2", 5692667, 5701385, '+',        "SOX11")
-        i2 = Interval("chr2", 5692667, 5701385, STRAND_POS, "SOX11")
+        i1 = GenomicInterval("chr2", 5692667, 5701385, '+',        "SOX11")
+        i2 = GenomicInterval("chr2", 5692667, 5701385, STRAND_POS, "SOX11")
         @test i1 == i2
-        @test i1 == Interval("chr2", 5692667:5701385, '+', "SOX11")
+        @test i1 == GenomicInterval("chr2", 5692667:5701385, '+', "SOX11")
     end
 
-    @test span(Interval("test", 1, 9)) == length(1:9)
-    @test GenomicFeatures.volume(Interval("test", 1, 9, '?', 2.5)) == length(1:9) * 2.5
+    @test span(GenomicInterval("test", 1, 9)) == length(1:9)
+    @test GenomicFeatures.volume(GenomicInterval("test", 1, 9, '?', 2.5)) == length(1:9) * 2.5
 
 end
 
-@testset "IntervalCollection" begin
+@testset "GenomicIntervalCollection" begin
 
     @testset "Insertion/Iteration" begin
         n = 100000
         intervals = random_intervals(["one", "two", "three"], 1000000, n)
-        ic = IntervalCollection{Int}()
+        ic = GenomicIntervalCollection{Int}()
 
         @test isempty(ic)
-        @test collect(Interval{Int}, ic) == Interval{Int}[]
+        @test collect(GenomicInterval{Int}, ic) == GenomicInterval{Int}[]
 
         for interval in intervals
             push!(ic, interval)
         end
-        @test is_all_ordered(collect(Interval{Int}, ic))
+        @test is_all_ordered(collect(GenomicInterval{Int}, ic))
     end
 
     @testset "Bulk Insertion" begin
-        i = Interval("chr1", 10, 20, '+', 1)
+        i = GenomicInterval("chr1", 10, 20, '+', 1)
 
         # Test equivalency of shorthand and longhand types.
-        @test IntervalCollection([i]) == IntervalCollection{Int}([i]) == IntervalCollection{Interval{Int}}([i])
+        @test GenomicIntervalCollection([i]) == GenomicIntervalCollection{Int}([i]) == GenomicIntervalCollection{GenomicInterval{Int}}([i])
 
     end
 
@@ -207,8 +206,8 @@ end
         intervals_b = random_intervals(["one", "three", "four"], 1000000, n)
 
         # empty versus empty
-        ic_a = IntervalCollection{Int}()
-        ic_b = IntervalCollection{Int}()
+        ic_a = GenomicIntervalCollection{Int}()
+        ic_b = GenomicIntervalCollection{Int}()
         @test collect(eachoverlap(ic_a, ic_b)) == Any[]
 
         # empty versus non-empty
@@ -224,25 +223,23 @@ end
             push!(ic_b, interval)
         end
 
-        @test sort(collect(eachoverlap(ic_a, ic_b))) ==
-              sort(simple_intersection(intervals_a, intervals_b))
-        @test sort(collect(eachoverlap(ic_a, ic_b, filter=(a,b) -> isodd(first(a))))) ==
-              sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
+        @test sort(collect(eachoverlap(ic_a, ic_b))) == sort(simple_intersection(intervals_a, intervals_b))
+        @test sort(collect(eachoverlap(ic_a, ic_b, filter=(a,b) -> isodd(first(a))))) == sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
 
         # Check hasintersection method.
-        @test hasintersection(Interval("test", 1, 1), IntervalCollection([Interval("test", 1,2)])) == true
-        @test hasintersection(Interval("test", 1, 1), IntervalCollection([Interval("test", 2,2)])) == false
+        @test hasintersection(GenomicInterval("test", 1, 1), GenomicIntervalCollection([GenomicInterval("test", 1,2)])) == true
+        @test hasintersection(GenomicInterval("test", 1, 1), GenomicIntervalCollection([GenomicInterval("test", 2,2)])) == false
 
         # Check hasintersection currying.
-        @test Interval("test", 1, 1) |> hasintersection(IntervalCollection([Interval("test", 1,2)])) == true
-        @test Interval("test", 1, 1) |> hasintersection(IntervalCollection([Interval("test", 2,2)])) == false
+        @test GenomicInterval("test", 1, 1) |> hasintersection(GenomicIntervalCollection([GenomicInterval("test", 1,2)])) == true
+        @test GenomicInterval("test", 1, 1) |> hasintersection(GenomicIntervalCollection([GenomicInterval("test", 2,2)])) == false
     end
 
     @testset "Show" begin
-        ic = IntervalCollection{Int}()
+        ic = GenomicIntervalCollection{Int}()
         show(devnull, ic)
 
-        push!(ic, Interval{Int}("one", 1, 1000, STRAND_POS, 0))
+        push!(ic, GenomicInterval{Int}("one", 1, 1000, STRAND_POS, 0))
         show(devnull, ic)
 
         intervals = random_intervals(["one", "two", "three"], 1000000, 100)
@@ -260,28 +257,28 @@ end
 
 @testset "Constructor Conversions" begin
 
-    i = Interval("chr1", 1, 2, '?', 3)
+    i = GenomicInterval("chr1", 1, 2, '?', 3)
     nt = (chrom="chr1", left=1, right=2, value=3)
 
-    function Base.convert(::Type{Interval{Int}}, nt::NamedTuple)
-        return Interval{Int}(nt.chrom, nt[2], nt[3], '?', nt[4])
+    function Base.convert(::Type{GenomicInterval{Int}}, nt::NamedTuple)
+        return GenomicInterval{Int}(nt.chrom, nt[2], nt[3], '?', nt[4])
     end
 
-    @test i == Interval{Int}(nt)
+    @test i == GenomicInterval{Int}(nt)
 
-    @test IntervalCollection([i]) == IntervalCollection{Int}([nt])
+    @test GenomicIntervalCollection([i]) == GenomicIntervalCollection{Int}([nt])
 
 end #testset Constructor Conversions
 
-@testset "IntervalStream" begin
+@testset "GenomicIntervalStream" begin
     @testset "Intersection" begin
         n = 1000
         Random.seed!(1234)
         intervals_a = random_intervals(["one", "two", "three"], 1000000, n)
         intervals_b = random_intervals(["one", "three", "four"], 1000000, n)
 
-        ic_a = IntervalCollection{Int}()
-        ic_b = IntervalCollection{Int}()
+        ic_a = GenomicIntervalCollection{Int}()
+        ic_b = GenomicIntervalCollection{Int}()
 
         for interval in intervals_a
             push!(ic_a, interval)
@@ -296,50 +293,49 @@ end #testset Constructor Conversions
         @test sort(collect(it)) == sort(simple_intersection(intervals_a, intervals_b))
 
         it = eachoverlap(ic_a, ic_b, isless, filter=(a,b) -> isodd(first(a)))
-        @test sort(collect(it)) ==
-              sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
+        @test sort(collect(it)) == sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
 
         it = eachoverlap(
-            [Interval("a", 1, 100, STRAND_POS, nothing), Interval("c", 1, 100, STRAND_POS, nothing)],
-            [Interval("a", 1, 100, STRAND_POS, nothing), Interval("b", 1, 100, STRAND_POS, nothing)],
+            [GenomicInterval("a", 1, 100, STRAND_POS, nothing), GenomicInterval("c", 1, 100, STRAND_POS, nothing)],
+            [GenomicInterval("a", 1, 100, STRAND_POS, nothing), GenomicInterval("b", 1, 100, STRAND_POS, nothing)],
             isless)
         @test length(collect(it)) == 1
 
         it = eachoverlap(
-            [Interval("c", 1, 100, STRAND_POS, nothing), Interval("d", 1, 100, STRAND_POS, nothing)],
-            [Interval("b", 1, 100, STRAND_POS, nothing), Interval("d", 1, 100, STRAND_POS, nothing)],
+            [GenomicInterval("c", 1, 100, STRAND_POS, nothing), GenomicInterval("d", 1, 100, STRAND_POS, nothing)],
+            [GenomicInterval("b", 1, 100, STRAND_POS, nothing), GenomicInterval("d", 1, 100, STRAND_POS, nothing)],
             isless)
         @test length(collect(it)) == 1
 
         # unsorted streams are not allowed
         @test_throws Exception begin
             it = eachoverlap(
-                [Interval("b", 1, 1000, STRAND_POS, nothing),
-                 Interval("a", 1, 1000, STRAND_POS, nothing)],
-                [Interval("a", 1, 1000, STRAND_POS, nothing),
-                 Interval("b", 1, 1000, STRAND_POS, nothing)], isless)
+                [GenomicInterval("b", 1, 1000, STRAND_POS, nothing),
+                 GenomicInterval("a", 1, 1000, STRAND_POS, nothing)],
+                [GenomicInterval("a", 1, 1000, STRAND_POS, nothing),
+                 GenomicInterval("b", 1, 1000, STRAND_POS, nothing)], isless)
             collect(it)
         end
 
         @test_throws Exception begin
             it = eachoverlap(
-                [Interval("a", 1, 1000, STRAND_POS, nothing),
-                 Interval("a", 500, 1000, STRAND_POS, nothing),
-                 Interval("a", 400, 2000, STRAND_POS, nothing)],
-                [Interval("a", 1, 1000, STRAND_POS, nothing),
-                 Interval("b", 1, 1000, STRAND_POS, nothing)], isless)
+                [GenomicInterval("a", 1, 1000, STRAND_POS, nothing),
+                 GenomicInterval("a", 500, 1000, STRAND_POS, nothing),
+                 GenomicInterval("a", 400, 2000, STRAND_POS, nothing)],
+                [GenomicInterval("a", 1, 1000, STRAND_POS, nothing),
+                 GenomicInterval("b", 1, 1000, STRAND_POS, nothing)], isless)
             collect(it)
         end
     end
 
-    @testset "IntervalStream Intersection" begin
+    @testset "GenomicIntervalStream Intersection" begin
         n = 1000
         Random.seed!(1234)
         intervals_a = random_intervals(["one", "two", "three"], 1000000, n)
         intervals_b = random_intervals(["one", "two", "three"], 1000000, n)
 
-        ic_a = IntervalCollection{Int}()
-        ic_b = IntervalCollection{Int}()
+        ic_a = GenomicIntervalCollection{Int}()
+        ic_b = GenomicIntervalCollection{Int}()
 
         for interval in intervals_a
             push!(ic_a, interval)
@@ -349,18 +345,16 @@ end #testset Constructor Conversions
             push!(ic_b, interval)
         end
 
-        @test sort(collect(eachoverlap(ic_a, ic_b, isless))) ==
-              sort(simple_intersection(intervals_a, intervals_b))
-        @test sort(collect(eachoverlap(ic_a, ic_b, isless, filter=(a,b) -> isodd(first(a))))) ==
-              sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
+        @test sort(collect(eachoverlap(ic_a, ic_b, isless))) == sort(simple_intersection(intervals_a, intervals_b))
+        @test sort(collect(eachoverlap(ic_a, ic_b, isless, filter=(a,b) -> isodd(first(a))))) == sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
     end
 
-    @testset "IntervalStream Coverage" begin
+    @testset "GenomicIntervalStream Coverage" begin
         n = 10000
         Random.seed!(1234)
         intervals = random_intervals(["one", "two", "three"], 1000000, n)
 
-        ic = IntervalCollection{Int}()
+        ic = GenomicIntervalCollection{Int}()
         for interval in intervals
             push!(ic, interval)
         end
@@ -369,47 +363,47 @@ end #testset Constructor Conversions
     end
 
     @testset "eachoverlap" begin
-        i = Interval("chr1", 1, 10)
+        i = GenomicInterval("chr1", 1, 10)
         intervals_a = typeof(i)[]
         @test length(collect(eachoverlap(intervals_a, intervals_a))) == 0
 
-        intervals_a = [Interval("chr1", 1, 10)]
+        intervals_a = [GenomicInterval("chr1", 1, 10)]
         intervals_b = eltype(intervals_a)[]
         @test length(collect(eachoverlap(intervals_a, intervals_b))) == 0
         @test length(collect(eachoverlap(intervals_b, intervals_a))) == 0
 
-        intervals_a = [Interval("chr1", 1, 10)]
+        intervals_a = [GenomicInterval("chr1", 1, 10)]
         @test length(collect(eachoverlap(intervals_a, intervals_a))) == 1
 
-        intervals_a = [Interval("chr1", 1, 10)]
-        intervals_b = [Interval("chr2", 1, 10)]
+        intervals_a = [GenomicInterval("chr1", 1, 10)]
+        intervals_b = [GenomicInterval("chr2", 1, 10)]
         @test length(collect(eachoverlap(intervals_a, intervals_b))) == 0
         @test length(collect(eachoverlap(intervals_b, intervals_a))) == 0
 
-        intervals_a = [Interval("chr1", 1, 10)]
-        intervals_b = [Interval("chr1", 11, 15)]
+        intervals_a = [GenomicInterval("chr1", 1, 10)]
+        intervals_b = [GenomicInterval("chr1", 11, 15)]
         @test length(collect(eachoverlap(intervals_a, intervals_b))) == 0
         @test length(collect(eachoverlap(intervals_b, intervals_a))) == 0
 
-        intervals_a = [Interval("chr1", 11, 15)]
-        intervals_b = [Interval("chr1", 1, 10), Interval("chr1", 12, 13)]
+        intervals_a = [GenomicInterval("chr1", 11, 15)]
+        intervals_b = [GenomicInterval("chr1", 1, 10), GenomicInterval("chr1", 12, 13)]
         @test length(collect(eachoverlap(intervals_a, intervals_b))) == 1
         @test length(collect(eachoverlap(intervals_b, intervals_a))) == 1
 
-        intervals_a = [Interval("chr1", 1, 2), Interval("chr1", 2, 5), Interval("chr2", 1, 10)]
-        intervals_b = [Interval("chr1", 1, 2), Interval("chr1", 2, 3), Interval("chr2", 1, 2)]
+        intervals_a = [GenomicInterval("chr1", 1, 2), GenomicInterval("chr1", 2, 5), GenomicInterval("chr2", 1, 10)]
+        intervals_b = [GenomicInterval("chr1", 1, 2), GenomicInterval("chr1", 2, 3), GenomicInterval("chr2", 1, 2)]
         @test length(collect(eachoverlap(intervals_a, intervals_b))) == 5
         @test length(collect(eachoverlap(intervals_b, intervals_a))) == 5
 
-        intervals_a = [Interval("chr1", 1, 2), Interval("chr1", 3, 5), Interval("chr2", 1, 10)]
+        intervals_a = [GenomicInterval("chr1", 1, 2), GenomicInterval("chr1", 3, 5), GenomicInterval("chr2", 1, 10)]
         @test length(collect(eachoverlap(intervals_a, intervals_a))) == 3
 
         # compare generic and specific eachoverlap methods
-        intervals_a = [Interval("chr1", 1, 2), Interval("chr1", 1, 3), Interval("chr1", 5, 9),
-                       Interval("chr2", 1, 5), Interval("chr2", 6, 6), Interval("chr2", 6, 8)]
+        intervals_a = [GenomicInterval("chr1", 1, 2), GenomicInterval("chr1", 1, 3), GenomicInterval("chr1", 5, 9),
+                       GenomicInterval("chr2", 1, 5), GenomicInterval("chr2", 6, 6), GenomicInterval("chr2", 6, 8)]
         intervals_b = intervals_a
-        ic_a = IntervalCollection(intervals_a)
-        ic_b = IntervalCollection(intervals_b)
+        ic_a = GenomicIntervalCollection(intervals_a)
+        ic_b = GenomicIntervalCollection(intervals_b)
         iter1 = eachoverlap(intervals_a, intervals_b)
         iter2 = eachoverlap(intervals_a, ic_b)
         iter3 = eachoverlap(ic_a, intervals_b)
@@ -417,7 +411,7 @@ end #testset Constructor Conversions
         @test collect(iter1) == collect(iter2) == collect(iter3) == collect(iter4)
 
         # non-overlapping query
-        @test length(collect(eachoverlap(ic_a, Interval("X", 0, 0)))) == 0
+        @test length(collect(eachoverlap(ic_a, GenomicInterval("X", 0, 0)))) == 0
     end
 end
 
