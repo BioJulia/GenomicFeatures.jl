@@ -1,6 +1,7 @@
 # <img src="./sticker.svg" width="30%" align="right" /> GenomicFeatures
 
 [![latest release](https://img.shields.io/github/release/BioJulia/GenomicFeatures.jl.svg)](https://github.com/BioJulia/GenomicFeatures.jl/releases/latest)
+[![DOI](https://zenodo.org/badge/94160625.svg)](https://zenodo.org/badge/latestdoi/94160625)
 [![MIT license](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/BioJulia/GenomicFeatures.jl/blob/master/LICENSE)
 [![Stable documentation](https://img.shields.io/badge/docs-stable-blue.svg)](https://biojulia.github.io/GenomicFeatures.jl/stable)
 [![Latest documentation](https://img.shields.io/badge/docs-dev-blue.svg)](https://biojulia.github.io/GenomicFeatures.jl/dev/)
