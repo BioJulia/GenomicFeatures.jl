@@ -304,6 +304,10 @@ function eachoverlap(a::IntervalCollection{T}, query::Interval; filter::F = true
     return ICTreeIntervalIntersectionIterator{F,T}(filter, ICTreeIntersection{T}(), ICTree{T}(), query)
 end
 
+function eachoverlap(query::Interval, b::IntervalCollection{T}; filter::F = true_cmp) where {F,T}
+    return eachoverlap(b, query; filter = filter)
+end
+
 function eachoverlap(a::IntervalCollection, b::IntervalCollection; filter = true_cmp)
     seqnames = collect(AbstractString, keys(a.trees) ∩ keys(b.trees))
     sort!(seqnames, lt = isless)
