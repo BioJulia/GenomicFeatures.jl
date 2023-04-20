@@ -199,6 +199,19 @@ end
 
     end
 
+    @testset "precedes" begin
+        interval_a = GenomicInterval("test", 1, 2)
+        interval_b = GenomicInterval("test", 2, 3)
+        interval_c = GenomicInterval("test", 3, 4)
+        interval_d = GenomicInterval("test2", 3, 4)
+
+        @test GenomicFeatures.precedes(interval_a, interval_a) == false
+        @test GenomicFeatures.precedes(interval_a, interval_b) == false
+        @test GenomicFeatures.precedes(interval_a, interval_c) == true
+        @test GenomicFeatures.precedes(interval_c, interval_a) == false
+        @test GenomicFeatures.precedes(interval_a, interval_d) == true
+    end
+
     @test span(GenomicInterval("test", 1, 9)) == length(1:9)
     @test GenomicFeatures.volume(GenomicInterval("test", 1, 9, '?', 2.5)) == length(1:9) * 2.5
 

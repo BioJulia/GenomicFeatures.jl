@@ -144,7 +144,12 @@ end
 Return true if interval `a` entirely precedes `b`.
 """
 function precedes(a::AbstractGenomicInterval, b::AbstractGenomicInterval, groupname_isless::Function=isless)
-    return (rightposition(a) < leftposition(b) && groupname(a) == groupname(b)) || groupname_isless(groupname(a), groupname(b))::Bool
+
+    if groupname(a) != groupname(b)
+        return groupname_isless(groupname(a), groupname(b))::Bool
+    end
+
+    return rightposition(a) < leftposition(b)
 end
 
 function Base.:(==)(a::AbstractGenomicInterval, b::AbstractGenomicInterval)
