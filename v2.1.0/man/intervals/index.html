@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Intervals · GenomicFeatures.jl</title><script data-outdated-warner src="../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.045/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.13.24/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../assets/documenter.js"></script><script src="../../siteinfo.js"></script><script src="../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../../"><img src="../../assets/logo.png" alt="GenomicFeatures.jl logo"/></a><div class="docs-package-name"><span class="docs-autofit"><a href="../../">GenomicFeatures.jl</a></span></div><form class="docs-search" action="../../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../../">Home</a></li><li class="is-active"><a class="tocitem" href>Intervals</a><ul class="internal"><li><a class="tocitem" href="#Interval-Type"><span>Interval Type</span></a></li><li><a class="tocitem" href="#Collections-of-Intervals"><span>Collections of Intervals</span></a></li><li><a class="tocitem" href="#Filtering"><span>Filtering</span></a></li><li><a class="tocitem" href="#Overlap-Query"><span>Overlap Query</span></a></li><li><a class="tocitem" href="#Coverage"><span>Coverage</span></a></li></ul></li><li><a class="tocitem" href="../../api/api/">API Reference</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Intervals</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Intervals</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/BioJulia/GenomicFeatures.jl/blob/develop/docs/src/man/intervals.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Genomic-Interval-Manipulation"><a class="docs-heading-anchor" href="#Genomic-Interval-Manipulation">Genomic Interval Manipulation</a><a id="Genomic-Interval-Manipulation-1"></a><a class="docs-heading-anchor-permalink" href="#Genomic-Interval-Manipulation" title="Permalink"></a></h1><p>The <code>GenomicFeatures</code> module consists of tools for working efficiently with genomic intervals.</p><h2 id="Interval-Type"><a class="docs-heading-anchor" href="#Interval-Type">Interval Type</a><a id="Interval-Type-1"></a><a class="docs-heading-anchor-permalink" href="#Interval-Type" title="Permalink"></a></h2><p>Intervals in <code>GenomicFeatures</code> are consistent with ranges in Julia: <em>1-based and end-inclusive</em>. When data is read from formats with different representations (i.e. 0-based and/or end-exclusive) they are always converted automatically. Similarly when writing data, you should not have to reason about off-by-one errors due to format differences while using functionality provided in <code>GenomicFeatures</code>.</p><p>The <a href="../../api/api/#GenomicFeatures.Interval"><code>Interval</code></a> type is defined as</p><pre><code class="language-julia hljs">struct Interval{T} &lt;: IntervalTrees.AbstractInterval{Int64}
+    seqname::String
+    first::Int64
+    last::Int64
+    strand::Strand
+    metadata::T
+end</code></pre><p>The first three fields (<code>seqname</code>, <code>first</code>, and <code>last</code>) are mandatory arguments when constructing the <a href="../../api/api/#GenomicFeatures.Interval"><code>Interval</code></a> object. The <code>seqname</code> field holds the sequence name associated with the interval. The <code>first</code> and <code>last</code> fields are the leftmost and rightmost positions of the interval, which can be accessed with <a href="../../api/api/#BioGenerics.leftposition-Tuple{Interval}"><code>leftposition</code></a> and <a href="../../api/api/#BioGenerics.rightposition-Tuple{Interval}"><code>rightposition</code></a> functions, respectively.</p><p>The <code>strand</code> field can take four kinds of values listed in the next table:</p><table><tr><th style="text-align: left">Symbol</th><th style="text-align: left">Constant</th><th style="text-align: left">Meaning</th></tr><tr><td style="text-align: left"><code>&#39;?&#39;</code></td><td style="text-align: left"><code>STRAND_NA</code></td><td style="text-align: left">strandedness is relevant, but unknown</td></tr><tr><td style="text-align: left"><code>&#39;+&#39;</code></td><td style="text-align: left"><code>STRAND_POS</code></td><td style="text-align: left">positive strand</td></tr><tr><td style="text-align: left"><code>&#39;-&#39;</code></td><td style="text-align: left"><code>STRAND_NEG</code></td><td style="text-align: left">negative strand</td></tr><tr><td style="text-align: left"><code>&#39;.&#39;</code></td><td style="text-align: left"><code>STRAND_BOTH</code></td><td style="text-align: left">non-strand-specific feature</td></tr></table><p><a href="../../api/api/#GenomicFeatures.Interval"><code>Interval</code></a> is parameterized on metadata type, which lets it efficiently and precisely be specialized to represent intervals from a variety of formats.</p><p>The default strand and metadata value are <code>STRAND_BOTH</code> and <code>nothing</code>:</p><pre><code class="language-julia-repl hljs">julia&gt; Interval(&quot;chr1&quot;, 10000, 20000)
+Interval{Nothing}:
+  sequence name: chr1
+  leftmost position: 10000
+  rightmost position: 20000
+  strand: .
+  metadata: nothing
+
+julia&gt; Interval(&quot;chr1&quot;, 10000, 20000, &#39;+&#39;)
+Interval{Nothing}:
+  sequence name: chr1
+  leftmost position: 10000
+  rightmost position: 20000
+  strand: +
+  metadata: nothing</code></pre><p>The following example shows all accessor functions for the five fields:</p><pre><code class="language-julia-repl hljs">julia&gt; i = Interval(&quot;chr1&quot;, 10000, 20000, &#39;+&#39;, &quot;some annotation&quot;)
+Interval{String}:
+  sequence name: chr1
+  leftmost position: 10000
+  rightmost position: 20000
+  strand: +
+  metadata: some annotation
+
+julia&gt; seqname(i)
+&quot;chr1&quot;
+
+julia&gt; leftposition(i)
+10000
+
+julia&gt; rightposition(i)
+20000
+
+julia&gt; strand(i)
+STRAND_POS
+
+julia&gt; metadata(i)
+&quot;some annotation&quot;</code></pre><h2 id="Collections-of-Intervals"><a class="docs-heading-anchor" href="#Collections-of-Intervals">Collections of Intervals</a><a id="Collections-of-Intervals-1"></a><a class="docs-heading-anchor-permalink" href="#Collections-of-Intervals" title="Permalink"></a></h2><p>Collections of intervals are represented using the <a href="../../api/api/#GenomicFeatures.IntervalCollection"><code>IntervalCollection</code></a> type, which is a general purpose indexed container for intervals. It supports fast intersection operations as well as insertion, deletion, and sorted iteration.</p><p>Empty interval collections can be initialized, and intervals elements can be added to the collection one-by-one using <code>push!</code>.</p><pre><code class="language-julia hljs"># The type parameter (Nothing here) indicates the interval metadata type.
+col = IntervalCollection{Nothing}()
+
+for i in 1:100:10000
+    push!(col, Interval(&quot;chr1&quot;, i, i + 99))
+end</code></pre><p>Incrementally building an interval collection like this works, but <a href="../../api/api/#GenomicFeatures.IntervalCollection"><code>IntervalCollection</code></a> also has a bulk insertion constructor that is able to build the indexed data structure extremely efficiently from a sorted vector of intervals.</p><pre><code class="language-julia hljs">col = IntervalCollection([Interval(&quot;chr1&quot;, i, i + 99) for i in 1:100:10000])</code></pre><p>Building <a href="../../api/api/#GenomicFeatures.IntervalCollection"><code>IntervalCollection</code></a>s in one shot like this should be preferred when it&#39;s convenient or speed is an issue.</p><h2 id="Filtering"><a class="docs-heading-anchor" href="#Filtering">Filtering</a><a id="Filtering-1"></a><a class="docs-heading-anchor-permalink" href="#Filtering" title="Permalink"></a></h2><p>Below are some examples of filtering intervals. The examples take advantage of bulk insertion.</p><pre><code class="language-julia hljs">intervals = [
+  Interval(&quot;chr1&quot;, 1, 8),
+  Interval(&quot;chr1&quot;, 4, 20),
+  Interval(&quot;chr1&quot;, 14, 27)]
+
+col = IntervalCollection(intervals)
+
+predicate(i) = isodd(leftposition(i))
+
+selected = IntervalCollection(Base.Iterators.filter(predicate, col))
+selected = IntervalCollection([x for x in col if predicate(x)])
+
+# output
+
+IntervalCollection{Nothing} with 1 intervals:
+  chr1:1-8  .  nothing</code></pre><h2 id="Overlap-Query"><a class="docs-heading-anchor" href="#Overlap-Query">Overlap Query</a><a id="Overlap-Query-1"></a><a class="docs-heading-anchor-permalink" href="#Overlap-Query" title="Permalink"></a></h2><p>There are number of <a href="#GenomicFeatures.eachoverlap"><code>eachoverlap</code></a> functions in the <code>GenomicFeatures</code> module. They follow two patterns:</p><ul><li>interval versus collection queries which return an iterator over intervals in the collection that overlap the query, and</li><li>collection versus collection queries which iterate over all pairs of overlapping intervals.</li></ul><article class="docstring"><header><a class="docstring-binding" id="GenomicFeatures.eachoverlap" href="#GenomicFeatures.eachoverlap"><code>GenomicFeatures.eachoverlap</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">eachoverlap(intervals_a, intervals_b, [seqname_isless=Base.isless])</code></pre><p>Create an iterator of overlapping intervals between <code>intervals_a</code> and <code>intervals_b</code>.</p><p>This function assumes elements of <code>intervals_a</code> and <code>intervals_b</code> are sorted by its sequence name and left position. If the element type is not a subtype of <code>GenomicFeatures.Interval</code>, elements are converted to <code>Interval</code> objects.</p><p>The third optional argument is a function that defines the order of sequence names. The default function is <code>Base.isless</code>, which is the lexicographical order.</p></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/GenomicFeatures.jl/blob/8f49a18a319a261983da663e491dd648151a2270/src/overlap.jl#L19-L29">source</a></section></article><p>The order of interval pairs is the same as the following nested loop but <a href="#GenomicFeatures.eachoverlap"><code>eachoverlap</code></a> is often much faster:</p><pre><code class="language-julia hljs">for a in intervals_a, b in intervals_b
+    if isoverlapping(a, b)
+        # do something...
+    end
+end</code></pre><h2 id="Coverage"><a class="docs-heading-anchor" href="#Coverage">Coverage</a><a id="Coverage-1"></a><a class="docs-heading-anchor-permalink" href="#Coverage" title="Permalink"></a></h2><p>A special sort of intersection can also be performed on an interval stream against itself to produce &quot;coverage intervals&quot;.</p><article class="docstring"><header><a class="docstring-binding" id="GenomicFeatures.coverage" href="#GenomicFeatures.coverage"><code>GenomicFeatures.coverage</code></a> — <span class="docstring-category">Function</span></header><section><div><pre><code class="language-julia hljs">coverage(intervals)</code></pre><p>Compute the coverage of a collection of intervals and return an <code>IntervalCollection</code> that contains run-length encoded coverage data.</p><p>For example, given intervals like:</p><pre><code class="nohighlight hljs">[------]     [------------]
+   [---------------]</code></pre><p>This function would return a new set of disjoint intervals with annotated coverage like:</p><pre><code class="nohighlight hljs">[1][-2-][-1-][--2--][--1--]</code></pre><p><strong>Example</strong></p><pre><code class="language-julia-repl hljs">julia&gt; intervals = [
+           Interval(&quot;chr1&quot;, 1, 8),
+           Interval(&quot;chr1&quot;, 4, 20),
+           Interval(&quot;chr1&quot;, 14, 27)];
+
+julia&gt; coverage(intervals)
+IntervalCollection{UInt32} with 5 intervals:
+  chr1:1-3  .  1
+  chr1:4-8  .  2
+  chr1:9-13  .  1
+  chr1:14-20  .  2
+  chr1:21-27  .  1</code></pre></div><a class="docs-sourcelink" target="_blank" href="https://github.com/BioJulia/GenomicFeatures.jl/blob/8f49a18a319a261983da663e491dd648151a2270/src/coverage.jl#L9-L39">source</a></section></article></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../../">« Home</a><a class="docs-footer-nextpage" href="../../api/api/">API Reference »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 0.27.24 on <span class="colophon-date" title="Thursday 20 April 2023 15:51">Thursday 20 April 2023</span>. Using Julia version 1.8.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
