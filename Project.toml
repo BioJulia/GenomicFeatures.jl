@@ -1,7 +1,7 @@
 name = "GenomicFeatures"
 uuid = "899a7d2d-5c61-547b-bef9-6698a8d05446"
 authors = ["Kenta Sato <bicycle1885@gmail.com>", "Sabrina J. Ward <sabrinajward@protonmail.com>", "Ciarán O’Mara <CiaranOMara@utas.edu.au>"]
-version = "2.1.0"
+version = "3.0.0"
 
 [deps]
 BioGenerics = "47718e42-2ac5-11e9-14af-e5595289c2ea"
