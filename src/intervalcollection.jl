@@ -150,7 +150,7 @@ function Base.eltype(::Type{IntervalCollection{T}}) where T
     return Interval{T}
 end
 
-function Base.:(==)(a::IntervalCollection{T}, b::IntervalCollection{T}) where T
+function Base.:(==)(a::IntervalCollection, b::IntervalCollection)
     if length(a) != length(b)
         return false
     end
@@ -302,6 +302,10 @@ function eachoverlap(a::IntervalCollection{T}, query::Interval; filter::F = true
     end
 
     return ICTreeIntervalIntersectionIterator{F,T}(filter, ICTreeIntersection{T}(), ICTree{T}(), query)
+end
+
+function eachoverlap(query::Interval, b::IntervalCollection{T}; filter::F = true_cmp) where {F,T}
+    return eachoverlap(b, query; filter = filter)
 end
 
 function eachoverlap(a::IntervalCollection, b::IntervalCollection; filter = true_cmp)
@@ -498,4 +502,33 @@ function Base.iterate(it::IntervalCollectionStreamIterator{F,S,T}, state = ()) w
             end
         end
     end
+end
+
+"""
+    hasintersection(interval::Interval, col::IntervalCollection)::Bool
+
+Query whether an `interval` has an intersection with `col`.
+"""
+function hasintersection(interval::Interval, col::IntervalCollection)
+
+	# Return early if chromosome is not in the interval collection.
+	if !haskey(col.trees, seqname(interval))
+		return false
+	end
+
+	# Setup intersection iterator.
+	iter = IntervalTrees.intersect(col.trees[seqname(interval)], (leftposition(interval), rightposition(interval)))
+
+	# Attempt first iteration.
+	if iterate(iter) === nothing
+		return false
+	end
+
+	# Intersection exists.
+	return true
+
+end
+
+function hasintersection(col::IntervalCollection)
+	return interval -> hasintersection(interval, col)
 end

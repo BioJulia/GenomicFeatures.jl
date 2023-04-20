@@ -79,7 +79,7 @@ end
 IntervalTrees.first(i::Interval) = leftposition(i)
 IntervalTrees.last(i::Interval) = rightposition(i)
 
-function Base.isless(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
+function Base.isless(a::Interval, b::Interval, seqname_isless::Function=isless)
     if seqname(a) != seqname(b)
         return seqname_isless(seqname(a), seqname(b))::Bool
     end
@@ -104,7 +104,7 @@ Check if two intervals are well ordered.
 
 Intervals are considered well ordered if seqname(a) <= seqname(b) and leftposition(a) <= leftposition(b).
 """
-function isordered(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
+function isordered(a::Interval, b::Interval, seqname_isless::Function=isless)
     if seqname(a) != seqname(b)
         return seqname_isless(seqname(a), seqname(b))::Bool
     end
@@ -119,11 +119,11 @@ end
 """
 Return true if interval `a` entirely precedes `b`.
 """
-function precedes(a::Interval{T}, b::Interval{T}, seqname_isless::Function=isless) where T
+function precedes(a::Interval, b::Interval, seqname_isless::Function=isless)
     return (rightposition(a) < leftposition(b) && seqname(a) == seqname(b)) || seqname_isless(seqname(a), seqname(b))::Bool
 end
 
-function Base.:(==)(a::Interval{T}, b::Interval{T}) where T
+function Base.:(==)(a::Interval, b::Interval)
     return seqname(a)       == seqname(b) &&
            leftposition(a)  == leftposition(b) &&
            rightposition(a) == rightposition(b) &&

@@ -170,6 +170,10 @@ end
         @test i1 == i2
         @test i1 == Interval("chr2", 5692667:5701385, '+', "SOX11")
     end
+
+    @test span(Interval("test", 1, 9)) == length(1:9)
+    @test GenomicFeatures.volume(Interval("test", 1, 9, '?', 2.5)) == length(1:9) * 2.5
+
 end
 
 @testset "IntervalCollection" begin
@@ -215,6 +219,14 @@ end
               sort(simple_intersection(intervals_a, intervals_b))
         @test sort(collect(eachoverlap(ic_a, ic_b, filter=(a,b) -> isodd(first(a))))) ==
               sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
+
+        # Check hasintersection method.
+        @test hasintersection(Interval("test", 1, 1), IntervalCollection([Interval("test", 1,2)])) == true
+        @test hasintersection(Interval("test", 1, 1), IntervalCollection([Interval("test", 2,2)])) == false
+
+        # Check hasintersection currying.
+        @test Interval("test", 1, 1) |> hasintersection(IntervalCollection([Interval("test", 1,2)])) == true
+        @test Interval("test", 1, 1) |> hasintersection(IntervalCollection([Interval("test", 2,2)])) == false
     end
 
     @testset "Show" begin
