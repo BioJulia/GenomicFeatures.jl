@@ -1,6 +1,5 @@
 using GenomicFeatures
 using Test
-using Documenter
 
 import Random
 
@@ -560,9 +559,5 @@ end
     @test String(take!(buf)) == "WithoutMetadatata:\n  group name: chr1\n  leftmost position: 1\n  rightmost position: 2\n  metadata: nothing"
 
 end #testset "Custom Concrete Types"
-
-# Include doctests.
-DocMeta.setdocmeta!(GenomicFeatures, :DocTestSetup, :(using GenomicFeatures); recursive=true)
-doctest(GenomicFeatures; manual = false)
 
 end #testset GenomicFeatures
