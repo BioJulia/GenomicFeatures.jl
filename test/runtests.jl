@@ -443,6 +443,10 @@ end #testset Constructor Conversions
         end
 
         @test sort(simple_coverage(intervals)) == sort(collect(coverage(ic)))
+
+        # Check coverage operation with different Integer type.
+        cov = GenomicIntervalCollection{GenomicInterval{Int64}}()
+        @test sort(simple_coverage(intervals)) == collect(GenomicFeatures.coverage!(cov, ic))
     end
 
     @testset "eachoverlap" begin
