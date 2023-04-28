@@ -90,7 +90,7 @@ Empty interval collections can be initialized, and intervals elements can be add
 ```@example
 using GenomicFeatures # hide
 # The type parameter (Nothing here) indicates the interval metadata type.
-col = IntervalCollection{Nothing}()
+col = IntervalCollection{Interval{Nothing}}()
 
 for i in 1:100:10000
     push!(col, Interval("chr1", i, i + 99))
@@ -138,7 +138,7 @@ selected = IntervalCollection([x for x in col if predicate(x)])
 
 # output
 
-IntervalCollection{Nothing} with 1 intervals:
+IntervalCollection{Interval{Nothing}} with 1 intervals:
   chr1:1-8  .  nothing
 ```
 

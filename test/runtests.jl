@@ -171,6 +171,30 @@ end
         @test i1 == Interval("chr2", 5692667:5701385, '+', "SOX11")
     end
 
+    @testset "intervaltype" begin
+
+        intervals = Interval.("test", [1, 2], [1, 2])
+        @test intervals |> eltype |> GenomicFeatures.intervaltype == Interval{Nothing}
+
+        intervals = Interval.("test", [1, 2], [1, 2], '.', [1.0, 2.0])
+        @test intervals |> eltype |> GenomicFeatures.intervaltype == Interval{Float64}
+
+        # Example `intervaltype` override.
+        function GenomicFeatures.intervaltype(::Type{NamedTuple{(:chrom, :left, :right, :value), Tuple{String, Int, Int, T}}}) where T
+            return Interval{T}
+        end
+
+        intervals = NamedTuple.(zip(
+            :chrom .=> Iterators.repeated("test", 2),
+            :left .=> [1, 2],
+            :right .=> [1, 2],
+            :value .=> [1.0, 2.0],
+        ))
+
+        @test intervals |> eltype |> GenomicFeatures.intervaltype == Interval{Float64}
+
+    end
+
     @test span(Interval("test", 1, 9)) == length(1:9)
     @test GenomicFeatures.volume(Interval("test", 1, 9, '?', 2.5)) == length(1:9) * 2.5
 

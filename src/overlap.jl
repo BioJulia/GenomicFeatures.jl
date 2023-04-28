@@ -9,7 +9,7 @@ struct OverlapIterator{Sa,Sb,L,F}
 end
 
 function Base.eltype(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
-    return Tuple{Interval{metadatatype(Sa)},Interval{metadatatype(Sb)}}
+    return Tuple{intervaltype(eltype(Sa)),intervaltype(eltype(Sb))} #Note: The iterator will attempt to convert to these eltypes.
 end
 
 function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
@@ -31,20 +31,20 @@ function eachoverlap(intervals_a, intervals_b, seqname_isless=Base.isless; filte
     return OverlapIterator(intervals_a, intervals_b, seqname_isless, filter)
 end
 
-struct OverlapIteratorState{Sa,Sb,Ta,Tb}
-    next_a::Sa
-    next_b::Sb
-    queue::Queue{Interval{Tb}}
+struct OverlapIteratorState{Na,Nb,Ia,Ib}
+    next_a::Na # Note: of the form (value, state)
+    next_b::Nb
+    queue::Queue{Ib}
     queue_index::Int
 end
 
-function OverlapIteratorState( Ta::Type, Tb::Type, next_a::Sa, next_b::Sb, queue::Queue, queue_index::Int) where {Sa, Sb}
-    return OverlapIteratorState{Sa,Sb,Ta,Tb}(next_a, next_b, queue, queue_index)
+function OverlapIteratorState(Ia::Type, Ib::Type, next_a::Na, next_b::Nb, queue::Queue, queue_index::Int) where {Na, Nb}
+    return OverlapIteratorState{Na,Nb,Ia,Ib}(next_a, next_b, queue, queue_index)
 end
 
-function OverlapIteratorState(Ta::Type, Tb::Type, next_a::Sa, next_b::Sb) where {Sa, Sb}
-    queue = Queue{Interval{Tb}}()
-    return OverlapIteratorState{Sa,Sb,Ta,Tb}(next_a, next_b, queue, 1)
+function OverlapIteratorState(Ia::Type, Ib::Type, next_a::Na, next_b::Nb) where {Na, Nb}
+    queue = Queue{Ib}()
+    return OverlapIteratorState{Na,Nb,Ia,Ib}(next_a, next_b, queue, 1)
 end
 
 
@@ -52,10 +52,10 @@ function Base.iterate(iter::OverlapIterator)
     next_a = iterate(iter.interval_stream_a)
     next_b = iterate(iter.interval_stream_b)
 
-    Ta = metadatatype(iter.interval_stream_a)
-    Tb = metadatatype(iter.interval_stream_b)
+    Ia = intervaltype(eltype(iter.interval_stream_a))
+    Ib = intervaltype(eltype(iter.interval_stream_b))
 
-    state = OverlapIteratorState(Ta, Tb, next_a, next_b)
+    state = OverlapIteratorState(Ia, Ib, next_a, next_b)
 
     return iterate(iter, state)
 end
@@ -70,7 +70,7 @@ function check_ordered(i1, i2, compare_func)
 end
 
 
-function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,Ta,Tb}) where {Sa,Sb,Ta,Tb}
+function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Na,Nb,Ia,Ib}) where {Na,Nb,Ia,Ib}
     next_a      = state.next_a
     next_b      = state.next_b
     queue       = state.queue
@@ -81,7 +81,7 @@ function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,T
     end
 
     entry_a, state_a = next_a
-    interval_a = convert(Interval{Ta}, entry_a)
+    interval_a = convert(Ia, entry_a)
 
     while true
         if queue_index > lastindex(state.queue)
@@ -93,13 +93,13 @@ function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,T
                 end
 
                 entry_a, state_a = next_a
-                next_interval_a = convert(Interval{Ta}, entry_a)
+                next_interval_a = convert(Ia, entry_a)
                 check_ordered(interval_a, next_interval_a, iter.isless)
                 interval_a = next_interval_a
                 queue_index = firstindex(state.queue)
             else
                 entry_b, state_b = next_b
-                interval_b = convert(Interval{Tb}, entry_b)
+                interval_b = convert(Ib, entry_b)
                 if !isempty(queue)
                     check_ordered(queue[end], interval_b, iter.isless)
                 end
@@ -108,7 +108,7 @@ function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,T
             end
         else
             entry_a, state_a = next_a
-            interval_a = convert(Interval{Ta}, entry_a)
+            interval_a = convert(Ia, entry_a)
             interval_b = queue[queue_index]
             c = compare_overlap(interval_a, interval_b, iter.isless)
             queue_index += 1
@@ -120,14 +120,14 @@ function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Sa,Sb,T
                     break
                 end
                 entry_a, state_a = next_a
-                next_interval_a = convert(Interval{Ta}, entry_a)
+                next_interval_a = convert(Ia, entry_a)
 
                 check_ordered(interval_a, next_interval_a, iter.isless)
                 interval_a = next_interval_a
                 queue_index = firstindex(state.queue)
             elseif c == 0
                 if iter.filter(interval_a, interval_b)
-                    return ((interval_a, interval_b), OverlapIteratorState(Ta, Tb, next_a, next_b, queue, queue_index))
+                    return ((interval_a, interval_b), OverlapIteratorState(Ia, Ib, next_a, next_b, queue, queue_index))
                 end
             else
                 if queue_index == firstindex(queue) + 1
