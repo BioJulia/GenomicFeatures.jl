@@ -28,9 +28,9 @@ function simple_intersection(intervals_a, intervals_b; filter=(a,b)->true)
     while i <= length(intervals_a) && j <= length(intervals_b)
         ai = intervals_a[i]
         bj = intervals_b[j]
-        if isless(seqname(ai), seqname(bj)) || (seqname(ai) == seqname(bj) && rightposition(ai) < leftposition(bj))
+        if isless(groupname(ai), groupname(bj)) || (groupname(ai) == groupname(bj) && rightposition(ai) < leftposition(bj))
             i += 1
-        elseif isless(seqname(bj), seqname(ai)) || (seqname(ai) == seqname(bj) && rightposition(bj) < leftposition(ai))
+        elseif isless(groupname(bj), groupname(ai)) || (groupname(ai) == groupname(bj) && rightposition(bj) < leftposition(ai))
             j += 1
         else
             k = j
@@ -49,25 +49,25 @@ end
 function simple_coverage(intervals)
     seqlens = Dict{String, Int}()
     for interval in intervals
-        if get(seqlens, seqname(interval), -1) < rightposition(interval)
-            seqlens[seqname(interval)] = rightposition(interval)
+        if get(seqlens, groupname(interval), -1) < rightposition(interval)
+            seqlens[groupname(interval)] = rightposition(interval)
         end
     end
 
     covarrays = Dict{String, Vector{Int}}()
-    for (seqname, seqlen) in seqlens
-        covarrays[seqname] = zeros(Int, seqlen)
+    for (groupname, seqlen) in seqlens
+        covarrays[groupname] = zeros(Int, seqlen)
     end
 
     for interval in intervals
-        arr = covarrays[seqname(interval)]
+        arr = covarrays[groupname(interval)]
         for i in leftposition(interval):rightposition(interval)
             arr[i] += 1
         end
     end
 
     covintervals = GenomicInterval{UInt32}[]
-    for (seqname, arr) in covarrays
+    for (groupname, arr) in covarrays
         i = j = 1
         while i <= length(arr)
             if arr[i] > 0
@@ -75,7 +75,7 @@ function simple_coverage(intervals)
                 while j <= length(arr) && arr[j] == arr[i]
                     j += 1
                 end
-                push!(covintervals, GenomicInterval{UInt32}(seqname, i, j - 1, STRAND_BOTH, arr[i]))
+                push!(covintervals, GenomicInterval{UInt32}(groupname, i, j - 1, STRAND_BOTH, arr[i]))
                 i = j
             else
                 i += 1
@@ -158,7 +158,7 @@ end
 @testset "GenomicInterval" begin
     @testset "Constructor" begin
         i = GenomicInterval("chr1", 10, 20)
-        @test seqname(i) == "chr1"
+        @test groupname(i) == "chr1"
         @test leftposition(i) == 10
         @test rightposition(i) == 20
         @test strand(i) == STRAND_BOTH
@@ -208,7 +208,7 @@ end
     @testset "Constructor" begin
 
         p = GenomicPosition("chr1", 1)
-        @test seqname(p) == "chr1"
+        @test groupname(p) == "chr1"
         @test leftposition(p) == 1
         @test rightposition(p) == 1
         @test position(p) == 1
@@ -524,7 +524,7 @@ end
     buf = IOBuffer()
 
     show(buf, WithoutMetadatata("chr1", 1, 2))
-    @test String(take!(buf)) == "WithoutMetadatata:\n  sequence name: chr1\n  leftmost position: 1\n  rightmost position: 2\n  metadata: nothing"
+    @test String(take!(buf)) == "WithoutMetadatata:\n  group name: chr1\n  leftmost position: 1\n  rightmost position: 2\n  metadata: nothing"
 
 end #testset "Custom Concrete Types"
 

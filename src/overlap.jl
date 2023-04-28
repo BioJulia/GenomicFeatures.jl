@@ -17,18 +17,18 @@ function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
 end
 
 """
-    eachoverlap(intervals_a, intervals_b, [seqname_isless=Base.isless])
+    eachoverlap(intervals_a, intervals_b, [groupname_isless=Base.isless])
 
 Create an iterator of overlapping intervals between `intervals_a` and `intervals_b`.
 
-This function assumes elements of `intervals_a` and `intervals_b` are sorted by its sequence name and left position.
+This function assumes elements of `intervals_a` and `intervals_b` are sorted by its group name and left position.
 If the element type is not a subtype of `GenomicFeatures.AbstractGenomicInterval`, elements are converted to `GenomicInterval` objects.
 
-The third optional argument is a function that defines the order of sequence names.
+The third optional argument is a function that defines the order of the group names.
 The default function is `Base.isless`, which is the lexicographical order.
 """
-function eachoverlap(intervals_a, intervals_b, seqname_isless=Base.isless; filter=true_cmp)
-    return OverlapIterator(intervals_a, intervals_b, seqname_isless, filter)
+function eachoverlap(intervals_a, intervals_b, groupname_isless=Base.isless; filter=true_cmp)
+    return OverlapIterator(intervals_a, intervals_b, groupname_isless, filter)
 end
 
 struct OverlapIteratorState{Na,Nb,Ia,Ib}
@@ -146,15 +146,15 @@ end
 #   0 when `i1` overlaps with `i2`, and
 #   +1 when `i1` follows `i2`.
 function compare_overlap(i1::AbstractGenomicInterval, i2::AbstractGenomicInterval, isless::Function)
-    if isless(seqname(i1), seqname(i2))
+    if isless(groupname(i1), groupname(i2))
         return -1
     end
 
-    if isless(seqname(i2), seqname(i1))
+    if isless(groupname(i2), groupname(i1))
         return +1
     end
 
-    # seqname(i1) == seqname(i2)
+    # groupname(i1) == groupname(i2)
     if rightposition(i1) < leftposition(i2)
         return -1
     end
@@ -168,7 +168,7 @@ end
 
 # Faster comparison for `Base.isless`.  Note that `Base.isless` must be consistent wtih `Base.cmp` to work correctly.
 function compare_overlap(i1::AbstractGenomicInterval, i2::AbstractGenomicInterval, ::typeof(Base.isless))
-    c = cmp(seqname(i1), seqname(i2))
+    c = cmp(groupname(i1), groupname(i2))
 
     if c != 0
         return c

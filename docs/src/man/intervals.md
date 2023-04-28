@@ -11,7 +11,7 @@ Similarly when writing data, you should not have to reason about off-by-one erro
 The [`GenomicInterval`](@ref GenomicInterval) type is defined as
 ```julia
 struct GenomicInterval{T} <: IntervalTrees.AbstractInterval{Int64}
-    seqname::String
+    groupname::String
     first::Int64
     last::Int64
     strand::Strand
@@ -19,8 +19,9 @@ struct GenomicInterval{T} <: IntervalTrees.AbstractInterval{Int64}
 end
 ```
 
-The first three fields (`seqname`, `first`, and `last`) are mandatory arguments when constructing the [`GenomicInterval`](@ref GenomicInterval) object.
-The `seqname` field holds the sequence name associated with the interval.
+The first three fields (`groupname`, `first`, and `last`) are mandatory arguments when constructing the [`GenomicInterval`](@ref GenomicInterval) object.
+The `groupname` field holds the group name associated with the interval.
+In some cases the `groupname` may denote the chromosome.
 The `first` and `last` fields are the leftmost and rightmost positions of the interval, which can be accessed with [`leftposition`](@ref leftposition) and [`rightposition`](@ref rightposition) functions, respectively.
 
 The `strand` field can take four kinds of values listed in the next table:
@@ -38,7 +39,7 @@ The default strand and metadata value are `STRAND_BOTH` and `nothing`:
 ```jldoctest; setup = :(using GenomicFeatures)
 julia> GenomicInterval("chr1", 10000, 20000)
 GenomicInterval{Nothing}:
-  sequence name: chr1
+  group name: chr1
   leftmost position: 10000
   rightmost position: 20000
   strand: .
@@ -46,7 +47,7 @@ GenomicInterval{Nothing}:
 
 julia> GenomicInterval("chr1", 10000, 20000, '+')
 GenomicInterval{Nothing}:
-  sequence name: chr1
+  group name: chr1
   leftmost position: 10000
   rightmost position: 20000
   strand: +
@@ -57,13 +58,13 @@ The following example shows all accessor functions for the five fields:
 ```jldoctest; setup = :(using GenomicFeatures)
 julia> i = GenomicInterval("chr1", 10000, 20000, '+', "some annotation")
 GenomicInterval{String}:
-  sequence name: chr1
+  group name: chr1
   leftmost position: 10000
   rightmost position: 20000
   strand: +
   metadata: some annotation
 
-julia> seqname(i)
+julia> groupname(i)
 "chr1"
 
 julia> leftposition(i)

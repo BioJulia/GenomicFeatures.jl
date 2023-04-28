@@ -18,7 +18,7 @@ SUITE = BenchmarkGroup()
 
 let suite = SUITE["accessors"] = BenchmarkGroup()
     s0 = suite["$(typeof(intervals))"] = BenchmarkGroup()
-    s0["seqname"] = @benchmarkable(seqname.($intervals))
+    s0["groupname"] = @benchmarkable(groupname.($intervals))
     s0["leftposition"] = @benchmarkable(leftposition.($intervals))
     s0["rightposition"] = @benchmarkable(rightposition.($intervals))
     s0["strand"] = @benchmarkable(strand.($intervals))
