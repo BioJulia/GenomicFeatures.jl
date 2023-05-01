@@ -10,7 +10,7 @@ export
     STRAND_BOTH,
 
     GenomicInterval,
-	groupname,
+    groupname,
     seqname,
     leftposition,
     rightposition,
@@ -23,7 +23,7 @@ export
     GenomicIntervalCollection,
     eachoverlap,
     coverage,
-	hasintersection,
+    hasintersection,
 
     isfilled,
     hasseqname,
