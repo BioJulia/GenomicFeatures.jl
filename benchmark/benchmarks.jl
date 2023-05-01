@@ -18,7 +18,7 @@ SUITE = BenchmarkGroup()
 
 let suite = SUITE["accessors"] = BenchmarkGroup()
     s0 = suite["$(typeof(intervals))"] = BenchmarkGroup()
-    s0["seqname"] = @benchmarkable(seqname.($intervals))
+    s0["groupname"] = @benchmarkable(groupname.($intervals))
     s0["leftposition"] = @benchmarkable(leftposition.($intervals))
     s0["rightposition"] = @benchmarkable(rightposition.($intervals))
     s0["strand"] = @benchmarkable(strand.($intervals))
@@ -30,20 +30,20 @@ let suite = SUITE["sort"] = BenchmarkGroup()
 end
 
 let suite = SUITE["insert"] = BenchmarkGroup()
-    suite["shorthand"] = @benchmarkable(IntervalCollection($intervals_sorted))
-    suite["type"] = @benchmarkable(IntervalCollection{Int}($intervals_sorted))
+    suite["shorthand"] = @benchmarkable(GenomicIntervalCollection($intervals_sorted))
+    suite["type"] = @benchmarkable(GenomicIntervalCollection{Int}($intervals_sorted))
 end
 
 let suite = SUITE["push"] = BenchmarkGroup()
-    suite["$(typeof(intervals))"] = @benchmarkable([push!(col, i) for i in $intervals], setup=(col=IntervalCollection{Int}()))
+    suite["$(typeof(intervals))"] = @benchmarkable([push!(col, i) for i in $intervals], setup=(col=GenomicIntervalCollection{Int}()))
 end
 
 let suite = SUITE["eachoverlap"] = BenchmarkGroup()
     intervals_a = intervals_sorted
     intervals_b = sort(random_intervals(SEQNAMES, 1000, N, SEED+1))
 
-    col_a = IntervalCollection(intervals_a)
-    col_b = IntervalCollection(intervals_b)
+    col_a = GenomicIntervalCollection(intervals_a)
+    col_b = GenomicIntervalCollection(intervals_b)
 
     As = [intervals_a, col_a]
     Bs = [intervals_b, col_b]

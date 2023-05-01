@@ -2,16 +2,16 @@
 
 The `GenomicFeatures` module consists of tools for working efficiently with genomic intervals.
 
-## Interval Type
+## GenomicInterval Type
 
 Intervals in `GenomicFeatures` are consistent with ranges in Julia: *1-based and end-inclusive*.
 When data is read from formats with different representations (i.e. 0-based and/or end-exclusive) they are always converted automatically.
 Similarly when writing data, you should not have to reason about off-by-one errors due to format differences while using functionality provided in `GenomicFeatures`.
 
-The [`Interval`](@ref Interval) type is defined as
+The [`GenomicInterval`](@ref GenomicInterval) type is defined as
 ```julia
-struct Interval{T} <: IntervalTrees.AbstractInterval{Int64}
-    seqname::String
+struct GenomicInterval{T} <: IntervalTrees.AbstractInterval{Int64}
+    groupname::String
     first::Int64
     last::Int64
     strand::Strand
@@ -19,8 +19,9 @@ struct Interval{T} <: IntervalTrees.AbstractInterval{Int64}
 end
 ```
 
-The first three fields (`seqname`, `first`, and `last`) are mandatory arguments when constructing the [`Interval`](@ref Interval) object.
-The `seqname` field holds the sequence name associated with the interval.
+The first three fields (`groupname`, `first`, and `last`) are mandatory arguments when constructing the [`GenomicInterval`](@ref GenomicInterval) object.
+The `groupname` field holds the group name associated with the interval.
+In some cases the `groupname` may denote the chromosome.
 The `first` and `last` fields are the leftmost and rightmost positions of the interval, which can be accessed with [`leftposition`](@ref leftposition) and [`rightposition`](@ref rightposition) functions, respectively.
 
 The `strand` field can take four kinds of values listed in the next table:
@@ -32,21 +33,21 @@ The `strand` field can take four kinds of values listed in the next table:
 | `'-'`  | `STRAND_NEG`  | negative strand                   |
 | `'.'`  | `STRAND_BOTH` | non-strand-specific feature       |
 
-[`Interval`](@ref Interval) is parameterized on metadata type, which lets it efficiently and precisely be specialized to represent intervals from a variety of formats.
+[`GenomicInterval`](@ref GenomicInterval) is parameterized on metadata type, which lets it efficiently and precisely be specialized to represent intervals from a variety of formats.
 
 The default strand and metadata value are `STRAND_BOTH` and `nothing`:
 ```jldoctest; setup = :(using GenomicFeatures)
-julia> Interval("chr1", 10000, 20000)
-Interval{Nothing}:
-  sequence name: chr1
+julia> GenomicInterval("chr1", 10000, 20000)
+GenomicInterval{Nothing}:
+  group name: chr1
   leftmost position: 10000
   rightmost position: 20000
   strand: .
   metadata: nothing
 
-julia> Interval("chr1", 10000, 20000, '+')
-Interval{Nothing}:
-  sequence name: chr1
+julia> GenomicInterval("chr1", 10000, 20000, '+')
+GenomicInterval{Nothing}:
+  group name: chr1
   leftmost position: 10000
   rightmost position: 20000
   strand: +
@@ -55,15 +56,15 @@ Interval{Nothing}:
 
 The following example shows all accessor functions for the five fields:
 ```jldoctest; setup = :(using GenomicFeatures)
-julia> i = Interval("chr1", 10000, 20000, '+', "some annotation")
-Interval{String}:
-  sequence name: chr1
+julia> i = GenomicInterval("chr1", 10000, 20000, '+', "some annotation")
+GenomicInterval{String}:
+  group name: chr1
   leftmost position: 10000
   rightmost position: 20000
   strand: +
   metadata: some annotation
 
-julia> seqname(i)
+julia> groupname(i)
 "chr1"
 
 julia> leftposition(i)
@@ -80,9 +81,9 @@ julia> metadata(i)
 ```
 
 
-## Collections of Intervals
+## Collections of GenomicIntervals
 
-Collections of intervals are represented using the [`IntervalCollection`](@ref IntervalCollection) type, which is a general purpose indexed container for intervals.
+Collections of intervals are represented using the [`GenomicIntervalCollection`](@ref GenomicIntervalCollection) type, which is a general purpose indexed container for intervals.
 It supports fast intersection operations as well as insertion, deletion, and sorted iteration.
 
 Empty interval collections can be initialized, and intervals elements can be added to the collection one-by-one using `push!`.
@@ -90,21 +91,21 @@ Empty interval collections can be initialized, and intervals elements can be add
 ```@example
 using GenomicFeatures # hide
 # The type parameter (Nothing here) indicates the interval metadata type.
-col = IntervalCollection{Nothing}()
+col = GenomicIntervalCollection{GenomicInterval{Nothing}}()
 
 for i in 1:100:10000
-    push!(col, Interval("chr1", i, i + 99))
+    push!(col, GenomicInterval("chr1", i, i + 99))
 end
 ```
 
-Incrementally building an interval collection like this works, but [`IntervalCollection`](@ref IntervalCollection) also has a bulk insertion constructor that is able to build the indexed data structure extremely efficiently from a sorted vector of intervals.
+Incrementally building an interval collection like this works, but [`GenomicIntervalCollection`](@ref GenomicIntervalCollection) also has a bulk insertion constructor that is able to build the indexed data structure extremely efficiently from a sorted vector of intervals.
 
 ```jldoctest; setup = :(using GenomicFeatures), output = false
-col = IntervalCollection([Interval("chr1", i, i + 99) for i in 1:100:10000])
+col = GenomicIntervalCollection([GenomicInterval("chr1", i, i + 99) for i in 1:100:10000])
 
 # output
 
-IntervalCollection{Nothing} with 100 intervals:
+GenomicIntervalCollection{GenomicInterval{Nothing}} with 100 intervals:
   chr1:1-100  .  nothing
   chr1:101-200  .  nothing
   chr1:201-300  .  nothing
@@ -117,7 +118,7 @@ IntervalCollection{Nothing} with 100 intervals:
 
 ```
 
-Building [`IntervalCollection`](@ref IntervalCollection)s in one shot like this should be preferred when it's convenient or speed is an issue.
+Building [`GenomicIntervalCollection`](@ref GenomicIntervalCollection)s in one shot like this should be preferred when it's convenient or speed is an issue.
 
 ## Filtering
 
@@ -125,20 +126,20 @@ Below are some examples of filtering intervals.
 The examples take advantage of bulk insertion.
 ```jldoctest; setup = :(using GenomicFeatures), output = true
 intervals = [
-  Interval("chr1", 1, 8),
-  Interval("chr1", 4, 20),
-  Interval("chr1", 14, 27)]
+  GenomicInterval("chr1", 1, 8),
+  GenomicInterval("chr1", 4, 20),
+  GenomicInterval("chr1", 14, 27)]
 
-col = IntervalCollection(intervals)
+col = GenomicIntervalCollection(intervals)
 
 predicate(i) = isodd(leftposition(i))
 
-selected = IntervalCollection(Base.Iterators.filter(predicate, col))
-selected = IntervalCollection([x for x in col if predicate(x)])
+selected = GenomicIntervalCollection(Base.Iterators.filter(predicate, col))
+selected = GenomicIntervalCollection([x for x in col if predicate(x)])
 
 # output
 
-IntervalCollection{Nothing} with 1 intervals:
+GenomicIntervalCollection{GenomicInterval{Nothing}} with 1 intervals:
   chr1:1-8  .  nothing
 ```
 

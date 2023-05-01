@@ -4,6 +4,3 @@ Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 GenomicFeatures = "899a7d2d-5c61-547b-bef9-6698a8d05446"
 PkgBenchmark = "32113eaa-f34f-5b0d-bd6c-c81e245fc73d"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
-
-[compat]
-GenomicFeatures = "2"
