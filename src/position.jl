@@ -54,7 +54,7 @@ function Base.show(io::IO, p::GenomicPosition)
     end
 end
 
-function Base.:(==)(a::GenomicPosition, b::GenomicPosition) where T
+function Base.:(==)(a::GenomicPosition, b::GenomicPosition)
     return groupname(a) == groupname(b) &&
            position(a)  == position(b) &&
            metadata(a)  == metadata(b)
