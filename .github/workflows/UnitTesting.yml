@@ -22,6 +22,7 @@ jobs:
       fail-fast: false
       matrix:
         julia-version: ['1']
+        # BEDTools_jll provides no `bedtools` for Windows, where the coverage tests compare with a simple implementation instead.
         os: [ubuntu-latest, macos-latest, windows-latest]
         experimental: [false]
         include:
