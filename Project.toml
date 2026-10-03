@@ -15,10 +15,11 @@ IntervalTrees = "1.1"
 julia = "1"
 
 [extras]
+BEDTools_jll = "a4d9fe64-ac7a-59f8-9e70-26745686a4e7"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Distributions", "Random", "Test"]
+test = ["BEDTools_jll", "Distributions", "Random", "Test"]

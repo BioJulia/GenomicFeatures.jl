@@ -1,6 +1,7 @@
 using GenomicFeatures
 using Test
 
+import BEDTools_jll
 import Random
 
 include(joinpath(@__DIR__, "Utilities.jl"))
@@ -83,6 +84,39 @@ function simple_coverage(intervals)
     end
 
     return covintervals
+end
+
+# Coverage computed by `bedtools genomecov` to test against.
+function bedtools_coverage(intervals)
+    mktempdir() do dir
+        bed = joinpath(dir, "intervals.bed")
+        genome = joinpath(dir, "genome.txt")
+
+        # Write intervals sorted by group name, as BED requires (0-based, half-open).
+        seqlens = Dict{String, Int}()
+        open(bed, "w") do io
+            for interval in sort(collect(intervals))
+                println(io, groupname(interval), '\t', leftposition(interval) - 1, '\t', rightposition(interval))
+                seqlens[groupname(interval)] = max(get(seqlens, groupname(interval), 0), rightposition(interval))
+            end
+        end
+
+        # Write the genome file of sequence lengths.
+        open(genome, "w") do io
+            for (name, seqlen) in sort(collect(seqlens))
+                println(io, name, '\t', seqlen)
+            end
+        end
+
+        # Read the bedGraph output of nonzero coverage runs.
+        covintervals = GenomicInterval{UInt32}[]
+        for line in eachline(`$(BEDTools_jll.bedtools()) genomecov -i $bed -g $genome -bg`)
+            name, first, last, depth = split(line, '\t')
+            push!(covintervals, GenomicInterval{UInt32}(name, parse(Int, first) + 1, parse(Int, last), STRAND_BOTH, parse(UInt32, depth)))
+        end
+
+        return covintervals
+    end
 end
 
 # Used to check show of AbstractGenomicInterval{Nothing}.
@@ -501,6 +535,84 @@ end #testset Constructor Conversions
         @test length(collect(eachoverlap(ic_a, GenomicInterval("X", 0, 0)))) == 0
     end
 end
+
+@testset "Coverage" begin
+
+    # Check that the same coverage is computed by GenomicFeatures and bedtools.
+    function test_coverage(intervals)
+        expected = sort(bedtools_coverage(intervals))
+        @test expected == sort(collect(coverage(GenomicIntervalCollection(intervals, true))))
+        @test expected == sort(collect(coverage(sort(intervals))))
+
+        # Check coverage operation with different Integer type.
+        cov = GenomicIntervalCollection{GenomicInterval{Int64}}()
+        @test expected == sort(collect(GenomicFeatures.coverage!(cov, sort(intervals))))
+    end
+
+    @testset "Docstring example" begin
+        intervals = [GenomicInterval("chr1", 1, 8), GenomicInterval("chr1", 4, 20), GenomicInterval("chr1", 14, 27)]
+        test_coverage(intervals)
+        @test bedtools_coverage(intervals) == [
+            GenomicInterval{UInt32}("chr1", 1, 3, '.', 1),
+            GenomicInterval{UInt32}("chr1", 4, 8, '.', 2),
+            GenomicInterval{UInt32}("chr1", 9, 13, '.', 1),
+            GenomicInterval{UInt32}("chr1", 14, 20, '.', 2),
+            GenomicInterval{UInt32}("chr1", 21, 27, '.', 1),
+        ]
+    end
+
+    @testset "Edge cases" begin
+        # Single interval.
+        test_coverage([GenomicInterval("chr1", 5, 10)])
+
+        # Single base.
+        test_coverage([GenomicInterval("chr1", 5, 5)])
+
+        # Identical intervals.
+        test_coverage([GenomicInterval("chr1", 5, 10), GenomicInterval("chr1", 5, 10), GenomicInterval("chr1", 5, 10)])
+
+        # Abutting intervals.
+        test_coverage([GenomicInterval("chr1", 1, 5), GenomicInterval("chr1", 6, 10)])
+        test_coverage([GenomicInterval("chr1", 1, 5), GenomicInterval("chr1", 6, 10), GenomicInterval("chr1", 11, 11)])
+
+        # Abutting intervals over a constant depth.
+        test_coverage([GenomicInterval("chr1", 1, 10), GenomicInterval("chr1", 1, 5), GenomicInterval("chr1", 6, 10)])
+
+        # Gaps between intervals.
+        test_coverage([GenomicInterval("chr1", 1, 5), GenomicInterval("chr1", 7, 10), GenomicInterval("chr1", 20, 30)])
+
+        # Nested intervals.
+        test_coverage([GenomicInterval("chr1", 1, 20), GenomicInterval("chr1", 5, 15), GenomicInterval("chr1", 8, 12), GenomicInterval("chr1", 10, 10)])
+
+        # Shared left and right positions.
+        test_coverage([GenomicInterval("chr1", 1, 10), GenomicInterval("chr1", 1, 20), GenomicInterval("chr1", 5, 20)])
+
+        # Multiple groups.
+        test_coverage([GenomicInterval("chr1", 1, 10), GenomicInterval("chr2", 5, 15), GenomicInterval("chr3", 1, 1)])
+
+        # Positions.
+        test_coverage([GenomicInterval("chr1", 1, 4), GenomicPosition("chr1", 2), GenomicPosition("chr1", 2), GenomicPosition("chr1", 5)])
+    end
+
+    @testset "Random intervals" begin
+        for seed in 1:5
+            test_coverage(random_intervals(["one", "two", "three"], 1000000, 10000, seed))
+        end
+    end
+
+    @testset "Dense random intervals" begin
+        # Many short intervals in a small span exercise the run boundaries.
+        Random.seed!(1234)
+        for _ in 1:50
+            intervals = map(1:200) do _
+                first = rand(1:100)
+                return GenomicInterval(rand(["one", "two"]), first, first + rand(0:10))
+            end
+            test_coverage(intervals)
+        end
+    end
+
+end #testset Coverage
 
 @testset "Mixed types" begin
 
