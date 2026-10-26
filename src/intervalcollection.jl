@@ -501,21 +501,21 @@ function Base.iterate(it::GenomicIntervalCollectionStreamIterator{F,S,Ib}, state
         return return_value, (state[1], state[2], intersection)
     end
 
-    # If code reaches this point, there is no valid intersection to return for the current query, so we get the next query and start looking for intersections.
-    while intersection.index == 0
-        # Get a new query from the stream, and its first intersection in the collection.
-        stream_it = (state === () ? iterate(it.stream) : iterate(it.stream, state[2]))
-        stream_it === nothing && return nothing # You have reached the end of the stream, stop iterating.
-        stream_value = stream_it[1]
-        if haskey(it.collection.trees, groupname(stream_value))
-            tree = it.collection.trees[groupname(stream_value)]
+    # If code reaches this point, there is no valid intersection to return for the current query, so take the next queries from the stream until one has an intersection in the collection.
+    # The stream's state advances with every query, including one whose group the collection lacks.
+    stream_it = (state === () ? iterate(it.stream) : iterate(it.stream, state[2]))
+    while stream_it !== nothing
+        stream_value, stream_state = stream_it
+        tree = get(it.collection.trees, groupname(stream_value), nothing)
+        if tree !== nothing
             IntervalTrees.firstintersection!(tree, stream_value, nothing, intersection, it.filter)
-            iterate_result = iterate(it, (stream_value, stream_it[2], intersection))
-            if iterate_result !== nothing
-                return iterate_result
+            if intersection.index != 0
+                return iterate(it, (stream_value, stream_state, intersection))
             end
         end
+        stream_it = iterate(it.stream, stream_state)
     end
+    return nothing # You have reached the end of the stream, stop iterating.
 end
 
 """

@@ -432,6 +432,24 @@ end #testset Constructor Conversions
         @test sort(collect(eachoverlap(ic_a, ic_b, isless, filter=(a,b) -> isodd(first(a))))) == sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(a))))
     end
 
+    @testset "GenomicIntervalStream and GenomicIntervalCollection" begin
+        # A stream's query whose group the collection lacks once stopped the stream advancing, and a query without overlaps had the rest of the stream searched again, so that the iteration never ended.
+        collection = GenomicIntervalCollection([GenomicInterval("chr1", 100, 200)])
+        queries = [GenomicInterval("chr0", 1, 10), GenomicInterval("chr1", 1, 10), GenomicInterval("chr1", 150, 160), GenomicInterval("chr2", 1, 10)]
+        @test collect(eachoverlap(queries, collection)) == [(queries[3], GenomicInterval("chr1", 100, 200))]
+        @test isempty(collect(eachoverlap([GenomicInterval("chr0", 1, 10)], collection)))
+        @test isempty(collect(eachoverlap([GenomicInterval("chr1", 1, 10), GenomicInterval("chr1", 300, 310)], collection)))
+
+        # A stream against a collection finds the pairs of two streams, whose groups differ.
+        Random.seed!(1234)
+        intervals_a = sort(random_intervals(["one", "two", "three"], 1000000, 1000))
+        intervals_b = random_intervals(["one", "three", "four"], 1000000, 1000)
+        ic_b = GenomicIntervalCollection(sort(intervals_b))
+        @test sort(collect(eachoverlap(intervals_a, ic_b))) == sort(simple_intersection(intervals_a, intervals_b))
+        # The filter takes the collection's interval first and the stream's second, the reverse of the pairs that the iteration gives.
+        @test sort(collect(eachoverlap(intervals_a, ic_b, filter=(b,a) -> isodd(first(b))))) == sort(simple_intersection(intervals_a, intervals_b, filter=(a,b) -> isodd(first(b))))
+    end
+
     @testset "GenomicIntervalStream Coverage" begin
         n = 10000
         Random.seed!(1234)
