@@ -28,3 +28,5 @@ Manifest.toml
 .benchmarkci
 benchmark/*.json
 benchmark/results
+
+.idea/

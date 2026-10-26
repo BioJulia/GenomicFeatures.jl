@@ -10,7 +10,7 @@
     GenomicInterval{T} <: AbstractGenomicInterval{T}
 
 A genomic interval specifies interval with some associated metadata.
-The first three fields (`groupname`, `first`, and `last`) are mandatory arguments when constructing the [`Interval`](@ref Interval) object.
+The first three fields (`groupname`, `first`, and `last`) are mandatory arguments when constructing the [`GenomicInterval`](@ref) object.
 
 # Fields
 - `groupname::String`: the group name associated with the interval.

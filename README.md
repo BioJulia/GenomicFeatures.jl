@@ -26,7 +26,8 @@ GenomicFeatures is tested against Julia `1.X` on Linux, OS X, and Windows.
 
 **Latest build status:**
 
-[![Unit Tests](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/UnitTests.yml/badge.svg)](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/UnitTests.yml)
+[![Unit tests](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/UnitTesting.yml/badge.svg)](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/UnitTesting.yml)
+[![Runic](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Formatting.yml/badge.svg)](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Formatting.yml)
 [![Documentation](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Documentation.yml/badge.svg)](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Documentation.yml)
 [![codecov](https://codecov.io/gh/BioJulia/GenomicFeatures.jl/branch/develop/graph/badge.svg)](https://codecov.io/gh/BioJulia/GenomicFeatures.jl)
 [![Downstream](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Downstream.yml/badge.svg)](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Downstream.yml)
