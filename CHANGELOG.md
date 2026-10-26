@@ -12,10 +12,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Gitflow, with the checks of BioJulia/Workflows: checks that pull requests into `master` come from `release/*` branches of `develop` or `hotfix/*` branches of `master`, take the next version, describe it in the changelog with its comparison links, and, if they break the public API or `master`'s tests, or narrow a compat bound, take a breaking version and say so in the changelog; and that pull requests into `develop` don't come from `release/*` or `hotfix/*` branches, and add a changelog entry.
 - Back-merge: once a release or hotfix merges into `master`, the workflow of BioJulia/Workflows opens the pull request that brings `master` back into `develop`, from a `back-merge/vX.Y.Z` branch.
 - This changelog, again, with every release.
+- Function names in snake case, after the Julia style guide: the interval interface, `group_name`, `has_group_name`, `left_position`, `has_left_position`, `right_position`, `has_right_position`, `is_overlapping` and `is_filled`, which are BioGenerics' functions under their snake case names, so that a method defined through either name reaches callers of both; and GenomicFeatures' own `each_overlap`, `has_intersection`, `interval_type`, `base_interval_type` and `metadata_type`.
 
 ### Changed
 
 - `coverage!` writes into a collection of intervals of any integer metadata type, `GenomicIntervalCollection{GenomicInterval{N}}` with `N <: Integer`, rather than only `UInt32`.
+
+### Deprecated
+
+- The squashed names of 3.0, such as `groupname`, `leftposition`, `eachoverlap` and `metadatatype`, and the internal `isordered`, which warn when deprecation warnings are on and go in 4.0; `seqname` and `hasseqname` are deprecated in favour of `group_name` and `has_group_name`.
 
 ## [3.0.1] - 2026-10-26
 

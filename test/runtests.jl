@@ -11,7 +11,7 @@ import .Utilities: random_intervals
 # Test that an array of intervals is well ordered
 function is_all_ordered(intervals::Vector{I}) where {I <: GenomicInterval}
     for i in 2:length(intervals)
-        if !GenomicFeatures.isordered(intervals[i - 1], intervals[i])
+        if !GenomicFeatures.is_ordered(intervals[i - 1], intervals[i])
             return false
         end
     end
@@ -28,14 +28,14 @@ function simple_intersection(intervals_a, intervals_b; filter = (a, b) -> true)
     while i <= length(intervals_a) && j <= length(intervals_b)
         ai = intervals_a[i]
         bj = intervals_b[j]
-        if isless(groupname(ai), groupname(bj)) || (groupname(ai) == groupname(bj) && rightposition(ai) < leftposition(bj))
+        if isless(group_name(ai), group_name(bj)) || (group_name(ai) == group_name(bj) && right_position(ai) < left_position(bj))
             i += 1
-        elseif isless(groupname(bj), groupname(ai)) || (groupname(ai) == groupname(bj) && rightposition(bj) < leftposition(ai))
+        elseif isless(group_name(bj), group_name(ai)) || (group_name(ai) == group_name(bj) && right_position(bj) < left_position(ai))
             j += 1
         else
             k = j
-            while k <= length(intervals_b) && leftposition(intervals_b[k]) <= rightposition(ai)
-                if isoverlapping(ai, intervals_b[k]) && filter(ai, intervals_b[k])
+            while k <= length(intervals_b) && left_position(intervals_b[k]) <= right_position(ai)
+                if is_overlapping(ai, intervals_b[k]) && filter(ai, intervals_b[k])
                     push!(intersections, (ai, intervals_b[k]))
                 end
                 k += 1
@@ -49,8 +49,8 @@ end
 function simple_coverage(intervals)
     seqlens = Dict{String, Int}()
     for interval in intervals
-        if get(seqlens, groupname(interval), -1) < rightposition(interval)
-            seqlens[groupname(interval)] = rightposition(interval)
+        if get(seqlens, group_name(interval), -1) < right_position(interval)
+            seqlens[group_name(interval)] = right_position(interval)
         end
     end
 
@@ -60,8 +60,8 @@ function simple_coverage(intervals)
     end
 
     for interval in intervals
-        arr = covarrays[groupname(interval)]
-        for i in leftposition(interval):rightposition(interval)
+        arr = covarrays[group_name(interval)]
+        for i in left_position(interval):right_position(interval)
             arr[i] += 1
         end
     end
@@ -96,8 +96,8 @@ function bedtools_coverage(intervals)
         seqlens = Dict{String, Int}()
         open(bed, "w") do io
             for interval in sort(collect(intervals))
-                println(io, groupname(interval), '\t', leftposition(interval) - 1, '\t', rightposition(interval))
-                seqlens[groupname(interval)] = max(get(seqlens, groupname(interval), 0), rightposition(interval))
+                println(io, group_name(interval), '\t', left_position(interval) - 1, '\t', right_position(interval))
+                seqlens[group_name(interval)] = max(get(seqlens, group_name(interval), 0), right_position(interval))
             end
         end
 
@@ -118,6 +118,15 @@ function bedtools_coverage(intervals)
         return covintervals
     end
 end
+
+# Types that define the interval interface through BioGenerics' functions, as packages for GenomicFeatures 3.0 do, and through the snake case names.
+struct SquashedSite end
+GenomicFeatures.BioGenerics.leftposition(::SquashedSite) = 7
+GenomicFeatures.BioGenerics.groupname(::SquashedSite) = "squashed"
+
+struct SnakeSite end
+GenomicFeatures.left_position(::SnakeSite) = 9
+GenomicFeatures.group_name(::SnakeSite) = "snake"
 
 # Used to check show of AbstractGenomicInterval{Nothing}.
 struct WithoutMetadatata <: GenomicFeatures.AbstractGenomicInterval{Nothing}
@@ -191,9 +200,9 @@ end
     @testset "GenomicInterval" begin
         @testset "Constructor" begin
             i = GenomicInterval("chr1", 10, 20)
-            @test groupname(i) == "chr1"
-            @test leftposition(i) == 10
-            @test rightposition(i) == 20
+            @test group_name(i) == "chr1"
+            @test left_position(i) == 10
+            @test right_position(i) == 20
             @test strand(i) == STRAND_BOTH
             @test i == GenomicInterval("chr1", 10:20)
 
@@ -211,13 +220,13 @@ end
         @testset "intervaltype" begin
 
             intervals = GenomicInterval.("test", [1, 2], [1, 2])
-            @test intervals |> eltype |> GenomicFeatures.intervaltype == GenomicInterval{Nothing}
+            @test intervals |> eltype |> GenomicFeatures.interval_type == GenomicInterval{Nothing}
 
             intervals = GenomicInterval.("test", [1, 2], [1, 2], '.', [1.0, 2.0])
-            @test intervals |> eltype |> GenomicFeatures.intervaltype == GenomicInterval{Float64}
+            @test intervals |> eltype |> GenomicFeatures.interval_type == GenomicInterval{Float64}
 
             # Example `intervaltype` override.
-            function GenomicFeatures.intervaltype(::Type{NamedTuple{(:chrom, :left, :right, :value), Tuple{String, Int, Int, T}}}) where {T}
+            function GenomicFeatures.interval_type(::Type{NamedTuple{(:chrom, :left, :right, :value), Tuple{String, Int, Int, T}}}) where {T}
                 return GenomicInterval{T}
             end
 
@@ -230,28 +239,28 @@ end
                 )
             )
 
-            @test intervals |> eltype |> GenomicFeatures.intervaltype == GenomicInterval{Float64}
+            @test intervals |> eltype |> GenomicFeatures.interval_type == GenomicInterval{Float64}
 
         end
 
         @testset "baseintervaltype" begin
             interval = GenomicInterval("test", 1, 2)
             @test typeof(interval) == GenomicInterval{Nothing}
-            @test GenomicFeatures.baseintervaltype(interval) === GenomicInterval
+            @test GenomicFeatures.base_interval_type(interval) === GenomicInterval
 
             interval = GenomicInterval("test", 1, 2, '.', 3.0)
             @test typeof(interval) == GenomicInterval{Float64}
-            @test GenomicFeatures.baseintervaltype(interval) === GenomicInterval
+            @test GenomicFeatures.base_interval_type(interval) === GenomicInterval
         end
 
         @testset "metadatatype" begin
             interval = GenomicInterval("test", 1, 2)
             @test typeof(interval) == GenomicInterval{Nothing}
-            @test GenomicFeatures.metadatatype(interval) === Nothing
+            @test GenomicFeatures.metadata_type(interval) === Nothing
 
             interval = GenomicInterval("test", 1, 2, '.', 3.0)
             @test typeof(interval) == GenomicInterval{Float64}
-            @test GenomicFeatures.metadatatype(interval) === Float64
+            @test GenomicFeatures.metadata_type(interval) === Float64
         end
 
         @testset "precedes" begin
@@ -276,9 +285,9 @@ end
         @testset "Constructor" begin
 
             p = GenomicPosition("chr1", 1)
-            @test groupname(p) == "chr1"
-            @test leftposition(p) == 1
-            @test rightposition(p) == 1
+            @test group_name(p) == "chr1"
+            @test left_position(p) == 1
+            @test right_position(p) == 1
             @test position(p) == 1
 
             @test GenomicPosition("chr1", 1) == GenomicPosition("chr1", 1:1)
@@ -327,31 +336,31 @@ end
             # empty versus empty
             ic_a = GenomicIntervalCollection{Int}()
             ic_b = GenomicIntervalCollection{Int}()
-            @test collect(eachoverlap(ic_a, ic_b)) == Any[]
+            @test collect(each_overlap(ic_a, ic_b)) == Any[]
 
             # empty versus non-empty
             for interval in intervals_a
                 push!(ic_a, interval)
             end
 
-            @test collect(eachoverlap(ic_a, ic_b)) == Any[]
-            @test collect(eachoverlap(ic_b, ic_a)) == Any[]
+            @test collect(each_overlap(ic_a, ic_b)) == Any[]
+            @test collect(each_overlap(ic_b, ic_a)) == Any[]
 
             # non-empty versus non-empty
             for interval in intervals_b
                 push!(ic_b, interval)
             end
 
-            @test sort(collect(eachoverlap(ic_a, ic_b))) == sort(simple_intersection(intervals_a, intervals_b))
-            @test sort(collect(eachoverlap(ic_a, ic_b, filter = (a, b) -> isodd(first(a))))) == sort(simple_intersection(intervals_a, intervals_b, filter = (a, b) -> isodd(first(a))))
+            @test sort(collect(each_overlap(ic_a, ic_b))) == sort(simple_intersection(intervals_a, intervals_b))
+            @test sort(collect(each_overlap(ic_a, ic_b, filter = (a, b) -> isodd(first(a))))) == sort(simple_intersection(intervals_a, intervals_b, filter = (a, b) -> isodd(first(a))))
 
-            # Check hasintersection method.
-            @test hasintersection(GenomicInterval("test", 1, 1), GenomicIntervalCollection([GenomicInterval("test", 1, 2)])) == true
-            @test hasintersection(GenomicInterval("test", 1, 1), GenomicIntervalCollection([GenomicInterval("test", 2, 2)])) == false
+            # Check has_intersection method.
+            @test has_intersection(GenomicInterval("test", 1, 1), GenomicIntervalCollection([GenomicInterval("test", 1, 2)])) == true
+            @test has_intersection(GenomicInterval("test", 1, 1), GenomicIntervalCollection([GenomicInterval("test", 2, 2)])) == false
 
-            # Check hasintersection currying.
-            @test GenomicInterval("test", 1, 1) |> hasintersection(GenomicIntervalCollection([GenomicInterval("test", 1, 2)])) == true
-            @test GenomicInterval("test", 1, 1) |> hasintersection(GenomicIntervalCollection([GenomicInterval("test", 2, 2)])) == false
+            # Check has_intersection currying.
+            @test GenomicInterval("test", 1, 1) |> has_intersection(GenomicIntervalCollection([GenomicInterval("test", 1, 2)])) == true
+            @test GenomicInterval("test", 1, 1) |> has_intersection(GenomicIntervalCollection([GenomicInterval("test", 2, 2)])) == false
         end
 
         @testset "Show" begin
@@ -408,20 +417,20 @@ end
             end
 
             # non-empty versus non-empty, stream intersection
-            it = eachoverlap(ic_a, ic_b, isless)
+            it = each_overlap(ic_a, ic_b, isless)
             @test sort(collect(it)) == sort(simple_intersection(intervals_a, intervals_b))
 
-            it = eachoverlap(ic_a, ic_b, isless, filter = (a, b) -> isodd(first(a)))
+            it = each_overlap(ic_a, ic_b, isless, filter = (a, b) -> isodd(first(a)))
             @test sort(collect(it)) == sort(simple_intersection(intervals_a, intervals_b, filter = (a, b) -> isodd(first(a))))
 
-            it = eachoverlap(
+            it = each_overlap(
                 [GenomicInterval("a", 1, 100, STRAND_POS, nothing), GenomicInterval("c", 1, 100, STRAND_POS, nothing)],
                 [GenomicInterval("a", 1, 100, STRAND_POS, nothing), GenomicInterval("b", 1, 100, STRAND_POS, nothing)],
                 isless
             )
             @test length(collect(it)) == 1
 
-            it = eachoverlap(
+            it = each_overlap(
                 [GenomicInterval("c", 1, 100, STRAND_POS, nothing), GenomicInterval("d", 1, 100, STRAND_POS, nothing)],
                 [GenomicInterval("b", 1, 100, STRAND_POS, nothing), GenomicInterval("d", 1, 100, STRAND_POS, nothing)],
                 isless
@@ -430,7 +439,7 @@ end
 
             # unsorted streams are not allowed
             @test_throws Exception begin
-                it = eachoverlap(
+                it = each_overlap(
                     [
                         GenomicInterval("b", 1, 1000, STRAND_POS, nothing),
                         GenomicInterval("a", 1, 1000, STRAND_POS, nothing),
@@ -444,7 +453,7 @@ end
             end
 
             @test_throws Exception begin
-                it = eachoverlap(
+                it = each_overlap(
                     [
                         GenomicInterval("a", 1, 1000, STRAND_POS, nothing),
                         GenomicInterval("a", 500, 1000, STRAND_POS, nothing),
@@ -476,26 +485,26 @@ end
                 push!(ic_b, interval)
             end
 
-            @test sort(collect(eachoverlap(ic_a, ic_b, isless))) == sort(simple_intersection(intervals_a, intervals_b))
-            @test sort(collect(eachoverlap(ic_a, ic_b, isless, filter = (a, b) -> isodd(first(a))))) == sort(simple_intersection(intervals_a, intervals_b, filter = (a, b) -> isodd(first(a))))
+            @test sort(collect(each_overlap(ic_a, ic_b, isless))) == sort(simple_intersection(intervals_a, intervals_b))
+            @test sort(collect(each_overlap(ic_a, ic_b, isless, filter = (a, b) -> isodd(first(a))))) == sort(simple_intersection(intervals_a, intervals_b, filter = (a, b) -> isodd(first(a))))
         end
 
         @testset "GenomicIntervalStream and GenomicIntervalCollection" begin
             # A stream's query whose group the collection lacks once stopped the stream advancing, and a query without overlaps had the rest of the stream searched again, so that the iteration never ended.
             collection = GenomicIntervalCollection([GenomicInterval("chr1", 100, 200)])
             queries = [GenomicInterval("chr0", 1, 10), GenomicInterval("chr1", 1, 10), GenomicInterval("chr1", 150, 160), GenomicInterval("chr2", 1, 10)]
-            @test collect(eachoverlap(queries, collection)) == [(queries[3], GenomicInterval("chr1", 100, 200))]
-            @test isempty(collect(eachoverlap([GenomicInterval("chr0", 1, 10)], collection)))
-            @test isempty(collect(eachoverlap([GenomicInterval("chr1", 1, 10), GenomicInterval("chr1", 300, 310)], collection)))
+            @test collect(each_overlap(queries, collection)) == [(queries[3], GenomicInterval("chr1", 100, 200))]
+            @test isempty(collect(each_overlap([GenomicInterval("chr0", 1, 10)], collection)))
+            @test isempty(collect(each_overlap([GenomicInterval("chr1", 1, 10), GenomicInterval("chr1", 300, 310)], collection)))
 
             # A stream against a collection finds the pairs of two streams, whose groups differ.
             Random.seed!(1234)
             intervals_a = sort(random_intervals(["one", "two", "three"], 1000000, 1000))
             intervals_b = random_intervals(["one", "three", "four"], 1000000, 1000)
             ic_b = GenomicIntervalCollection(sort(intervals_b))
-            @test sort(collect(eachoverlap(intervals_a, ic_b))) == sort(simple_intersection(intervals_a, intervals_b))
+            @test sort(collect(each_overlap(intervals_a, ic_b))) == sort(simple_intersection(intervals_a, intervals_b))
             # The filter takes the collection's interval first and the stream's second, the reverse of the pairs that the iteration gives.
-            @test sort(collect(eachoverlap(intervals_a, ic_b, filter = (b, a) -> isodd(first(b))))) == sort(simple_intersection(intervals_a, intervals_b, filter = (a, b) -> isodd(first(b))))
+            @test sort(collect(each_overlap(intervals_a, ic_b, filter = (b, a) -> isodd(first(b))))) == sort(simple_intersection(intervals_a, intervals_b, filter = (a, b) -> isodd(first(b))))
         end
 
         @testset "GenomicIntervalStream Coverage" begin
@@ -515,43 +524,43 @@ end
             @test sort(simple_coverage(intervals)) == collect(GenomicFeatures.coverage!(cov, ic))
         end
 
-        @testset "eachoverlap" begin
+        @testset "each_overlap" begin
             i = GenomicInterval("chr1", 1, 10)
             intervals_a = typeof(i)[]
-            @test length(collect(eachoverlap(intervals_a, intervals_a))) == 0
+            @test length(collect(each_overlap(intervals_a, intervals_a))) == 0
 
             intervals_a = [GenomicInterval("chr1", 1, 10)]
             intervals_b = eltype(intervals_a)[]
-            @test length(collect(eachoverlap(intervals_a, intervals_b))) == 0
-            @test length(collect(eachoverlap(intervals_b, intervals_a))) == 0
+            @test length(collect(each_overlap(intervals_a, intervals_b))) == 0
+            @test length(collect(each_overlap(intervals_b, intervals_a))) == 0
 
             intervals_a = [GenomicInterval("chr1", 1, 10)]
-            @test length(collect(eachoverlap(intervals_a, intervals_a))) == 1
+            @test length(collect(each_overlap(intervals_a, intervals_a))) == 1
 
             intervals_a = [GenomicInterval("chr1", 1, 10)]
             intervals_b = [GenomicInterval("chr2", 1, 10)]
-            @test length(collect(eachoverlap(intervals_a, intervals_b))) == 0
-            @test length(collect(eachoverlap(intervals_b, intervals_a))) == 0
+            @test length(collect(each_overlap(intervals_a, intervals_b))) == 0
+            @test length(collect(each_overlap(intervals_b, intervals_a))) == 0
 
             intervals_a = [GenomicInterval("chr1", 1, 10)]
             intervals_b = [GenomicInterval("chr1", 11, 15)]
-            @test length(collect(eachoverlap(intervals_a, intervals_b))) == 0
-            @test length(collect(eachoverlap(intervals_b, intervals_a))) == 0
+            @test length(collect(each_overlap(intervals_a, intervals_b))) == 0
+            @test length(collect(each_overlap(intervals_b, intervals_a))) == 0
 
             intervals_a = [GenomicInterval("chr1", 11, 15)]
             intervals_b = [GenomicInterval("chr1", 1, 10), GenomicInterval("chr1", 12, 13)]
-            @test length(collect(eachoverlap(intervals_a, intervals_b))) == 1
-            @test length(collect(eachoverlap(intervals_b, intervals_a))) == 1
+            @test length(collect(each_overlap(intervals_a, intervals_b))) == 1
+            @test length(collect(each_overlap(intervals_b, intervals_a))) == 1
 
             intervals_a = [GenomicInterval("chr1", 1, 2), GenomicInterval("chr1", 2, 5), GenomicInterval("chr2", 1, 10)]
             intervals_b = [GenomicInterval("chr1", 1, 2), GenomicInterval("chr1", 2, 3), GenomicInterval("chr2", 1, 2)]
-            @test length(collect(eachoverlap(intervals_a, intervals_b))) == 5
-            @test length(collect(eachoverlap(intervals_b, intervals_a))) == 5
+            @test length(collect(each_overlap(intervals_a, intervals_b))) == 5
+            @test length(collect(each_overlap(intervals_b, intervals_a))) == 5
 
             intervals_a = [GenomicInterval("chr1", 1, 2), GenomicInterval("chr1", 3, 5), GenomicInterval("chr2", 1, 10)]
-            @test length(collect(eachoverlap(intervals_a, intervals_a))) == 3
+            @test length(collect(each_overlap(intervals_a, intervals_a))) == 3
 
-            # compare generic and specific eachoverlap methods
+            # compare generic and specific each_overlap methods
             intervals_a = [
                 GenomicInterval("chr1", 1, 2), GenomicInterval("chr1", 1, 3), GenomicInterval("chr1", 5, 9),
                 GenomicInterval("chr2", 1, 5), GenomicInterval("chr2", 6, 6), GenomicInterval("chr2", 6, 8),
@@ -559,14 +568,14 @@ end
             intervals_b = intervals_a
             ic_a = GenomicIntervalCollection(intervals_a)
             ic_b = GenomicIntervalCollection(intervals_b)
-            iter1 = eachoverlap(intervals_a, intervals_b)
-            iter2 = eachoverlap(intervals_a, ic_b)
-            iter3 = eachoverlap(ic_a, intervals_b)
-            iter4 = eachoverlap(ic_a, ic_b)
+            iter1 = each_overlap(intervals_a, intervals_b)
+            iter2 = each_overlap(intervals_a, ic_b)
+            iter3 = each_overlap(ic_a, intervals_b)
+            iter4 = each_overlap(ic_a, ic_b)
             @test collect(iter1) == collect(iter2) == collect(iter3) == collect(iter4)
 
             # non-overlapping query
-            @test length(collect(eachoverlap(ic_a, GenomicInterval("X", 0, 0)))) == 0
+            @test length(collect(each_overlap(ic_a, GenomicInterval("X", 0, 0)))) == 0
         end
     end
 
@@ -679,25 +688,25 @@ end
 
         # Check overlap.
         interval_p1_equiv = GenomicInterval("chr1", 2, 2)
-        @test true == isoverlapping(i, interval_p1_equiv)
+        @test true == is_overlapping(i, interval_p1_equiv)
         @test interval_p1_equiv == p1
 
-        @test true == isoverlapping(i, p1)
-        @test false == isoverlapping(i, p2) == isoverlapping(i, p3)
+        @test true == is_overlapping(i, p1)
+        @test false == is_overlapping(i, p2) == is_overlapping(i, p3)
 
-        # Check eachoverlap.
-        # @test [(i, p1)] == collect(eachoverlap(i, [p1,p2,p3])) #Note: attempts to broadcast i.
-        @test [(i, p1)] == collect(eachoverlap([i], [p1, p2, p3]))
-        @test [(i, p1)] == collect(eachoverlap(GenomicIntervalCollection([i]), GenomicIntervalCollection([p1, p2, p3])))
-        # @test [(p1, i)] == collect(eachoverlap([p1,p2,p3], i)) #Note: attempts to broadcast i.
-        @test [(p1, i)] == collect(eachoverlap([p1, p2, p3], [i]))
-        @test [(p1, i)] == collect(eachoverlap(GenomicIntervalCollection([p1, p2, p3]), GenomicIntervalCollection([i])))
+        # Check each_overlap.
+        # @test [(i, p1)] == collect(each_overlap(i, [p1,p2,p3])) #Note: attempts to broadcast i.
+        @test [(i, p1)] == collect(each_overlap([i], [p1, p2, p3]))
+        @test [(i, p1)] == collect(each_overlap(GenomicIntervalCollection([i]), GenomicIntervalCollection([p1, p2, p3])))
+        # @test [(p1, i)] == collect(each_overlap([p1,p2,p3], i)) #Note: attempts to broadcast i.
+        @test [(p1, i)] == collect(each_overlap([p1, p2, p3], [i]))
+        @test [(p1, i)] == collect(each_overlap(GenomicIntervalCollection([p1, p2, p3]), GenomicIntervalCollection([i])))
 
         # Pushing mixed types to Queue.
-        @test [(i, p1), (p1, p1)] == collect(eachoverlap([i, p1], [p1, p2, p3]))
-        @test [(i, p1), (p1, p1)] == collect(eachoverlap(GenomicIntervalCollection([i, p1]), GenomicIntervalCollection([p1, p2, p3])))
-        @test [(p1, i), (p1, p1)] == collect(eachoverlap([p1, p2, p3], [i, p1]))
-        @test [(p1, i), (p1, p1)] == collect(eachoverlap(GenomicIntervalCollection([p1, p2, p3]), GenomicIntervalCollection([i, p1])))
+        @test [(i, p1), (p1, p1)] == collect(each_overlap([i, p1], [p1, p2, p3]))
+        @test [(i, p1), (p1, p1)] == collect(each_overlap(GenomicIntervalCollection([i, p1]), GenomicIntervalCollection([p1, p2, p3])))
+        @test [(p1, i), (p1, p1)] == collect(each_overlap([p1, p2, p3], [i, p1]))
+        @test [(p1, i), (p1, p1)] == collect(each_overlap(GenomicIntervalCollection([p1, p2, p3]), GenomicIntervalCollection([i, p1])))
 
         # Check coverage.
         @test [GenomicInterval{UInt32}("chr1", 1, 1, '.', 1), GenomicInterval{UInt32}("chr1", 2, 2, '.', 2), GenomicInterval{UInt32}("chr1", 3, 4, '.', 1)] == collect(coverage(GenomicIntervalCollection([i, p1]))) #TODO: relax comparisons.
@@ -713,5 +722,55 @@ end
         @test String(take!(buf)) == "WithoutMetadatata:\n  group name: chr1\n  leftmost position: 1\n  rightmost position: 2\n  metadata: nothing"
 
     end #testset "Custom Concrete Types"
+
+    @testset "Deprecated squashed names" begin
+        # Run `code` in a fresh process with `depwarn` (`yes`, `no` or `error`), and return its standard output and error.
+        function run_julia(code; depwarn)
+            command = `$(Base.julia_cmd()) --depwarn=$(depwarn) --startup-file=no --project=$(Base.active_project()) -e $(code)`
+            output, error = IOBuffer(), IOBuffer()
+            run(pipeline(ignorestatus(command); stdout = output, stderr = error))
+            return String(take!(output)), String(take!(error))
+        end
+
+        # Each deprecated name is the same function as its snake case name; the legacy names keep BioGenerics' functions.
+        # Any use of a deprecated name warns, even `getfield`, so the comparisons run in a process without deprecation warnings.
+        pairs = [
+            :groupname => :group_name, :hasgroupname => :has_group_name,
+            :leftposition => :left_position, :hasleftposition => :has_left_position,
+            :rightposition => :right_position, :hasrightposition => :has_right_position,
+            :isoverlapping => :is_overlapping, :isfilled => :is_filled,
+            :eachoverlap => :each_overlap, :hasintersection => :has_intersection,
+            :intervaltype => :interval_type, :baseintervaltype => :base_interval_type, :metadatatype => :metadata_type,
+        ]
+        comparisons = join(["print(GenomicFeatures.$(old) === GenomicFeatures.$(new), ' ')" for (old, new) in pairs], "; ")
+        output, _ = run_julia(
+            """
+            using GenomicFeatures
+            $(comparisons)
+            BioGenerics = GenomicFeatures.BioGenerics
+            print(GenomicFeatures.seqname === BioGenerics.seqname && GenomicFeatures.hasseqname === BioGenerics.hasseqname, ' ')
+            print(GenomicFeatures.seqname(GenomicInterval("chr1", 1, 2)) == "chr1")
+            """; depwarn = "no"
+        )
+        @test split(output) == fill("true", length(pairs) + 2)
+
+        # A type whose interface is defined through BioGenerics' functions answers to the snake case names, and the reverse.
+        @test left_position === GenomicFeatures.BioGenerics.leftposition && group_name === GenomicFeatures.BioGenerics.groupname
+        @test left_position(SquashedSite()) == 7 && group_name(SquashedSite()) == "squashed"
+        @test GenomicFeatures.BioGenerics.leftposition(SnakeSite()) == 9 && GenomicFeatures.BioGenerics.groupname(SnakeSite()) == "snake"
+
+        # Every use of a deprecated name warns, naming its snake case replacement; the snake case names don't.
+        # Julia 1.10 begins the warning with "WARNING:" and later versions with "Use of", so the tests match what follows.
+        _, warnings = run_julia("using GenomicFeatures; GenomicFeatures.leftposition; GenomicFeatures.eachoverlap; GenomicFeatures.seqname"; depwarn = "yes")
+        @test occursin("GenomicFeatures.leftposition is deprecated, use left_position instead", warnings)
+        @test occursin("GenomicFeatures.eachoverlap is deprecated, use each_overlap instead", warnings)
+        @test occursin("GenomicFeatures.seqname is deprecated, use group_name instead", warnings)
+        _, warnings = run_julia("using GenomicFeatures; GenomicFeatures.left_position; GenomicFeatures.each_overlap; GenomicFeatures.group_name"; depwarn = "yes")
+        @test !occursin("deprecated", warnings)
+
+        # `--depwarn=error` makes a use of a deprecated name an error.
+        output, _ = run_julia("using GenomicFeatures; try; GenomicFeatures.leftposition; print(\"none\"); catch exception; print(sprint(showerror, exception)); end"; depwarn = "error")
+        @test occursin("deprecated variable: GenomicFeatures.leftposition", output)
+    end #testset "Deprecated squashed names"
 
 end #testset GenomicFeatures
