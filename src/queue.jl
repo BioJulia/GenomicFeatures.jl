@@ -8,7 +8,7 @@ mutable struct Queue{T}
     last::Int
 end
 
-function Queue{T}(bufsize::Integer=2^4) where {T}
+function Queue{T}(bufsize::Integer = 2^4) where {T}
     if bufsize ≤ 0
         throw(ArgumentError("buffer size must be positive"))
     elseif !ispow2(bufsize)
@@ -17,7 +17,7 @@ function Queue{T}(bufsize::Integer=2^4) where {T}
     return Queue(Vector{T}(undef, bufsize), 0, 1, 0)
 end
 
-function Base.eltype(::Type{Queue{T}}) where T
+function Base.eltype(::Type{Queue{T}}) where {T}
     return T
 end
 
@@ -29,7 +29,7 @@ function Base.isempty(queue::Queue)
     return queue.first > queue.last
 end
 
-function Base.push!(queue::Queue{T}, elm::T) where T
+function Base.push!(queue::Queue{T}, elm::T) where {T}
     if length(queue.data) < length(queue) + 1
         index_first = dataindex(queue, queue.first)
         index_last = dataindex(queue, queue.last)

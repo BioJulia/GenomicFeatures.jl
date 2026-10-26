@@ -1,18 +1,18 @@
 # Overlap Iterator
 # ================
 
-struct OverlapIterator{Sa,Sb,L,F}
+struct OverlapIterator{Sa, Sb, L, F}
     interval_stream_a::Sa
     interval_stream_b::Sb
     isless::L
     filter::F
 end
 
-function Base.eltype(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
-    return Tuple{intervaltype(eltype(Sa)),intervaltype(eltype(Sb))} #Note: The iterator will attempt to convert to these eltypes.
+function Base.eltype(::Type{OverlapIterator{Sa, Sb, L, F}}) where {Sa, Sb, L, F}
+    return Tuple{intervaltype(eltype(Sa)), intervaltype(eltype(Sb))} #Note: The iterator will attempt to convert to these eltypes.
 end
 
-function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
+function Base.IteratorSize(::Type{OverlapIterator{Sa, Sb, L, F}}) where {Sa, Sb, L, F}
     return Base.SizeUnknown()
 end
 
@@ -27,11 +27,11 @@ If the element type is not a subtype of `GenomicFeatures.AbstractGenomicInterval
 The third optional argument is a function that defines the order of the group names.
 The default function is `Base.isless`, which is the lexicographical order.
 """
-function eachoverlap(intervals_a, intervals_b, groupname_isless=Base.isless; filter=true_cmp)
+function eachoverlap(intervals_a, intervals_b, groupname_isless = Base.isless; filter = true_cmp)
     return OverlapIterator(intervals_a, intervals_b, groupname_isless, filter)
 end
 
-struct OverlapIteratorState{Na,Nb,Ia,Ib}
+struct OverlapIteratorState{Na, Nb, Ia, Ib}
     next_a::Na # Note: of the form (value, state)
     next_b::Nb
     queue::Queue{Ib}
@@ -39,12 +39,12 @@ struct OverlapIteratorState{Na,Nb,Ia,Ib}
 end
 
 function OverlapIteratorState(Ia::Type, Ib::Type, next_a::Na, next_b::Nb, queue::Queue, queue_index::Int) where {Na, Nb}
-    return OverlapIteratorState{Na,Nb,Ia,Ib}(next_a, next_b, queue, queue_index)
+    return OverlapIteratorState{Na, Nb, Ia, Ib}(next_a, next_b, queue, queue_index)
 end
 
 function OverlapIteratorState(Ia::Type, Ib::Type, next_a::Na, next_b::Nb) where {Na, Nb}
     queue = Queue{Ib}()
-    return OverlapIteratorState{Na,Nb,Ia,Ib}(next_a, next_b, queue, 1)
+    return OverlapIteratorState{Na, Nb, Ia, Ib}(next_a, next_b, queue, 1)
 end
 
 
@@ -69,14 +69,14 @@ function check_ordered(i1, i2, compare_func)
     return nothing
 end
 
-function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Nothing,Nb,Ia,Ib}) where {Nb,Ia,Ib}
+function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Nothing, Nb, Ia, Ib}) where {Nb, Ia, Ib}
     return nothing
 end
 
-function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Na,Nb,Ia,Ib}) where {Na,Nb,Ia,Ib}
-    next_a      = state.next_a
-    next_b      = state.next_b
-    queue       = state.queue
+function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Na, Nb, Ia, Ib}) where {Na, Nb, Ia, Ib}
+    next_a = state.next_a
+    next_b = state.next_b
+    queue = state.queue
     queue_index = state.queue_index
 
     entry_a, state_a = next_a

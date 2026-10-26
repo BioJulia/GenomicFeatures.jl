@@ -37,12 +37,12 @@ GenomicIntervalCollection{GenomicInterval{UInt32}} with 5 intervals:
   chr1:21-27  .  1
 ```
 """
-function coverage(stream, groupname_isless::Function=isless)
+function coverage(stream, groupname_isless::Function = isless)
     cov = GenomicIntervalCollection{UInt32}()
     return coverage!(cov, stream, groupname_isless)
 end
 
-function coverage!(cov::GenomicIntervalCollection{GenomicInterval{N}}, stream, groupname_isless::Function=isless) where N <: Integer
+function coverage!(cov::GenomicIntervalCollection{GenomicInterval{N}}, stream, groupname_isless::Function = isless) where {N <: Integer}
     lasts = Int64[]
 
     stream_next = iterate(stream)
@@ -122,7 +122,7 @@ function coverage!(cov::GenomicIntervalCollection{GenomicInterval{N}}, stream, g
 end
 
 # Helper function for coverage. Process remaining interval end points after all intervals have been read.
-function coverage_process_lasts_heap!(cov::GenomicIntervalCollection{GenomicInterval{N}}, current_coverage, coverage_groupname, coverage_first, lasts) where N <: Integer
+function coverage_process_lasts_heap!(cov::GenomicIntervalCollection{GenomicInterval{N}}, current_coverage, coverage_groupname, coverage_first, lasts) where {N <: Integer}
     while !isempty(lasts)
         pos = DataStructures.heappop!(lasts)
         if pos == coverage_first - 1
@@ -134,5 +134,5 @@ function coverage_process_lasts_heap!(cov::GenomicIntervalCollection{GenomicInte
             coverage_first = pos + 1
         end
     end
-    @assert current_coverage == 0
+    return @assert current_coverage == 0
 end
