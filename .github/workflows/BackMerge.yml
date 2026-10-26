@@ -1,0 +1,24 @@
+# Back-merge: once a release or hotfix merges into master, BioJulia/Workflows opens the pull request that brings master back into develop.
+# The ReleaseFlow app's client ID and private key, or else the personal access token RELEASEFLOW_TOKEN, open it so that its checks run; keep them as secrets of the `releaseflow` environment, limited to master, as BioJulia/Workflows' README describes.
+name: Back-merge
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  back-merge:
+    uses: BioJulia/Workflows/.github/workflows/back-merge.yml@v1
+    with:
+      main-branch: master
+    permissions:
+      contents: write
+      pull-requests: write
+    secrets:
+      RELEASEFLOW_APP_CLIENT_ID: ${{ secrets.RELEASEFLOW_APP_CLIENT_ID }}
+      RELEASEFLOW_APP_PRIVATE_KEY: ${{ secrets.RELEASEFLOW_APP_PRIVATE_KEY }}
+      RELEASEFLOW_TOKEN: ${{ secrets.RELEASEFLOW_TOKEN }}

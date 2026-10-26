@@ -1,0 +1,21 @@
+# Gitflow: the checks of BioJulia/Workflows, on pull requests into master and develop; its README describes them.
+# Rulesets on master and develop require them, as "gitflow / Source branch", "gitflow / Version", "gitflow / Changelog", "gitflow / Breaking changes" and "gitflow / Changelog entry".
+name: Gitflow
+
+on:
+  pull_request:
+    branches:
+      - master
+      - develop
+    # Adding or removing the `skip changelog` label runs the checks again.
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+
+permissions: {}
+
+jobs:
+  gitflow:
+    uses: BioJulia/Workflows/.github/workflows/gitflow.yml@v1
+    with:
+      main-branch: master
+    permissions:
+      contents: read

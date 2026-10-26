@@ -8,8 +8,8 @@ makedocs(
     sitename = "GenomicFeatures.jl",
     doctest = true,
     linkcheck = true,
-    # A workflow's page exists once the workflow is on GitHub, which a pull request that adds it precedes.
-    linkcheck_ignore = [r"^https://github\.com/BioJulia/GenomicFeatures\.jl/actions/workflows/"],
+    # The pages of this repository's own workflows and files on develop exist once they are on GitHub, which a pull request that adds them precedes.
+    linkcheck_ignore = [r"^https://github\.com/BioJulia/GenomicFeatures\.jl/(actions/workflows|blob/develop)/"],
     pages = [
         "Home" => "index.md",
         "Intervals" => "man/intervals.md",
