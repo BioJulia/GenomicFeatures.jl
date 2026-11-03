@@ -1,14 +1,15 @@
 # Dependabot keeps the compat bounds of the Julia projects and the versions of the GitHub Actions current, with weekly pull requests.
 version: 2
 updates:
-  # The package and the projects of its workspace, the tests and the documentation.
+  # The package's workspace, whose projects, the tests, the documentation and the benchmarks, Dependabot updates from the root, so they aren't listed apart, which would open a pull request for each.
   - package-ecosystem: "julia"
-    directories:
-      - "/"
-      - "/test"
-      - "/docs"
+    directory: "/"
     schedule:
       interval: "weekly"
+    # Dependabot takes the standard libraries' version for 0.0.0, and would widen their bounds to `<0.0.1, 1`.
+    ignore:
+      - dependency-name: "Random"
+      - dependency-name: "Test"
   # The actions are pinned to commits, with their versions in comments, which these pull requests update; an action's update isn't a change for the package's users, so they carry the `skip changelog` label.
   - package-ecosystem: "github-actions"
     directory: "/"
