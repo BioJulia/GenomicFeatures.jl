@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [3.1.0] - 2026-11-03
+
 ### Added
 
 - CI, after BioJuliaTemplate.jl: unit tests on Julia 1 on Linux, macOS and Windows and on Julia 1.10 on Linux, with coverage, documentation with Documenter 1, Runic formatting, and Dependabot in place of CompatHelper, with the actions pinned to commits; the tests and the documentation are projects of the package's workspace.
@@ -190,7 +192,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Code from Bio.jl.
 - Support for GFF3 and BigWig.
 
-[Unreleased]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v3.0.1...HEAD
+[Unreleased]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v3.0.1...v3.1.0
 [3.0.1]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v3.0.0...v3.0.1
 [3.0.0]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v2.1.0...v3.0.0
 [2.1.0]: https://github.com/BioJulia/GenomicFeatures.jl/compare/v2.0.5...v2.1.0
