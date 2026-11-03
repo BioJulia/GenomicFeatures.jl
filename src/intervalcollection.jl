@@ -77,10 +77,10 @@ mutable struct GenomicIntervalCollection{I} <: AbstractGenomicCollection{I}
         i = 1
         while i <= n
             j = i
-            while j <= n && groupname(intervals[i]) == groupname(intervals[j])
+            while j <= n && group_name(intervals[i]) == group_name(intervals[j])
                 j += 1
             end
-            trees[groupname(intervals[i])] = ICTree{I}(view(intervals, i:(j - 1)))
+            trees[group_name(intervals[i])] = ICTree{I}(view(intervals, i:(j - 1)))
             i = j
         end
         return new{I}(trees, n, ICTree{I}[], true)
@@ -113,10 +113,10 @@ end
 
 """
     GenomicIntervalCollection(data, sort::Bool=false)
-Constructor that guesses metadatatype, and offers conversion through collection.
+Constructor that guesses the metadata type, and offers conversion through collection.
 """
 function GenomicIntervalCollection(data, sort::Bool = false)
-    return GenomicIntervalCollection(collect(intervaltype(eltype(data)), data), sort)
+    return GenomicIntervalCollection(collect(interval_type(eltype(data)), data), sort)
 end
 
 function update_ordered_trees!(ic::GenomicIntervalCollection{I}) where {I}
@@ -129,8 +129,8 @@ function update_ordered_trees!(ic::GenomicIntervalCollection{I}) where {I}
 end
 
 function Base.push!(ic::GenomicIntervalCollection{I}, i::AbstractGenomicInterval) where {I <: AbstractGenomicInterval}
-    tree = get!(ic.trees, groupname(i)) do
-        # Setup empty tree for new groupname key.
+    tree = get!(ic.trees, group_name(i)) do
+        # Setup empty tree for new group name key.
         ic.ordered_trees_outdated = true
         return ICTree{I}()
     end
@@ -193,7 +193,7 @@ mutable struct GenomicIntervalCollectionIteratorState{T}
     end
 end
 
-function iterinitstate(ic::GenomicIntervalCollection{T}) where T
+function iter_init_state(ic::GenomicIntervalCollection{T}) where T
     update_ordered_trees!(ic)
     i = 1
     while i <= length(ic.ordered_trees)
@@ -221,7 +221,7 @@ end
 =#
 
 #=
-function Base.iterate(ic::GenomicIntervalCollection, state=iterinitstate(ic))
+function Base.iterate(ic::GenomicIntervalCollection, state=iter_init_state(ic))
     i = state.i
     treeit = iterate(ic.ordered_trees[i], state.tree_state)
     if treeit === nothing
@@ -239,7 +239,7 @@ function Base.iterate(ic::GenomicIntervalCollection, state=iterinitstate(ic))
 end
 =#
 
-function iterprep(ic::GenomicIntervalCollection)
+function iter_prep(ic::GenomicIntervalCollection)
     update_ordered_trees!(ic)
     return ()
 end
@@ -248,7 +248,7 @@ end
 # (ot iteration state, current ot element, current ot element state)
 # "ot" is shorthand for "ordered_trees"
 # This iterate method basically works like the Iterators.Flatten iterator.
-@propagate_inbounds function Base.iterate(ic::GenomicIntervalCollection, state = iterprep(ic))
+@propagate_inbounds function Base.iterate(ic::GenomicIntervalCollection, state = iter_prep(ic))
     if state !== ()
         # Iterate over each interval in current ordered tree.
         tree_it = iterate(Base.tail(state)...)
@@ -288,7 +288,7 @@ end
 
 true_cmp(a, b) = true
 
-eachoverlap_equal_filter(a, b) = first(a) == first(b) && last(a) == last(b)
+each_overlap_equal_filter(a, b) = first(a) == first(b) && last(a) == last(b)
 
 # TODO: other prebaked filter predicates
 
@@ -299,30 +299,30 @@ Find a the first interval with matching start and end points.
 Returns that interval, or 'nothing' if no interval was found.
 """
 function Base.findfirst(a::GenomicIntervalCollection, b::AbstractGenomicInterval; filter = true_cmp)
-    if !haskey(a.trees, groupname(b))
+    if !haskey(a.trees, group_name(b))
         return nothing
     end
 
-    return findfirst(a.trees[groupname(b)], b, filter)
+    return findfirst(a.trees[group_name(b)], b, filter)
 end
 
 
 # Overlaps
 # --------
 
-function eachoverlap(a::GenomicIntervalCollection{I}, query::AbstractGenomicInterval; filter::F = true_cmp) where {F, I}
-    if haskey(a.trees, groupname(query))
-        return ICTreeIntervalIntersectionIterator{F, I}(filter, ICTreeIntersection{I}(), a.trees[groupname(query)], query)
+function each_overlap(a::GenomicIntervalCollection{I}, query::AbstractGenomicInterval; filter::F = true_cmp) where {F, I}
+    if haskey(a.trees, group_name(query))
+        return ICTreeIntervalIntersectionIterator{F, I}(filter, ICTreeIntersection{I}(), a.trees[group_name(query)], query)
     end
 
     return ICTreeIntervalIntersectionIterator{F, I}(filter, ICTreeIntersection{I}(), ICTree{I}(), query)
 end
 
-function eachoverlap(query::AbstractGenomicInterval, b::GenomicIntervalCollection{I}; filter::F = true_cmp) where {F, I}
-    return eachoverlap(b, query; filter = filter)
+function each_overlap(query::AbstractGenomicInterval, b::GenomicIntervalCollection{I}; filter::F = true_cmp) where {F, I}
+    return each_overlap(b, query; filter = filter)
 end
 
-function eachoverlap(a::GenomicIntervalCollection, b::GenomicIntervalCollection; filter = true_cmp)
+function each_overlap(a::GenomicIntervalCollection, b::GenomicIntervalCollection; filter = true_cmp)
     groupnames = collect(AbstractString, keys(a.trees) ∩ keys(b.trees))
     sort!(groupnames, lt = isless)
     a_trees = [a.trees[groupname] for groupname in groupnames]
@@ -415,7 +415,7 @@ function Base.done(it::IntersectIterator{F, S, T}, state) where {F, S, T}
 end
 =#
 
-function eachoverlap(a, b::GenomicIntervalCollection; filter = true_cmp)
+function each_overlap(a, b::GenomicIntervalCollection; filter = true_cmp)
     return GenomicIntervalCollectionStreamIterator(filter, a, b)
 end
 
@@ -426,7 +426,7 @@ struct GenomicIntervalCollectionStreamIterator{F, S, Ib}
 end
 
 function Base.eltype(::Type{GenomicIntervalCollectionStreamIterator{F, S, Ib}}) where {F, S, Ib}
-    return Tuple{intervaltype(eltype(S)), Ib}
+    return Tuple{interval_type(eltype(S)), Ib}
 end
 
 function Base.IteratorSize(::Type{GenomicIntervalCollectionStreamIterator{F, S, Ib}}) where {F, S, Ib}
@@ -455,15 +455,15 @@ function Base.start(it::GenomicIntervalCollectionStreamIterator{F,S,T}) where {F
     intersection = ICTreeIntersection{T}()
     while !done(it.stream, stream_state)
         stream_value, stream_state = next(it.stream, stream_state)
-        if haskey(it.collection.trees, groupname(stream_value))
-            tree = it.collection.trees[groupname(stream_value)]
+        if haskey(it.collection.trees, group_name(stream_value))
+            tree = it.collection.trees[group_name(stream_value)]
             IntervalTrees.firstintersection!(tree, stream_value, nothing, intersection, it.filter)
             if intersection.index != 0
-                return GenomicIntervalCollectionStreamIteratorState{F,T,metadatatype(it.stream),typeof(stream_state)}(intersection, stream_value, stream_state)
+                return GenomicIntervalCollectionStreamIteratorState{F,T,metadata_type(it.stream),typeof(stream_state)}(intersection, stream_value, stream_state)
             end
         end
     end
-    return GenomicIntervalCollectionStreamIteratorState{S,metadatatype(it.stream),typeof(stream_state)}()
+    return GenomicIntervalCollectionStreamIteratorState{S,metadata_type(it.stream),typeof(stream_state)}()
 end
 
 function Base.next(it::GenomicIntervalCollectionStreamIterator{F,S,T}, state) where {F,S,T}
@@ -473,8 +473,8 @@ function Base.next(it::GenomicIntervalCollectionStreamIterator{F,S,T}, state) wh
     IntervalTrees.nextintersection!(intersection.node, intersection.index, state.stream_value, intersection, it.filter)
     while intersection.index == 0 && !done(it.stream, state.stream_state)
         state.stream_value, state.stream_state = next(it.stream, state.stream_state)
-        if haskey(it.b.trees, groupname(state.stream_value))
-            tree = it.b.trees[groupname(state.stream_value)]
+        if haskey(it.b.trees, group_name(state.stream_value))
+            tree = it.b.trees[group_name(state.stream_value)]
             IntervalTrees.firstintersection!(tree, state.stream_value, nothing, intersection, it.filter)
         end
     end
@@ -506,7 +506,7 @@ function Base.iterate(it::GenomicIntervalCollectionStreamIterator{F, S, Ib}, sta
     stream_it = (state === () ? iterate(it.stream) : iterate(it.stream, state[2]))
     while stream_it !== nothing
         stream_value, stream_state = stream_it
-        tree = get(it.collection.trees, groupname(stream_value), nothing)
+        tree = get(it.collection.trees, group_name(stream_value), nothing)
         if tree !== nothing
             IntervalTrees.firstintersection!(tree, stream_value, nothing, intersection, it.filter)
             if intersection.index != 0
@@ -519,19 +519,19 @@ function Base.iterate(it::GenomicIntervalCollectionStreamIterator{F, S, Ib}, sta
 end
 
 """
-    hasintersection(interval::AbstractGenomicInterval, col::GenomicIntervalCollection)::Bool
+    has_intersection(interval::AbstractGenomicInterval, col::GenomicIntervalCollection)::Bool
 
 Query whether an `interval` has an intersection with `col`.
 """
-function hasintersection(interval::AbstractGenomicInterval, col::GenomicIntervalCollection)
+function has_intersection(interval::AbstractGenomicInterval, col::GenomicIntervalCollection)
 
     # Return early if chromosome is not in the interval collection.
-    if !haskey(col.trees, groupname(interval))
+    if !haskey(col.trees, group_name(interval))
         return false
     end
 
     # Setup intersection iterator.
-    iter = IntervalTrees.intersect(col.trees[groupname(interval)], (leftposition(interval), rightposition(interval)))
+    iter = IntervalTrees.intersect(col.trees[group_name(interval)], (left_position(interval), right_position(interval)))
 
     # Attempt first iteration.
     if iterate(iter) === nothing
@@ -543,6 +543,6 @@ function hasintersection(interval::AbstractGenomicInterval, col::GenomicInterval
 
 end
 
-function hasintersection(col::GenomicIntervalCollection)
-    return interval -> hasintersection(interval, col)
+function has_intersection(col::GenomicIntervalCollection)
+    return interval -> has_intersection(interval, col)
 end

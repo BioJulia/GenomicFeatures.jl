@@ -2,6 +2,13 @@
 
 The `GenomicFeatures` module consists of tools for working efficiently with genomic intervals.
 
+## Snake case names
+
+Julia's style guide asks packages to write function names in snake case, and so `GenomicFeatures` names its functions: [`group_name`](@ref), [`has_group_name`](@ref), [`left_position`](@ref), [`has_left_position`](@ref), [`right_position`](@ref), [`has_right_position`](@ref), [`is_overlapping`](@ref), [`is_filled`](@ref), [`each_overlap`](@ref) and [`has_intersection`](@ref).
+The squashed names of earlier versions, `groupname`, `leftposition`, `eachoverlap` and the rest, are deprecated, and go in `GenomicFeatures` 4.0.
+Until then, each is the same function as its snake case name, so a method defined through either name reaches callers of both, and every use of a squashed name warns when deprecation warnings are on, as they are in `Pkg.test` or with `julia --depwarn=yes`.
+Packages that give their types the interval interface define methods through the snake case names, such as `GenomicFeatures.left_position(record::MyRecord)`.
+
 ## GenomicInterval Type
 
 Intervals in `GenomicFeatures` are consistent with ranges in Julia: *1-based and end-inclusive*.
@@ -22,7 +29,7 @@ end
 The first three fields (`groupname`, `first`, and `last`) are mandatory arguments when constructing the [`GenomicInterval`](@ref GenomicInterval) object.
 The `groupname` field holds the group name associated with the interval.
 In some cases the `groupname` may denote the chromosome.
-The `first` and `last` fields are the leftmost and rightmost positions of the interval, which can be accessed with [`leftposition`](@ref leftposition) and [`rightposition`](@ref rightposition) functions, respectively.
+The `first` and `last` fields are the leftmost and rightmost positions of the interval, which can be accessed with [`left_position`](@ref left_position) and [`right_position`](@ref right_position) functions, respectively.
 
 The `strand` field can take four kinds of values listed in the next table:
 
@@ -64,13 +71,13 @@ GenomicInterval{String}:
   strand: +
   metadata: some annotation
 
-julia> groupname(i)
+julia> group_name(i)
 "chr1"
 
-julia> leftposition(i)
+julia> left_position(i)
 10000
 
-julia> rightposition(i)
+julia> right_position(i)
 20000
 
 julia> strand(i)
@@ -132,7 +139,7 @@ intervals = [
 
 col = GenomicIntervalCollection(intervals)
 
-predicate(i) = isodd(leftposition(i))
+predicate(i) = isodd(left_position(i))
 
 selected = GenomicIntervalCollection(Base.Iterators.filter(predicate, col))
 selected = GenomicIntervalCollection([x for x in col if predicate(x)])
@@ -145,19 +152,19 @@ GenomicIntervalCollection{GenomicInterval{Nothing}} with 1 intervals:
 
 ## Overlap Query
 
-There are number of [`eachoverlap`](@ref eachoverlap) functions in the `GenomicFeatures` module.
+There are number of [`each_overlap`](@ref each_overlap) functions in the `GenomicFeatures` module.
 They follow two patterns:
 - interval versus collection queries which return an iterator over intervals in the collection that overlap the query, and
 - collection versus collection queries which iterate over all pairs of overlapping intervals.
 
 ```@docs
-eachoverlap
+each_overlap
 ```
 
-The order of interval pairs is the same as the following nested loop but [`eachoverlap`](@ref eachoverlap) is often much faster:
+The order of interval pairs is the same as the following nested loop but [`each_overlap`](@ref each_overlap) is often much faster:
 ```julia
 for a in intervals_a, b in intervals_b
-    if isoverlapping(a, b)
+    if is_overlapping(a, b)
         # do something...
     end
 end

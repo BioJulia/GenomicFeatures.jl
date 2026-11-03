@@ -31,8 +31,8 @@ end
 
 function Base.push!(queue::Queue{T}, elm::T) where {T}
     if length(queue.data) < length(queue) + 1
-        index_first = dataindex(queue, queue.first)
-        index_last = dataindex(queue, queue.last)
+        index_first = data_index(queue, queue.first)
+        index_last = data_index(queue, queue.last)
         index_end = lastindex(queue.data)
         # NOTE: resize factor must be a power of two
         resize!(queue.data, 2 * length(queue.data))
@@ -44,7 +44,7 @@ function Base.push!(queue::Queue{T}, elm::T) where {T}
         copyto!(queue.data, 1, queue.data, index_first, length(queue))
         queue.offset = 0
     end
-    queue.data[dataindex(queue, queue.last + 1)] = elm
+    queue.data[data_index(queue, queue.last + 1)] = elm
     queue.last += 1
     return queue
 end
@@ -53,7 +53,7 @@ function Base.popfirst!(queue::Queue)
     if isempty(queue)
         throw(ArgumentError("empty"))
     end
-    elm = queue.data[dataindex(queue, queue.first)]
+    elm = queue.data[data_index(queue, queue.first)]
     queue.first += 1
     queue.offset += 1
     return elm
@@ -68,10 +68,10 @@ function Base.iterate(queue::Queue, i)
         return nothing
     end
 
-    return queue.data[dataindex(queue, i)], i + 1
+    return queue.data[data_index(queue, i)], i + 1
 end
 
-function dataindex(queue::Queue, i::Integer)
+function data_index(queue::Queue, i::Integer)
     return ((i - queue.first + queue.offset) & (length(queue.data) - 1)) + 1
 end
 
@@ -88,5 +88,5 @@ function Base.getindex(queue::Queue, i::Integer)
         throw(BoundsError())
     end
 
-    return queue.data[dataindex(queue, i)]
+    return queue.data[data_index(queue, i)]
 end

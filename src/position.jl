@@ -16,11 +16,11 @@ function GenomicPosition(groupname::String, range::UnitRange{<:Integer}, metadat
     return GenomicPosition(groupname, first(range), metadata)
 end
 
-function BioGenerics.leftposition(site::AbstractGenomicPosition)
+function left_position(site::AbstractGenomicPosition)
     return site.pos
 end
 
-function BioGenerics.rightposition(site::AbstractGenomicPosition)
+function right_position(site::AbstractGenomicPosition)
     return site.pos
 end
 
@@ -30,32 +30,32 @@ end
 Return the position of `p`.
 """
 function Base.position(site::AbstractGenomicPosition)
-    return leftposition(site)
+    return left_position(site)
 end
 
 function Base.show(io::IO, p::AbstractGenomicPosition)
     return if get(io, :compact, false)
-        print(io, groupname(p), ":", position(p))
+        print(io, group_name(p), ":", position(p))
     else
         println(io, summary(p), ':')
-        println(io, "  group name: ", groupname(p))
+        println(io, "  group name: ", group_name(p))
         print(io, "  position: ", position(p))
     end
 end
 
 function Base.show(io::IO, p::GenomicPosition)
     return if get(io, :compact, false)
-        print(io, groupname(p), ":", position(p), "  ", metadata(p) === nothing ? "nothing" : metadata(p))
+        print(io, group_name(p), ":", position(p), "  ", metadata(p) === nothing ? "nothing" : metadata(p))
     else
         println(io, summary(p), ':')
-        println(io, "  group name: ", groupname(p))
+        println(io, "  group name: ", group_name(p))
         println(io, "  position: ", position(p))
         print(io, "  metadata: ", metadata(p) === nothing ? "nothing" : metadata(p))
     end
 end
 
 function Base.:(==)(a::GenomicPosition, b::GenomicPosition)
-    return groupname(a) == groupname(b) &&
+    return group_name(a) == group_name(b) &&
         position(a) == position(b) &&
         metadata(a) == metadata(b)
 end
