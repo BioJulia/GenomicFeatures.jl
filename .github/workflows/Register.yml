@@ -1,0 +1,16 @@
+# Register: once a release or hotfix merges into master, BioJulia/Workflows comments `@JuliaRegistrator register` on its commit, with its section of the changelog as the release notes; TagBot then tags it once the registry merges it.
+# The comment takes the workflow's GITHUB_TOKEN, as github-actions[bot], whose comments Registrator acts on; the job runs in the `releaseflow` environment, limited to master, as BioJulia/Workflows' README describes.
+name: Register
+
+on:
+  push:
+    branches:
+      - master
+
+permissions: {}
+
+jobs:
+  register:
+    uses: BioJulia/Workflows/.github/workflows/register.yml@v1
+    permissions:
+      contents: write
