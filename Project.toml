@@ -3,10 +3,10 @@ uuid = "899a7d2d-5c61-547b-bef9-6698a8d05446"
 authors = ["Kenta Sato <bicycle1885@gmail.com>", "Sabrina J. Ward <sabrinajward@protonmail.com>", "Ciarán O’Mara <CiaranOMara@utas.edu.au>"]
 version = "3.0.1"
 
-# The tests and the documentation are projects of this workspace, which resolves them together with the package, in one manifest, from Julia 1.12.
+# The tests, the documentation and the benchmarks are projects of this workspace, which resolves them together with the package, in one manifest, from Julia 1.12.
 # Before 1.12, `Pkg.test` uses test/Project.toml alone, and the `[extras]` and `[targets]` below remain for the oldest versions.
 [workspace]
-projects = ["test", "docs"]
+projects = ["test", "docs", "benchmark"]
 
 [deps]
 BioGenerics = "47718e42-2ac5-11e9-14af-e5595289c2ea"
