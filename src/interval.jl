@@ -10,7 +10,7 @@
     GenomicInterval{T} <: AbstractGenomicInterval{T}
 
 A genomic interval specifies interval with some associated metadata.
-The first three fields (`groupname`, `first`, and `last`) are mandatory arguments when constructing the [`Interval`](@ref Interval) object.
+The first three fields (`groupname`, `first`, and `last`) are mandatory arguments when constructing the [`GenomicInterval`](@ref) object.
 
 # Fields
 - `groupname::String`: the group name associated with the interval.
@@ -27,11 +27,11 @@ struct GenomicInterval{T} <: AbstractGenomicInterval{T}
     metadata::T
 end
 
-function GenomicInterval(groupname::AbstractString, first::Integer, last::Integer, strand::Union{Strand,Char}=STRAND_BOTH, metadata::T=nothing) where T
+function GenomicInterval(groupname::AbstractString, first::Integer, last::Integer, strand::Union{Strand, Char} = STRAND_BOTH, metadata::T = nothing) where {T}
     return GenomicInterval{T}(groupname, first, last, strand, metadata)
 end
 
-function GenomicInterval(groupname::AbstractString, range::UnitRange{R}, strand::Union{Strand,Char}=STRAND_BOTH, metadata::T=nothing) where {T,R<:Integer}
+function GenomicInterval(groupname::AbstractString, range::UnitRange{R}, strand::Union{Strand, Char} = STRAND_BOTH, metadata::T = nothing) where {T, R <: Integer}
     return GenomicInterval{T}(groupname, first(range), last(range), strand, metadata)
 end
 
@@ -42,7 +42,7 @@ end
 The returned data is converted to GenomicInterval{T} if there is an implemented [`Base.convert`](https://docs.julialang.org/en/v1/base/base/#Base.convert) function for the type of data.
 This method provides a useful hook for converting custom types to GenomicInterval{T}.
 """
-function GenomicInterval{T}(data) :: GenomicInterval{T} where T
+function GenomicInterval{T}(data)::GenomicInterval{T} where {T}
     return data #Note: the returned data is converted to GenomicInterval{T}.
 end
 
@@ -87,7 +87,7 @@ end
 IntervalTrees.first(i::AbstractGenomicInterval) = leftposition(i)
 IntervalTrees.last(i::AbstractGenomicInterval) = rightposition(i)
 
-function Base.isless(a::AbstractGenomicInterval, b::AbstractGenomicInterval, groupname_isless::Function=isless)
+function Base.isless(a::AbstractGenomicInterval, b::AbstractGenomicInterval, groupname_isless::Function = isless)
     if groupname(a) != groupname(b)
         return groupname_isless(groupname(a), groupname(b))::Bool
     end
@@ -103,7 +103,7 @@ function Base.isless(a::AbstractGenomicInterval, b::AbstractGenomicInterval, gro
     return false
 end
 
-function Base.isless(a::GenomicInterval, b::GenomicInterval, groupname_isless::Function=isless)
+function Base.isless(a::GenomicInterval, b::GenomicInterval, groupname_isless::Function = isless)
     if groupname(a) != groupname(b)
         return groupname_isless(groupname(a), groupname(b))::Bool
     end
@@ -128,7 +128,7 @@ Check if two intervals are well ordered.
 
 `AbstractGenomicInterval` are considered well ordered if groupname(a) <= groupname(b) and leftposition(a) <= leftposition(b).
 """
-function isordered(a::AbstractGenomicInterval, b::AbstractGenomicInterval, groupname_isless::Function=isless)
+function isordered(a::AbstractGenomicInterval, b::AbstractGenomicInterval, groupname_isless::Function = isless)
     if groupname(a) != groupname(b)
         return groupname_isless(groupname(a), groupname(b))::Bool
     end
@@ -143,7 +143,7 @@ end
 """
 Return true if interval `a` entirely precedes `b`.
 """
-function precedes(a::AbstractGenomicInterval, b::AbstractGenomicInterval, groupname_isless::Function=isless)
+function precedes(a::AbstractGenomicInterval, b::AbstractGenomicInterval, groupname_isless::Function = isless)
 
     if groupname(a) != groupname(b)
         return groupname_isless(groupname(a), groupname(b))::Bool
@@ -153,41 +153,41 @@ function precedes(a::AbstractGenomicInterval, b::AbstractGenomicInterval, groupn
 end
 
 function Base.:(==)(a::AbstractGenomicInterval, b::AbstractGenomicInterval)
-    return groupname(a)     == groupname(b) &&
-           leftposition(a)  == leftposition(b) &&
-           rightposition(a) == rightposition(b) &&
-           metadata(a)      == metadata(b)
+    return groupname(a) == groupname(b) &&
+        leftposition(a) == leftposition(b) &&
+        rightposition(a) == rightposition(b) &&
+        metadata(a) == metadata(b)
 end
 
 function Base.:(==)(a::GenomicInterval, b::GenomicInterval)
-    return groupname(a)     == groupname(b) &&
-           leftposition(a)  == leftposition(b) &&
-           rightposition(a) == rightposition(b) &&
-           strand(a)        == strand(b) &&
-           metadata(a)      == metadata(b)
+    return groupname(a) == groupname(b) &&
+        leftposition(a) == leftposition(b) &&
+        rightposition(a) == rightposition(b) &&
+        strand(a) == strand(b) &&
+        metadata(a) == metadata(b)
 end
 
 "Return true if interval `a` overlaps interval `b`, with no consideration to strand"
 function BioGenerics.isoverlapping(a::AbstractGenomicInterval, b::AbstractGenomicInterval)
     return leftposition(a) <= rightposition(b) &&
-           leftposition(b) <= rightposition(a) &&
-           groupname(a)    == groupname(b)
+        leftposition(b) <= rightposition(a) &&
+        groupname(a) == groupname(b)
 end
 
 function Base.show(io::IO, i::AbstractGenomicInterval)
-    if get(io, :compact, false)
+    return if get(io, :compact, false)
         print(io, groupname(i), ":", leftposition(i), "-", rightposition(i), "  ", metadata(i) === nothing ? "nothing" : metadata(i))
     else
         println(io, summary(i), ':')
         println(io, "  group name: ", groupname(i))
         println(io, "  leftmost position: ", leftposition(i))
         println(io, "  rightmost position: ", rightposition(i))
-          print(io, "  metadata: ", metadata(i) === nothing ? "nothing" : metadata(i))
+        print(io, "  metadata: ", metadata(i) === nothing ? "nothing" : metadata(i))
     end
 end
 
 function Base.show(io::IO, i::GenomicInterval)
-    if get(io, :compact, false)
+    return if get(io, :compact, false)
         print(io, groupname(i), ":", leftposition(i), "-", rightposition(i), "  ", strand(i), "  ", metadata(i) === nothing ? "nothing" : metadata(i))
     else
         println(io, summary(i), ':')
@@ -195,6 +195,6 @@ function Base.show(io::IO, i::GenomicInterval)
         println(io, "  leftmost position: ", leftposition(i))
         println(io, "  rightmost position: ", rightposition(i))
         println(io, "  strand: ", strand(i))
-          print(io, "  metadata: ", metadata(i) === nothing ? "nothing" : metadata(i))
+        print(io, "  metadata: ", metadata(i) === nothing ? "nothing" : metadata(i))
     end
 end

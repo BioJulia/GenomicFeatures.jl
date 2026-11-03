@@ -1,0 +1,24 @@
+name: Formatting
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - release/*
+      - hotfix/*
+    tags: '*'
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  runic:
+    name: Runic
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: fredrikekre/runic-action@b4dbd650db5cc684baae27fea45d22daf41693c2 # v1.5.0
+        with:
+          version: '1'

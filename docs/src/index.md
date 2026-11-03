@@ -21,11 +21,12 @@ If you are interested in the cutting edge of the development, please check out t
 
 ## Testing
 
-GenomicFeatures is tested against Julia `1.X` on Linux, OS X, and Windows.
+GenomicFeatures is tested against Julia 1 on Linux, macOS and Windows, and against Julia 1.10, the long-term support release, on Linux.
 
 **Latest build status:**
 
-[![Unit Tests](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/UnitTests.yml/badge.svg)](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/UnitTests.yml)
+[![Unit tests](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/UnitTesting.yml/badge.svg)](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/UnitTesting.yml)
+[![Runic](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Formatting.yml/badge.svg)](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Formatting.yml)
 [![Documentation](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Documentation.yml/badge.svg)](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Documentation.yml)
 [![codecov](https://codecov.io/gh/BioJulia/GenomicFeatures.jl/branch/develop/graph/badge.svg)](https://codecov.io/gh/BioJulia/GenomicFeatures.jl)
 [![Downstream](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Downstream.yml/badge.svg)](https://github.com/BioJulia/GenomicFeatures.jl/actions/workflows/Downstream.yml)
@@ -33,40 +34,24 @@ GenomicFeatures is tested against Julia `1.X` on Linux, OS X, and Windows.
 ## Contributing
 
 We appreciate [contributions](https://github.com/BioJulia/GenomicFeatures.jl/graphs/contributors) from users including reporting bugs, fixing issues, improving performance and adding new features.
+See the [contributing files](https://github.com/BioJulia/Contributing) for detailed contributor and maintainer guidelines and the code of conduct.
 
-Take a look at the [contributing files](https://github.com/BioJulia/Contributing) detailed contributor and maintainer guidelines, and code of conduct.
+This project follows [semantic versioning](https://semver.org), and records notable changes in [CHANGELOG.md](https://github.com/BioJulia/GenomicFeatures.jl/blob/develop/CHANGELOG.md).
+Development happens on the [develop branch](https://github.com/BioJulia/GenomicFeatures.jl/tree/develop), following the [git-flow branching model](https://nvie.com/posts/a-successful-git-branching-model/):
+- features branch from `develop`, and merge back into it by pull request;
+- hotfixes branch from `master`, and merge back into it by pull request;
+- releases and hotfixes branch as `release/vX.Y.Z` and `hotfix/vX.Y.Z`, set that version in `Project.toml`, move the unreleased entries of `CHANGELOG.md` into a `## [X.Y.Z]` section, and merge into `master` by pull request; the Back-merge workflow then opens a pull request from a `back-merge/vX.Y.Z` branch at `master` into `develop`, which brings them back, never one from the release or hotfix branch itself.
+  A conflict with `develop` is resolved on the `back-merge/vX.Y.Z` branch, by merging `develop` into it.
 
+The [checks of BioJulia/Workflows](https://github.com/BioJulia/Workflows) enforce this, on pull requests into `master`:
+- that it comes from a `release/*` branch of `develop` or a `hotfix/*` branch of `master`, of this repository or a fork;
+- that its version is that of the branch's name, a single step up from `master`'s, and the next patch for a hotfix;
+- that the changelog describes the version, with its comparison links, and leaves nothing unreleased;
+- that a change that breaks the public API, the tests or the compat bounds of `master` takes a breaking version and a `### Breaking` subsection, and that a hotfix doesn't break.
 
-### Financial contributions
+And on pull requests into `develop`: that it doesn't come from a `release/*` or `hotfix/*` branch, and that it adds an entry under `## [Unreleased]`, unless it brings `master` back, or a maintainer has labelled it `skip changelog`, for a change that users won't notice.
+Rulesets on `master` and `develop` require these checks; the README of BioJulia/Workflows describes them, their setup, and how to run them locally.
 
-We also welcome financial contributions in full transparency on our [open collective](https://opencollective.com/biojulia).
-Anyone can file an expense. If the expense makes sense for the development of the community, it will be "merged" in the ledger of our open collective by the core contributors and the person who filed the expense will be reimbursed.
+## Questions
 
-
-## Backers & Sponsors
-
-Thank you to all our backers and sponsors!
-
-Love our work and community? [Become a backer](https://opencollective.com/biojulia#backer).
-
-[![backers](https://opencollective.com/biojulia/backers.svg?width=890)](https://opencollective.com/biojulia#backers)
-
-Does your company use BioJulia?
-Help keep BioJulia feature rich and healthy by [sponsoring the project](https://opencollective.com/biojulia#sponsor).
-Your logo will show up here with a link to your website.
-
-[![](https://opencollective.com/biojulia/sponsor/0/avatar.svg)](https://opencollective.com/biojulia/sponsor/0/website)
-[![](https://opencollective.com/biojulia/sponsor/1/avatar.svg)](https://opencollective.com/biojulia/sponsor/1/website)
-[![](https://opencollective.com/biojulia/sponsor/2/avatar.svg)](https://opencollective.com/biojulia/sponsor/2/website)
-[![](https://opencollective.com/biojulia/sponsor/3/avatar.svg)](https://opencollective.com/biojulia/sponsor/3/website)
-[![](https://opencollective.com/biojulia/sponsor/4/avatar.svg)](https://opencollective.com/biojulia/sponsor/4/website)
-[![](https://opencollective.com/biojulia/sponsor/5/avatar.svg)](https://opencollective.com/biojulia/sponsor/5/website)
-[![](https://opencollective.com/biojulia/sponsor/6/avatar.svg)](https://opencollective.com/biojulia/sponsor/6/website)
-[![](https://opencollective.com/biojulia/sponsor/7/avatar.svg)](https://opencollective.com/biojulia/sponsor/7/website)
-[![](https://opencollective.com/biojulia/sponsor/8/avatar.svg)](https://opencollective.com/biojulia/sponsor/8/website)
-[![](https://opencollective.com/biojulia/sponsor/9/avatar.svg)](https://opencollective.com/biojulia/sponsor/9/website)
-
-
-## Questions?
-
-If you have a question about contributing or using BioJulia software, come on over and chat to us on [the Julia Slack workspace](https://julialang.slack.com/channels/biology), or you can try the [Bio category of the Julia discourse site](https://discourse.julialang.org/c/domain/bio).
+If you have a question about contributing or using BioJulia software, come and chat with us in the `#biology` channel of [the Julia Slack workspace](https://julialang.slack.com/archives/biology), or try the [Bio category of the Julia Discourse site](https://discourse.julialang.org/c/domain/bio/15).
