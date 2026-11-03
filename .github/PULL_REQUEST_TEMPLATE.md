@@ -42,6 +42,8 @@ _(Please tick any or all of the following that are applicable)_
 - [ ] :blue_book: I have added or updated relevant user and developer manuals/documentation in `docs/src/`.
 - [ ] :ok: There are unit tests that cover the code changes I have made.
 - [ ] :ok: The unit tests cover my code changes AND they pass.
-- [ ] :pencil: I have added an entry to the `[UNRELEASED]` section of the manually curated `CHANGELOG.md` file for this repository.
+- [ ] :pencil: I have described my changes under `## [Unreleased]` in `CHANGELOG.md`, marking any breaking changes, or a maintainer has labelled the pull request `skip changelog`.
+- [ ] :twisted_rightwards_arrows: The pull request targets `develop` from a feature branch or a back-merge of `master`, or `master` from a `release/*` or `hotfix/*` branch, as gitflow does.
+- [ ] :bookmark: For a release or hotfix, the branch comes from `develop` or `master` respectively, is named after the new version, `Project.toml` has it, and `CHANGELOG.md` has its section, with a `### Breaking` subsection for breaking changes, and its comparison link.
 - [ ] :ok: All changes should be compatible with the latest stable version of Julia.
 - [ ] :thought_balloon: I have commented liberally for any complex pieces of internal code.

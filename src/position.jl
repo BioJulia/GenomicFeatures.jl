@@ -7,20 +7,20 @@ mutable struct GenomicPosition{T} <: AbstractGenomicPosition{T}
     metadata::T
 end
 
-function GenomicPosition(groupname::String, pos::Integer, metadata::T = nothing) where T
+function GenomicPosition(groupname::String, pos::Integer, metadata::T = nothing) where {T}
     return GenomicPosition{T}(groupname, pos, metadata)
 end
 
-function GenomicPosition(groupname::String, range::UnitRange{<:Integer}, metadata::T = nothing) where T
+function GenomicPosition(groupname::String, range::UnitRange{<:Integer}, metadata::T = nothing) where {T}
     length(range) == 1 || error("Position must have a length of 1.")
     return GenomicPosition(groupname, first(range), metadata)
 end
 
-function BioGenerics.leftposition(site::AbstractGenomicPosition)
+function left_position(site::AbstractGenomicPosition)
     return site.pos
 end
 
-function BioGenerics.rightposition(site::AbstractGenomicPosition)
+function right_position(site::AbstractGenomicPosition)
     return site.pos
 end
 
@@ -30,32 +30,32 @@ end
 Return the position of `p`.
 """
 function Base.position(site::AbstractGenomicPosition)
-    return leftposition(site)
+    return left_position(site)
 end
 
 function Base.show(io::IO, p::AbstractGenomicPosition)
-    if get(io, :compact, false)
-        print(io, groupname(p), ":", position(p))
+    return if get(io, :compact, false)
+        print(io, group_name(p), ":", position(p))
     else
         println(io, summary(p), ':')
-        println(io, "  group name: ", groupname(p))
-          print(io, "  position: ", position(p))
+        println(io, "  group name: ", group_name(p))
+        print(io, "  position: ", position(p))
     end
 end
 
 function Base.show(io::IO, p::GenomicPosition)
-    if get(io, :compact, false)
-        print(io, groupname(p), ":", position(p), "  ", metadata(p) === nothing ? "nothing" : metadata(p))
+    return if get(io, :compact, false)
+        print(io, group_name(p), ":", position(p), "  ", metadata(p) === nothing ? "nothing" : metadata(p))
     else
         println(io, summary(p), ':')
-        println(io, "  group name: ", groupname(p))
+        println(io, "  group name: ", group_name(p))
         println(io, "  position: ", position(p))
-          print(io, "  metadata: ", metadata(p) === nothing ? "nothing" : metadata(p))
+        print(io, "  metadata: ", metadata(p) === nothing ? "nothing" : metadata(p))
     end
 end
 
-function Base.:(==)(a::GenomicPosition, b::GenomicPosition) where T
-    return groupname(a) == groupname(b) &&
-           position(a)  == position(b) &&
-           metadata(a)  == metadata(b)
+function Base.:(==)(a::GenomicPosition, b::GenomicPosition)
+    return group_name(a) == group_name(b) &&
+        position(a) == position(b) &&
+        metadata(a) == metadata(b)
 end

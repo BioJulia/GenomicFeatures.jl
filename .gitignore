@@ -25,6 +25,7 @@ Manifest.toml
 
 .DS_Store
 
-.benchmarkci
-benchmark/*.json
+# The results of AirspeedVelocity.jl's `benchpkg`.
 benchmark/results
+
+.idea/

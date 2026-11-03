@@ -1,0 +1,2 @@
+# The workflows decide which checks every pull request runs, so a change to them needs a maintainer's review.
+/.github/ @BioJulia/maintainers

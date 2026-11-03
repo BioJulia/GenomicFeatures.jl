@@ -1,23 +1,23 @@
 # Overlap Iterator
 # ================
 
-struct OverlapIterator{Sa,Sb,L,F}
+struct OverlapIterator{Sa, Sb, L, F}
     interval_stream_a::Sa
     interval_stream_b::Sb
     isless::L
     filter::F
 end
 
-function Base.eltype(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
-    return Tuple{intervaltype(eltype(Sa)),intervaltype(eltype(Sb))} #Note: The iterator will attempt to convert to these eltypes.
+function Base.eltype(::Type{OverlapIterator{Sa, Sb, L, F}}) where {Sa, Sb, L, F}
+    return Tuple{interval_type(eltype(Sa)), interval_type(eltype(Sb))} #Note: The iterator will attempt to convert to these eltypes.
 end
 
-function Base.IteratorSize(::Type{OverlapIterator{Sa,Sb,L,F}}) where {Sa,Sb,L,F}
+function Base.IteratorSize(::Type{OverlapIterator{Sa, Sb, L, F}}) where {Sa, Sb, L, F}
     return Base.SizeUnknown()
 end
 
 """
-    eachoverlap(intervals_a, intervals_b, [groupname_isless=Base.isless])
+    each_overlap(intervals_a, intervals_b, [groupname_isless=Base.isless])
 
 Create an iterator of overlapping intervals between `intervals_a` and `intervals_b`.
 
@@ -27,11 +27,11 @@ If the element type is not a subtype of `GenomicFeatures.AbstractGenomicInterval
 The third optional argument is a function that defines the order of the group names.
 The default function is `Base.isless`, which is the lexicographical order.
 """
-function eachoverlap(intervals_a, intervals_b, groupname_isless=Base.isless; filter=true_cmp)
+function each_overlap(intervals_a, intervals_b, groupname_isless = Base.isless; filter = true_cmp)
     return OverlapIterator(intervals_a, intervals_b, groupname_isless, filter)
 end
 
-struct OverlapIteratorState{Na,Nb,Ia,Ib}
+struct OverlapIteratorState{Na, Nb, Ia, Ib}
     next_a::Na # Note: of the form (value, state)
     next_b::Nb
     queue::Queue{Ib}
@@ -39,12 +39,12 @@ struct OverlapIteratorState{Na,Nb,Ia,Ib}
 end
 
 function OverlapIteratorState(Ia::Type, Ib::Type, next_a::Na, next_b::Nb, queue::Queue, queue_index::Int) where {Na, Nb}
-    return OverlapIteratorState{Na,Nb,Ia,Ib}(next_a, next_b, queue, queue_index)
+    return OverlapIteratorState{Na, Nb, Ia, Ib}(next_a, next_b, queue, queue_index)
 end
 
 function OverlapIteratorState(Ia::Type, Ib::Type, next_a::Na, next_b::Nb) where {Na, Nb}
     queue = Queue{Ib}()
-    return OverlapIteratorState{Na,Nb,Ia,Ib}(next_a, next_b, queue, 1)
+    return OverlapIteratorState{Na, Nb, Ia, Ib}(next_a, next_b, queue, 1)
 end
 
 
@@ -52,8 +52,8 @@ function Base.iterate(iter::OverlapIterator)
     next_a = iterate(iter.interval_stream_a)
     next_b = iterate(iter.interval_stream_b)
 
-    Ia = intervaltype(eltype(iter.interval_stream_a))
-    Ib = intervaltype(eltype(iter.interval_stream_b))
+    Ia = interval_type(eltype(iter.interval_stream_a))
+    Ib = interval_type(eltype(iter.interval_stream_b))
 
     state = OverlapIteratorState(Ia, Ib, next_a, next_b)
 
@@ -63,20 +63,20 @@ end
 
 # check i1 and i2 are ordered
 function check_ordered(i1, i2, compare_func)
-    if !isordered(i1, i2, compare_func)
+    if !is_ordered(i1, i2, compare_func)
         error("intervals are not sorted")
     end
     return nothing
 end
 
-function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Nothing,Nb,Ia,Ib}) where {Nb,Ia,Ib}
+function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Nothing, Nb, Ia, Ib}) where {Nb, Ia, Ib}
     return nothing
 end
 
-function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Na,Nb,Ia,Ib}) where {Na,Nb,Ia,Ib}
-    next_a      = state.next_a
-    next_b      = state.next_b
-    queue       = state.queue
+function Base.iterate(iter::OverlapIterator, state::OverlapIteratorState{Na, Nb, Ia, Ib}) where {Na, Nb, Ia, Ib}
+    next_a = state.next_a
+    next_b = state.next_b
+    queue = state.queue
     queue_index = state.queue_index
 
     entry_a, state_a = next_a
@@ -146,20 +146,20 @@ end
 #   0 when `i1` overlaps with `i2`, and
 #   +1 when `i1` follows `i2`.
 function compare_overlap(i1::AbstractGenomicInterval, i2::AbstractGenomicInterval, isless::Function)
-    if isless(groupname(i1), groupname(i2))
+    if isless(group_name(i1), group_name(i2))
         return -1
     end
 
-    if isless(groupname(i2), groupname(i1))
+    if isless(group_name(i2), group_name(i1))
         return +1
     end
 
-    # groupname(i1) == groupname(i2)
-    if rightposition(i1) < leftposition(i2)
+    # group_name(i1) == group_name(i2)
+    if right_position(i1) < left_position(i2)
         return -1
     end
 
-    if leftposition(i1) > rightposition(i2)
+    if left_position(i1) > right_position(i2)
         return +1
     end
 
@@ -168,17 +168,17 @@ end
 
 # Faster comparison for `Base.isless`.  Note that `Base.isless` must be consistent wtih `Base.cmp` to work correctly.
 function compare_overlap(i1::AbstractGenomicInterval, i2::AbstractGenomicInterval, ::typeof(Base.isless))
-    c = cmp(groupname(i1), groupname(i2))
+    c = cmp(group_name(i1), group_name(i2))
 
     if c != 0
         return c
     end
 
-    if rightposition(i1) < leftposition(i2)
+    if right_position(i1) < left_position(i2)
         return -1
     end
 
-    if leftposition(i1) > rightposition(i2)
+    if left_position(i1) > right_position(i2)
         return +1
     end
 

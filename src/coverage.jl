@@ -37,8 +37,12 @@ GenomicIntervalCollection{GenomicInterval{UInt32}} with 5 intervals:
   chr1:21-27  .  1
 ```
 """
-function coverage(stream, groupname_isless::Function=isless)
+function coverage(stream, groupname_isless::Function = isless)
     cov = GenomicIntervalCollection{UInt32}()
+    return coverage!(cov, stream, groupname_isless)
+end
+
+function coverage!(cov::GenomicIntervalCollection{GenomicInterval{N}}, stream, groupname_isless::Function = isless) where {N <: Integer}
     lasts = Int64[]
 
     stream_next = iterate(stream)
@@ -54,59 +58,59 @@ function coverage(stream, groupname_isless::Function=isless)
     stream_next = iterate(stream, stream_state)
 
     while true
-        if groupname(interval) != coverage_groupname
+        if group_name(interval) != coverage_groupname
             coverage_process_lasts_heap!(cov, current_coverage, coverage_groupname, coverage_first, lasts)
-            if !(isempty(coverage_groupname) || groupname_isless(coverage_groupname, groupname(interval)))
+            if !(isempty(coverage_groupname) || groupname_isless(coverage_groupname, group_name(interval)))
                 error("GenomicIntervals must be sorted to compute coverage.")
             end
 
-            coverage_groupname = groupname(interval)
+            coverage_groupname = group_name(interval)
             current_coverage = 0
             coverage_first = 0
             last_interval_first = 0
         end
 
-        if leftposition(interval) < last_interval_first
+        if left_position(interval) < last_interval_first
             error("GenomicIntervals must be sorted to compute coverage.")
         end
 
-        if !isempty(lasts) && lasts[1] < leftposition(interval)
+        if !isempty(lasts) && lasts[1] < left_position(interval)
             pos = DataStructures.heappop!(lasts)
-            if leftposition(interval) == pos + 1
-                DataStructures.heappush!(lasts, rightposition(interval))
+            if left_position(interval) == pos + 1
+                DataStructures.heappush!(lasts, right_position(interval))
                 if stream_next === nothing
                     break
                 end
-                last_interval_first = leftposition(interval)
+                last_interval_first = left_position(interval)
                 interval, stream_state = stream_next
                 stream_next = iterate(stream, stream_state)
             elseif pos == coverage_first - 1
                 current_coverage -= 1
             else
                 @assert pos >= coverage_first
-                push!(cov, GenomicInterval{UInt32}(coverage_groupname, coverage_first, pos, STRAND_BOTH, current_coverage))
+                push!(cov, GenomicInterval{N}(coverage_groupname, coverage_first, pos, STRAND_BOTH, current_coverage))
                 current_coverage -= 1
                 coverage_first = pos + 1
             end
         else
             if coverage_first == 0
-                coverage_first = leftposition(interval)
+                coverage_first = left_position(interval)
                 current_coverage = 1
-            elseif coverage_first == leftposition(interval)
+            elseif coverage_first == left_position(interval)
                 current_coverage += 1
             else
                 if current_coverage > 0
-                    push!(cov, GenomicInterval{UInt32}(coverage_groupname, coverage_first, leftposition(interval) - 1, STRAND_BOTH, current_coverage))
+                    push!(cov, GenomicInterval{N}(coverage_groupname, coverage_first, left_position(interval) - 1, STRAND_BOTH, current_coverage))
                 end
                 current_coverage += 1
-                coverage_first = leftposition(interval)
+                coverage_first = left_position(interval)
             end
 
-            DataStructures.heappush!(lasts, rightposition(interval))
+            DataStructures.heappush!(lasts, right_position(interval))
             if stream_next === nothing
                 break
             end
-            last_interval_first = leftposition(interval)
+            last_interval_first = left_position(interval)
             interval, stream_state = stream_next
             stream_next = iterate(stream, stream_state)
         end
@@ -118,17 +122,17 @@ function coverage(stream, groupname_isless::Function=isless)
 end
 
 # Helper function for coverage. Process remaining interval end points after all intervals have been read.
-function coverage_process_lasts_heap!(cov::GenomicIntervalCollection{GenomicInterval{UInt32}}, current_coverage, coverage_groupname, coverage_first, lasts)
+function coverage_process_lasts_heap!(cov::GenomicIntervalCollection{GenomicInterval{N}}, current_coverage, coverage_groupname, coverage_first, lasts) where {N <: Integer}
     while !isempty(lasts)
         pos = DataStructures.heappop!(lasts)
         if pos == coverage_first - 1
             current_coverage -= 1
         else
             @assert pos >= coverage_first
-            push!(cov, GenomicInterval{UInt32}(coverage_groupname, coverage_first, pos, STRAND_BOTH, current_coverage))
+            push!(cov, GenomicInterval{N}(coverage_groupname, coverage_first, pos, STRAND_BOTH, current_coverage))
             current_coverage -= 1
             coverage_first = pos + 1
         end
     end
-    @assert current_coverage == 0
+    return @assert current_coverage == 0
 end

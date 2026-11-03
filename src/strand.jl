@@ -33,13 +33,13 @@ Base.convert(::Type{UInt8}, strand::Strand) = reinterpret(UInt8, strand)
 Base.isless(a::Strand, b::Strand) = convert(UInt8, a) < convert(UInt8, b)
 
 "Unknown strand ('?')"
-const STRAND_NA   = convert(Strand, 0b000)
+const STRAND_NA = convert(Strand, 0b000)
 
 "Positive strand ('+')"
-const STRAND_POS  = convert(Strand, 0b001)
+const STRAND_POS = convert(Strand, 0b001)
 
 "Negative strand ('-')"
-const STRAND_NEG  = convert(Strand, 0b010)
+const STRAND_NEG = convert(Strand, 0b010)
 
 "Both strand ('.')"
 const STRAND_BOTH = convert(Strand, 0b011)
@@ -90,7 +90,7 @@ function Base.convert(::Type{Char}, strand::Strand)
 end
 
 function Base.show(io::IO, strand::Strand)
-    if strand == STRAND_NA
+    return if strand == STRAND_NA
         print(io, "STRAND_NA")
     elseif strand == STRAND_POS
         print(io, "STRAND_POS")
@@ -104,7 +104,7 @@ function Base.show(io::IO, strand::Strand)
 end
 
 function Base.print(io::IO, strand::Strand)
-    if strand == STRAND_NA
+    return if strand == STRAND_NA
         print(io, "?")
     elseif strand == STRAND_POS
         print(io, "+")

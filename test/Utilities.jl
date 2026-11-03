@@ -16,7 +16,7 @@ function random_intervals(groupnames::Vector{String}, maxpos::Int, n::Int)
         while intlen >= maxpos || intlen <= 0
             intlen = ceil(Int, rand(length_dist))
         end
-        first = rand(1:maxpos-intlen)
+        first = rand(1:(maxpos - intlen))
         last = first + intlen - 1
         strand = rand(strand_dist) == 1 ? STRAND_POS : STRAND_NEG
         intervals[i] = GenomicInterval{Int}(groupnames[rand(seq_dist)], first, last, strand, i)

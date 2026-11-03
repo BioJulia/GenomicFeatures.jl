@@ -1,0 +1,60 @@
+name: Unit tests
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+      - release/*
+      - hotfix/*
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Julia ${{ matrix.julia-version }} - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental }}
+    strategy:
+      fail-fast: false
+      matrix:
+        julia-version: ['1']
+        # BEDTools_jll provides no `bedtools` for Windows, where the coverage tests compare with a simple implementation instead.
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        experimental: [false]
+        include:
+          # Nightly is experimental, so it may fail without failing CI.
+          - julia-version: nightly
+            os: ubuntu-latest
+            experimental: true
+          # The long-term support release, as the oldest that is tested, on one platform.
+          - julia-version: '1.10'
+            os: ubuntu-latest
+            experimental: false
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Setup Julia
+        uses: julia-actions/setup-julia@da908477b5db94c10ffce8cfea9f2b3b9d5db687 # v3.0.3
+        with:
+          version: ${{ matrix.julia-version }}
+      - name: Cache Julia Packages
+        uses: julia-actions/cache@9353db09a0f2bbbdec6f41791918c75d37391b36 # v3.5.0
+      - name: Run Tests
+        uses: julia-actions/julia-runtest@6e050c8013b833b1195105ff2fce9cd802f53271 # v1.12.0
+      # Coverage of one job is enough.
+      - name: Create CodeCov
+        if: matrix.julia-version == '1' && matrix.os == 'ubuntu-latest'
+        uses: julia-actions/julia-processcoverage@03114f09f119417c3242a9fb6e0b722676aedf38 # v1.2.2
+      - name: Upload CodeCov
+        if: matrix.julia-version == '1' && matrix.os == 'ubuntu-latest'
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
+        with:
+          files: ./lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}

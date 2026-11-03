@@ -1,7 +1,12 @@
 name = "GenomicFeatures"
 uuid = "899a7d2d-5c61-547b-bef9-6698a8d05446"
 authors = ["Kenta Sato <bicycle1885@gmail.com>", "Sabrina J. Ward <sabrinajward@protonmail.com>", "Ciarán O’Mara <CiaranOMara@utas.edu.au>"]
-version = "3.0.1"
+version = "3.1.0"
+
+# The tests, the documentation and the benchmarks are projects of this workspace, which resolves them together with the package, in one manifest, from Julia 1.12.
+# Before 1.12, `Pkg.test` uses test/Project.toml alone, and the `[extras]` and `[targets]` below remain for the oldest versions.
+[workspace]
+projects = ["test", "docs", "benchmark"]
 
 [deps]
 BioGenerics = "47718e42-2ac5-11e9-14af-e5595289c2ea"
@@ -10,15 +15,16 @@ IntervalTrees = "524e6230-43b7-53ae-be76-1e9e4d08d11b"
 
 [compat]
 BioGenerics = "0.1"
-DataStructures = "0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18"
+DataStructures = "0.11, 0.12, 0.13, 0.14, 0.15, 0.16, 0.17, 0.18, 0.19"
 IntervalTrees = "1.1"
 julia = "1"
 
 [extras]
+BEDTools_jll = "a4d9fe64-ac7a-59f8-9e70-26745686a4e7"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Distributions", "Random", "Test"]
+test = ["BEDTools_jll", "Distributions", "Random", "Test"]
