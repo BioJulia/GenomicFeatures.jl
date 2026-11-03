@@ -10,6 +10,11 @@ on:
     # Adding or removing the `skip changelog` label runs the checks again.
     types: [opened, synchronize, reopened, labeled, unlabeled]
 
+# A new push, or a change of the labels, cancels the run that's still checking the pull request.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 permissions: {}
 
 jobs:
