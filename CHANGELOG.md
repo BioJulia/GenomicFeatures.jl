@@ -16,6 +16,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- The compat bound of DataStructures admits 0.19.
 - `coverage!` writes into a collection of intervals of any integer metadata type, `GenomicIntervalCollection{GenomicInterval{N}}` with `N <: Integer`, rather than only `UInt32`.
 
 ### Deprecated
