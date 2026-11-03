@@ -13,6 +13,7 @@ makedocs(
     pages = [
         "Home" => "index.md",
         "Intervals" => "man/intervals.md",
+        "Benchmarks" => "benchmarks.md",
         "API Reference" => "api/api.md",
     ],
     format = Documenter.HTML(edit_link = "develop"),
