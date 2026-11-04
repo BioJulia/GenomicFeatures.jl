@@ -19,7 +19,7 @@ end
 const SIZES = (1_000, 100_000)
 
 const SUITE = BenchmarkGroup()
-for name in ("accessors", "sort", "collection", "eachoverlap", "coverage", "hasintersection")
+for name in ("accessors", "sort", "collection", "each_overlap", "coverage", "has_intersection")
     SUITE[name] = BenchmarkGroup()
 end
 
@@ -32,9 +32,9 @@ for n in SIZES
     label = string(n)
 
     accessors = SUITE["accessors"][label] = BenchmarkGroup()
-    accessors["groupname"] = @benchmarkable groupname.($intervals)
-    accessors["leftposition"] = @benchmarkable leftposition.($intervals)
-    accessors["rightposition"] = @benchmarkable rightposition.($intervals)
+    accessors["group_name"] = @benchmarkable group_name.($intervals)
+    accessors["left_position"] = @benchmarkable left_position.($intervals)
+    accessors["right_position"] = @benchmarkable right_position.($intervals)
     accessors["strand"] = @benchmarkable strand.($intervals)
     accessors["metadata"] = @benchmarkable metadata.($intervals)
 
@@ -44,12 +44,12 @@ for n in SIZES
     building["sorted vector"] = @benchmarkable GenomicIntervalCollection($sorted)
     building["push!"] = @benchmarkable foreach(interval -> push!(empty, interval), $intervals) setup = (empty = GenomicIntervalCollection{GenomicInterval{Int}}()) evals = 1
 
-    overlaps = SUITE["eachoverlap"][label] = BenchmarkGroup()
-    overlaps["vector, vector"] = @benchmarkable collect(eachoverlap($sorted, $others))
-    overlaps["vector, collection"] = @benchmarkable collect(eachoverlap($sorted, $other_collection))
-    overlaps["collection, collection"] = @benchmarkable collect(eachoverlap($collection, $other_collection))
+    overlaps = SUITE["each_overlap"][label] = BenchmarkGroup()
+    overlaps["vector, vector"] = @benchmarkable collect(each_overlap($sorted, $others))
+    overlaps["vector, collection"] = @benchmarkable collect(each_overlap($sorted, $other_collection))
+    overlaps["collection, collection"] = @benchmarkable collect(each_overlap($collection, $other_collection))
 
     SUITE["coverage"][label] = @benchmarkable coverage($collection)
 
-    SUITE["hasintersection"][label] = @benchmarkable count(hasintersection($collection), $others)
+    SUITE["has_intersection"][label] = @benchmarkable count(has_intersection($collection), $others)
 end
