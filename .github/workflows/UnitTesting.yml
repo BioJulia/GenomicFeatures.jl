@@ -24,19 +24,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        julia-version: ['1']
+        # The long-term support release, the oldest that the package supports, and the latest release, each on Linux, macOS and Windows.
+        julia-version: ['lts', '1']
         # BEDTools_jll provides no `bedtools` for Windows, where the coverage tests compare with a simple implementation instead.
         os: [ubuntu-latest, macos-latest, windows-latest]
         experimental: [false]
         include:
-          # Nightly is experimental, so it may fail without failing CI.
-          - julia-version: nightly
+          # The prerelease of the next version, or the latest release where there's none, is experimental, so it may fail without failing CI.
+          - julia-version: pre
             os: ubuntu-latest
             experimental: true
-          # The long-term support release, as the oldest that is tested, on one platform.
-          - julia-version: '1.10'
-            os: ubuntu-latest
-            experimental: false
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
