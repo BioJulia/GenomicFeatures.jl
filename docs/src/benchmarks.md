@@ -2,7 +2,7 @@
 
 GenomicFeatures' benchmarks are in `benchmark/`, a project of the package's workspace.
 
-`benchmark/benchmarks.jl` defines `SUITE`, a [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl) group of the accessors, `sort`, building a `GenomicIntervalCollection`, `eachoverlap`, `coverage` and `hasintersection`, on 10³ and 10⁵ random intervals.
+`benchmark/benchmarks.jl` defines `SUITE`, a [BenchmarkTools.jl](https://github.com/JuliaCI/BenchmarkTools.jl) group of the accessors, `sort`, building a `GenomicIntervalCollection`, `each_overlap`, `coverage` and `has_intersection`, on 10³ and 10⁵ random intervals.
 [AirspeedVelocity.jl](https://github.com/MilesCranmer/AirspeedVelocity.jl) runs it at two revisions and compares their times and allocations.
 On every pull request, the Benchmarks workflow compares the pull request with the commit of its base branch, `develop` or `master`, that it merges onto, and comments the table, with the ratio of their times, on the pull request.
 It runs the pull request's own suite at both revisions, so the suite uses only names that the base has too.
