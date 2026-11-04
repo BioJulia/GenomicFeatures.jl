@@ -1,7 +1,7 @@
 using GenomicFeatures
 using Test
 
-import BEDTools_jll
+import BEDTools
 import Random
 
 include(joinpath(@__DIR__, "Utilities.jl"))
@@ -110,7 +110,7 @@ function bedtools_coverage(intervals)
 
         # Read the bedGraph output of nonzero coverage runs.
         covintervals = GenomicInterval{UInt32}[]
-        for line in eachline(`$(BEDTools_jll.bedtools()) genomecov -i $bed -g $genome -bg`)
+        for line in BEDTools.genomecov(bed, genome; bg = true)
             name, first, last, depth = split(line, '\t')
             push!(covintervals, GenomicInterval{UInt32}(name, parse(Int, first) + 1, parse(Int, last), STRAND_BOTH, parse(UInt32, depth)))
         end
@@ -583,7 +583,7 @@ end
 
         # Check that the same coverage is computed by GenomicFeatures and bedtools.
         # BEDTools_jll provides no `bedtools` for some platforms, such as Windows, where the coverage is compared with the simple implementation instead.
-        has_bedtools = BEDTools_jll.is_available()
+        has_bedtools = BEDTools.is_available()
         has_bedtools || @warn "BEDTools_jll provides no `bedtools` for this platform, so the coverage is compared with a simple implementation instead."
         reference_coverage(intervals) = has_bedtools ? bedtools_coverage(intervals) : simple_coverage(intervals)
 

@@ -1,5 +1,5 @@
 [deps]
-BEDTools_jll = "a4d9fe64-ac7a-59f8-9e70-26745686a4e7"
+BEDTools = "36b681cb-7f1b-4b01-910b-2d46d07e0378"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 GenomicFeatures = "899a7d2d-5c61-547b-bef9-6698a8d05446"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
@@ -8,7 +8,7 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 # Compat bounds for the packages that only the tests use.
 # The bounds of GenomicFeatures' own dependencies are in its Project.toml, which the workspace resolves together with this one.
 [compat]
-BEDTools_jll = "2.31"
+BEDTools = "0.1.1"
 Distributions = "0.25"
 Random = "1"
 Test = "1"
