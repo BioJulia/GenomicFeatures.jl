@@ -1,19 +1,22 @@
 # Benchmarks: on pull requests, AirspeedVelocity.jl runs the pull request's regression suite, benchmark/benchmarks.jl, at the commit of its base branch that it merges onto and at the pull request, and compares them; docs/src/benchmarks.md describes it.
+# A maintainer's `skip benchmark` label skips the benchmarks, for a change that can't affect them, such as to the documentation or the CI; removing it runs them.
 name: Benchmarks
 
 on:
   pull_request:
-
-# A new push to a pull request cancels the run of its outdated commit.
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+    types: [opened, synchronize, reopened, labeled, unlabeled]
 
 permissions: {}
 
 jobs:
   regression:
     name: Regression
+    # Adding or removing another label doesn't run the benchmarks again; with `skip benchmark`, the job is skipped, which GitHub counts as passed.
+    if: ${{ (github.event.action != 'labeled' && github.event.action != 'unlabeled' || github.event.label.name == 'skip benchmark') && !contains(github.event.pull_request.labels.*.name, 'skip benchmark') }}
+    # A new push cancels the run of the pull request's outdated benchmarks; the concurrency is the job's, so that a skipped run, for a label, cancels nothing, and a run already going finishes.
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+      cancel-in-progress: true
     runs-on: ubuntu-latest
     permissions:
       contents: read
