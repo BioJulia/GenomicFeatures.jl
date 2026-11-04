@@ -5,10 +5,12 @@ on:
     branches:
       - master
       - develop
-      - release/*
-      - hotfix/*
-    tags: '*'
   pull_request:
+
+# A new push to a pull request cancels the run of its outdated commit; the runs of pushes to branches, and of tags, all finish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read

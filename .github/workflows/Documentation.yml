@@ -1,15 +1,19 @@
+# Documentation: a push to develop deploys the development documentation, a version tag that version's, and a pull request, a release's or a hotfix's into master included, a preview under previews/PR<number>, since docs/make.jl sets `push_preview`.
+# master isn't built, since each release's tag deploys its documentation.
 name: Documentation
 
 on:
   push:
     branches:
-      - master
       - develop
-      - release/*
-      - hotfix/*
     tags: '*'
   pull_request:
   workflow_dispatch:
+
+# A new push to a pull request cancels the run of its outdated commit; the runs of pushes to branches, and of tags, all finish.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   Documenter:

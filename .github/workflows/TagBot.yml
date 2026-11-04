@@ -1,3 +1,4 @@
+# TagBot: tags each release vX.Y.Z, with its GitHub release, once the registry merges it; the deploy key DOCUMENTER_KEY pushes the tag, so that the tag's workflows, such as the documentation's, run.
 name: TagBot
 
 on:
@@ -5,6 +6,9 @@ on:
     types:
       - created
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   TagBot:
@@ -15,3 +19,5 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           ssh: ${{ secrets.DOCUMENTER_KEY }}
+          # The release branch, whose commits TagBot tags: a back-merge into develop may share a release's tree, and without the branch TagBot may pick it.
+          branch: master

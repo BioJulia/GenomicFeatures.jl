@@ -10,10 +10,11 @@ updates:
     ignore:
       - dependency-name: "Random"
       - dependency-name: "Test"
-  # The actions are pinned to commits, with their versions in comments, which these pull requests update; an action's update isn't a change for the package's users, so they carry the `skip changelog` label.
+  # The actions are pinned to commits, with their versions in comments, which these pull requests update; an action's update isn't a change for the package's users, nor does it change the package's code, so they carry the `skip changelog` and `skip benchmark` labels.
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
     labels:
       - "skip changelog"
+      - "skip benchmark"
