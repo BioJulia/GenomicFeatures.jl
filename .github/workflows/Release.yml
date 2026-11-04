@@ -1,0 +1,35 @@
+# Release: started by hand from the Actions tab, BioJulia/Workflows prepares release/vX.Y.Z from develop, or hotfix/vX.Y.Z from master, sets its version in Project.toml and gives the changelog's unreleased entries its dated section with its links, and opens its pull request into master.
+# The step `auto` reads the changelog's unreleased section: `### Breaking` takes a breaking version, `### Added` the next minor version, and anything else the next patch.
+# The ReleaseFlow app's client ID and private key, or else the personal access token RELEASEFLOW_TOKEN, push the branch and open the pull request, so that its checks run; keep them as secrets of the `releaseflow` environment, which allows develop, where this runs, as BioJulia/Workflows' README describes.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: A release, from develop, or a hotfix, from master.
+        type: choice
+        options: [release, hotfix]
+        default: release
+      step:
+        description: The step of the version; `auto` reads the changelog's unreleased section.
+        type: choice
+        options: [auto, patch, minor, major]
+        default: auto
+
+permissions: {}
+
+jobs:
+  release:
+    uses: BioJulia/Workflows/.github/workflows/release.yml@v1
+    permissions:
+      contents: read
+    with:
+      model: gitflow
+      main-branch: master
+      kind: ${{ inputs.kind }}
+      step: ${{ inputs.step }}
+    secrets:
+      RELEASEFLOW_APP_CLIENT_ID: ${{ secrets.RELEASEFLOW_APP_CLIENT_ID }}
+      RELEASEFLOW_APP_PRIVATE_KEY: ${{ secrets.RELEASEFLOW_APP_PRIVATE_KEY }}
+      RELEASEFLOW_TOKEN: ${{ secrets.RELEASEFLOW_TOKEN }}
