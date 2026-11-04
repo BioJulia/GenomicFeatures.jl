@@ -1,11 +1,15 @@
 # Back-merge: once a release or hotfix merges into master, BioJulia/Workflows opens the pull request that brings master back into develop.
-# The ReleaseFlow app's client ID and private key, or else the personal access token RELEASEFLOW_TOKEN, open it so that its checks run; keep them as secrets of the `releaseflow` environment, limited to master, as BioJulia/Workflows' README describes.
+# Once TagBot has tagged the release, the required checks pass and it doesn't conflict, github-actions[bot] approves it and the ReleaseFlow app merges it; TagBot's runs and the checks' runs start this workflow again, so the caller names every workflow whose checks the ruleset requires.
+# The ReleaseFlow app's client ID and private key, or else the personal access token RELEASEFLOW_TOKEN, open and merge it so that its checks and develop's workflows run; keep them as secrets of the `releaseflow` environment, limited to master and develop, the default branch, where `workflow_run` runs, as BioJulia/Workflows' README describes.
 name: Back-merge
 
 on:
   push:
     branches:
       - master
+  workflow_run:
+    workflows: [TagBot, Gitflow, Unit tests, Formatting, Documentation, Benchmarks, Downstream]
+    types: [completed]
   workflow_dispatch:
 
 permissions: {}
@@ -15,6 +19,7 @@ jobs:
     uses: BioJulia/Workflows/.github/workflows/back-merge.yml@v1
     with:
       main-branch: master
+      auto-merge: true
     permissions:
       contents: write
       pull-requests: write
